@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] - 2026-02-23
+
+### Added
+- **`/squad-run-agents`** — New Claude Code-only command that runs the squad batch pipeline using parallel subagents. Spawns one architect agent per task simultaneously (Phase 1), then one full dev→test→review pipeline agent per task simultaneously (Phase 2). Significantly faster than `/squad-run` for multi-task batches.
+- **ESLint accessibility linting** for `contextkit-docs` — installed `eslint-plugin-test-a11y-js` with the `flat/react` preset and `@typescript-eslint/parser`. Fixed 30 violations across 11 files (heading order, table structure, button/form/link labels, keyboard accessibility).
+
+### Fixed
+- `.gitignore` docs artifact paths corrected from `vibe-kit-docs/` → `contextkit-docs/`
+
+---
+
 ## [0.9.7] - 2026-02-19
 
 ### Added

@@ -161,7 +161,8 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test` | Write and run tests against acceptance criteria |
 | `/squad-review` | Review the full pipeline and give a verdict |
 | `/squad-batch` | Kick off multiple tasks at once (batch PO specs) |
-| `/squad-run` | Auto-run the remaining pipeline for batch tasks |
+| `/squad-run` | Auto-run the remaining pipeline for batch tasks (sequential) |
+| `/squad-run-agents` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
 | `/ck` | Health check — verify setup, standards, and integrations |
 
 **Claude Code** — available as `/analyze`, `/review`, etc. in `.claude/commands/`
@@ -205,6 +206,16 @@ For multiple tasks, use batch mode to spec them all up front, then run the full 
 
 /squad-run
 # Runs Architect → Dev → Test → Review for each task sequentially
+```
+
+**Agent mode (Claude Code only):** Use `/squad-run-agents` instead of `/squad-run` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
+
+```bash
+/squad-batch "add dark mode" "fix login bug" "refactor checkout"
+
+/squad-run-agents
+# Phase 1: architect agents for all 3 tasks run in parallel
+# Phase 2: dev→test→review pipeline runs in parallel per task
 ```
 
 ### Feedback Loop

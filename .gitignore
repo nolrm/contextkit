@@ -167,8 +167,8 @@ build/
 .claude/
 
 # Docs build artifacts
-vibe-kit-docs/.next/
-vibe-kit-docs/out/
-vibe-kit-docs/.vercel/
+contextkit-docs/.next/
+contextkit-docs/out/
+contextkit-docs/.vercel/
 
 test-project/
