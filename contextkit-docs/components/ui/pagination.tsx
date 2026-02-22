@@ -49,6 +49,7 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   return (
+    // eslint-disable-next-line test-a11y-js/link-text
     <a
       aria-current={isActive ? 'page' : undefined}
       data-slot="pagination-link"

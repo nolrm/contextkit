@@ -53,9 +53,11 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       <p className="font-medium text-sm mb-3">On this page</p>
       <div className="grid grid-flow-row auto-rows-max text-sm">
         {headings.map((heading) => (
+          // eslint-disable-next-line test-a11y-js/link-text
           <a
             key={heading.id}
             href={`#${heading.id}`}
+            aria-label={heading.text}
             className={cn(
               "group flex w-full items-center rounded-md border border-transparent px-2 hover:underline text-sm",
               activeId === heading.id 

@@ -65,12 +65,12 @@ export default function SlashCommandsPage() {
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Available Commands</h2>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table aria-label="Available slash commands" className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="text-left py-2 pr-4 font-semibold">Command</th>
-                <th className="text-left py-2 pr-4 font-semibold">What it does</th>
-                <th className="text-left py-2 font-semibold">Source file</th>
+                <th scope="col" className="text-left py-2 pr-4 font-semibold">Command</th>
+                <th scope="col" className="text-left py-2 pr-4 font-semibold">What it does</th>
+                <th scope="col" className="text-left py-2 font-semibold">Source file</th>
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
@@ -279,13 +279,13 @@ export default function SlashCommandsPage() {
         <div>
           <h3 className="text-lg font-semibold mb-3">Pipeline Roles</h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table aria-label="Squad pipeline roles" className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2 pr-4 font-semibold">Step</th>
-                  <th className="text-left py-2 pr-4 font-semibold">Role</th>
-                  <th className="text-left py-2 pr-4 font-semibold">Command</th>
-                  <th className="text-left py-2 font-semibold">What it does</th>
+                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Step</th>
+                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Role</th>
+                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Command</th>
+                  <th scope="col" className="text-left py-2 font-semibold">What it does</th>
                 </tr>
               </thead>
               <tbody className="text-muted-foreground">

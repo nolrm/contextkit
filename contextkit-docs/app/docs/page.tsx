@@ -16,7 +16,7 @@ export default function DocsPage() {
         <div className="rounded-lg border bg-card p-4 hover:border-primary/50 transition-colors">
           <div className="flex items-center gap-2 mb-2">
             <Brain className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">No AI Hallucinations</h3>
+            <p className="font-semibold">No AI Hallucinations</p>
           </div>
           <p className="text-sm text-muted-foreground">
             AI has access to your actual standards, not generic patterns. It reads your real project structure and conventions.
@@ -26,7 +26,7 @@ export default function DocsPage() {
         <div className="rounded-lg border bg-card p-4 hover:border-primary/50 transition-colors">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Consistent Code</h3>
+            <p className="font-semibold">Consistent Code</p>
           </div>
           <p className="text-sm text-muted-foreground">
             Every suggestion follows your specific patterns. TypeScript config, component structure, testing approach—all matched to your codebase.
@@ -36,7 +36,7 @@ export default function DocsPage() {
         <div className="rounded-lg border bg-card p-4 hover:border-primary/50 transition-colors">
           <div className="flex items-center gap-2 mb-2">
             <FileCode className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Project-Specific Guidance</h3>
+            <p className="font-semibold">Project-Specific Guidance</p>
           </div>
           <p className="text-sm text-muted-foreground">
             Tailored to your tech stack and team preferences. Update the markdown files as your project evolves.
@@ -46,7 +46,7 @@ export default function DocsPage() {
         <div className="rounded-lg border bg-card p-4 hover:border-primary/50 transition-colors">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Living Documentation</h3>
+            <p className="font-semibold">Living Documentation</p>
           </div>
           <p className="text-sm text-muted-foreground">
             Your standards evolve with your project. Document decisions once, reuse them across all AI interactions.

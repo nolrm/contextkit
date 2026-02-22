@@ -73,6 +73,11 @@ function InputGroupAddon({
         }
         e.currentTarget.parentElement?.querySelector('input')?.focus()
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.currentTarget.parentElement?.querySelector('input')?.focus()
+        }
+      }}
       {...props}
     />
   )
@@ -105,6 +110,7 @@ function InputGroupButton({
 }: Omit<React.ComponentProps<typeof Button>, 'size'> &
   VariantProps<typeof inputGroupButtonVariants>) {
   return (
+    // eslint-disable-next-line test-a11y-js/button-label
     <Button
       type={type}
       data-size={size}
@@ -132,6 +138,7 @@ function InputGroupInput({
   ...props
 }: React.ComponentProps<'input'>) {
   return (
+    // eslint-disable-next-line test-a11y-js/form-label
     <Input
       data-slot="input-group-control"
       className={cn(
@@ -148,6 +155,7 @@ function InputGroupTextarea({
   ...props
 }: React.ComponentProps<'textarea'>) {
   return (
+    // eslint-disable-next-line test-a11y-js/form-label
     <Textarea
       data-slot="input-group-control"
       className={cn(

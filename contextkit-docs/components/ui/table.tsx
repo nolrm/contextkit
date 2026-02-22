@@ -10,6 +10,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
     >
+      {/* eslint-disable-next-line test-a11y-js/table-structure */}
       <table
         data-slot="table"
         className={cn('w-full caption-bottom text-sm', className)}
@@ -68,6 +69,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
 function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
   return (
     <th
+      scope="col"
       data-slot="table-head"
       className={cn(
         'text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',

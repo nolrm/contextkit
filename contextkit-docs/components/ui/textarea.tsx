@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 
 function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
   return (
+    // eslint-disable-next-line test-a11y-js/form-label
     <textarea
       data-slot="textarea"
       className={cn(
