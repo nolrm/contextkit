@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - 2026-02-23
+## [0.11.0] - 2026-02-23
 
 ### Added
 - **`/squad-run-agents`** — New Claude Code-only command that runs the squad batch pipeline using parallel subagents. Spawns one architect agent per task simultaneously (Phase 1), then one full dev→test→review pipeline agent per task simultaneously (Phase 2). Significantly faster than `/squad-run` for multi-task batches.
@@ -8,6 +8,13 @@
 
 ### Fixed
 - `.gitignore` docs artifact paths corrected from `vibe-kit-docs/` → `contextkit-docs/`
+
+---
+
+## [0.10.0] - 2026-02-20
+
+### Changed
+- **Interactive platform picker** — `ck install` now prompts "Which AI tool?" instead of auto-detecting all tools. Supports a positional argument (`ck install claude`) to skip the prompt. `--non-interactive` installs base files only. Platform-specific commands (`ck claude`, etc.) are unchanged.
 
 ---
 
