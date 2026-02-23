@@ -165,6 +165,9 @@ build/
 .cursor/
 .vibe-kit/
 .claude/
+.contextkit/
+!.contextkit/hooks/commit-msg.sh
+!.contextkit/hooks/pre-push.sh
 
 # Docs build artifacts
 contextkit-docs/.next/
