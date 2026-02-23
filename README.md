@@ -2,7 +2,7 @@
 
 > Context Engineering for AI Development
 
-Give your AI assistants (Cursor, Claude, Copilot, Codex, Gemini, Aider, Continue, Windsurf) structured context through markdown files. ContextKit creates a knowledge base that ensures AI generates code matching your exact patterns, style, and architecture—no more hallucinated code or mismatched conventions.
+Give your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf) structured context through markdown files. ContextKit creates a knowledge base that ensures AI generates code matching your exact patterns, style, and architecture—no more hallucinated code or mismatched conventions.
 
 ContextKit is a CLI tool that provides **context-engineering** capabilities by creating `.contextkit/` directories with project standards, guidelines, and patterns that AI assistants read automatically.
 
@@ -21,7 +21,7 @@ Update `.md` files as your project evolves; the AI follows.
 
 ## Multi-Platform Support
 
-Works with: **Cursor** • **Claude Code** • **GitHub Copilot** • **Codex CLI** • **Gemini CLI** • **Aider** • **Continue** • **Windsurf**
+Works with: **Cursor** • **Claude Code** • **GitHub Copilot** • **Codex CLI** • **OpenCode** • **Gemini CLI** • **Aider** • **Continue** • **Windsurf**
 
 Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.windsurfrules`, etc.) so your AI tools read project standards automatically. Claude Code uses `@` imports in CLAUDE.md to load standards content directly into context — no extra token cost from manual file reads.
 
@@ -76,6 +76,7 @@ ck claude      # creates CLAUDE.md + .claude/rules/
 ck cursor      # creates .cursor/rules/ (scoped .mdc files)
 ck copilot     # creates .github/copilot-instructions.md
 ck codex       # creates AGENTS.md
+ck opencode    # creates AGENTS.md
 ck gemini      # creates GEMINI.md + .gemini/settings.json
 ck aider       # creates CONVENTIONS.md + .aider/rules.md
 ck continue    # creates .continue/rules/ + config.yaml
@@ -134,6 +135,11 @@ claude "create checkout flow for customer"
 **Codex CLI** — reads `AGENTS.md` automatically
 ```bash
 codex "create checkout flow for customer"
+```
+
+**OpenCode** — reads `AGENTS.md` automatically
+```bash
+opencode "create checkout flow for customer"
 ```
 
 **CLI** (Chat with AI)
@@ -284,7 +290,7 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 - 🧠 **Context Engineering** - Structured MD files your AI reads automatically
 - 🔍 **Smart Analysis** - AI generates standards content based on your codebase
 - 🌍 **Project Agnostic** - Works with React, Vue, Node.js, PHP, Python, Rust, monorepos—any project type
-- 🤖 **Multi-Platform** - Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, Continue, Windsurf
+- 🤖 **Multi-Platform** - Works with Cursor, Claude Code, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf
 - 🛡️ **Safe Install** - Backs up existing files with rollback support
 - ⚡ **Zero Config** - Auto-detects project type and package manager
 - ✅ **Policy Enforcement** - Configurable validation with `ck check`
@@ -303,6 +309,7 @@ ck claude      # add Claude Code integration (CLAUDE.md + rules)
 ck cursor      # add Cursor integration (scoped .mdc rules)
 ck copilot     # add GitHub Copilot integration
 ck codex       # add Codex CLI integration (AGENTS.md)
+ck opencode    # add OpenCode integration (AGENTS.md)
 ck gemini      # add Gemini CLI integration (GEMINI.md)
 ck aider       # add Aider integration (CONVENTIONS.md)
 ck continue    # add Continue integration

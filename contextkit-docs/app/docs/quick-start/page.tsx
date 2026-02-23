@@ -78,6 +78,8 @@ export default function QuickStartPage() {
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit vscode</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit claude</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit gemini</code>
+              <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit codex</code>
+              <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit opencode</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit aider</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit continue</code>
             </div>

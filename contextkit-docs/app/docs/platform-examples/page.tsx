@@ -9,6 +9,7 @@ export default function PlatformExamplesPage() {
     { id: 'vscode', text: 'VS Code' },
     { id: 'claude', text: 'Claude CLI' },
     { id: 'codex', text: 'Codex CLI' },
+    { id: 'opencode', text: 'OpenCode' },
     { id: 'continue', text: 'Continue.dev' },
     { id: 'aider', text: 'Aider' },
     { id: 'gemini', text: 'Gemini CLI' },
@@ -42,7 +43,7 @@ export default function PlatformExamplesPage() {
         <div className="space-y-3">
           <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Platform Examples</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Step-by-step examples for using ContextKit with Cursor, VS Code, Claude CLI, Gemini CLI, Codex CLI, Windsurf, and other AI tools.
+            Step-by-step examples for using ContextKit with Cursor, VS Code, Claude CLI, Gemini CLI, Codex CLI, OpenCode, Windsurf, and other AI tools.
           </p>
         </div>
 
@@ -302,6 +303,57 @@ export default function PlatformExamplesPage() {
           </div>
         </div>
 
+        {/* OpenCode */}
+        <div id="opencode" className="rounded-lg border bg-card p-6 scroll-mt-20 mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <Bot className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">OpenCode</h2>
+              <p className="text-sm text-muted-foreground">Auto-loads AGENTS.md</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Setup</h3>
+              <p className="text-sm text-muted-foreground">
+                Run <code className="rounded bg-muted px-1 font-mono text-xs">contextkit opencode</code> to set up OpenCode integration. OpenCode auto-loads <code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code> so your standards are always in context.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Usage</h3>
+              <div className="rounded-lg border border-border bg-muted/50 p-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Terminal className="h-4 w-4" />
+                  <span className="font-mono">Terminal</span>
+                </div>
+                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
+                  opencode "create a button component"
+                </code>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Using ContextKit Wrapper</h3>
+              <div className="rounded-lg border border-border bg-muted/50 p-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Terminal className="h-4 w-4" />
+                  <span className="font-mono">Terminal</span>
+                </div>
+                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
+                  export AI_TOOL=opencode
+                </code>
+                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">
+                  contextkit ai "create a button component"
+                </code>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Continue.dev */}
         <div id="continue" className="rounded-lg border bg-card p-6 scroll-mt-20 mb-8">
           <div className="flex items-center gap-3 mb-4">
@@ -493,7 +545,8 @@ export default function PlatformExamplesPage() {
               <div>Person 4 (Claude): <code className="rounded bg-muted px-1">contextkit claude</code></div>
               <div>Person 5 (Gemini): <code className="rounded bg-muted px-1">contextkit gemini</code></div>
               <div>Person 6 (Codex): <code className="rounded bg-muted px-1">contextkit codex</code></div>
-              <div>Person 7 (Windsurf): <code className="rounded bg-muted px-1">contextkit windsurf</code></div>
+              <div>Person 7 (OpenCode): <code className="rounded bg-muted px-1">contextkit opencode</code></div>
+              <div>Person 8 (Windsurf): <code className="rounded bg-muted px-1">contextkit windsurf</code></div>
             </div>
           </div>
         </div>

@@ -40,6 +40,7 @@ export default function CommandsPage() {
               <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit claude</code>
               <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit gemini</code>
               <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit codex</code>
+              <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit opencode</code>
               <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit aider</code>
               <code className="block rounded bg-muted px-3 py-1 font-mono text-xs">contextkit continue</code>
             </div>

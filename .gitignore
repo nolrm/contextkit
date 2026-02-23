@@ -168,6 +168,7 @@ build/
 .contextkit/
 !.contextkit/hooks/commit-msg.sh
 !.contextkit/hooks/pre-push.sh
+!.contextkit/hooks/setup-hooks.sh
 
 # Docs build artifacts
 contextkit-docs/.next/

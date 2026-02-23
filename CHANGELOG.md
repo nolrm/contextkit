@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0] - 2026-02-23
+
+### Added
+- **OpenCode integration** — New platform support. Run `ck opencode` to create `AGENTS.md` (auto-loaded by OpenCode). Same bridge file pattern as Codex.
+
+---
+
 ## [0.11.0] - 2026-02-23
 
 ### Added

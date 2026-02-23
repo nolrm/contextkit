@@ -1,6 +1,6 @@
 {
   "name": "@nolrm/contextkit",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "ContextKit - Context Engineering for AI Development. Provide rich context to AI through structured MD files with standards, code guides, and documentation. Works with Cursor, Claude, Aider, VS Code Copilot, and more.",
   "main": "lib/index.js",
   "bin": {

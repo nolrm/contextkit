@@ -124,7 +124,7 @@ pnpm start
 
 1. **Introduction** (`/docs`) - Overview of ContextKit and Context Engineering
 2. **Quick Start** (`/docs/quick-start`) - Complete installation and setup guide (3 steps)
-3. **Platform Examples** (`/docs/platform-examples`) - How to use with Cursor, VS Code, Aider, Claude CLI, Gemini
+3. **Platform Examples** (`/docs/platform-examples`) - How to use with Cursor, VS Code, Aider, Claude CLI, OpenCode, Gemini
 4. **Project Structure** (`/docs/project-structure`) - Directory structure and customization
 5. **Commands** (`/docs/commands`) - Complete CLI command reference
 
