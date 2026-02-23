@@ -136,7 +136,7 @@ export default function QualityGatesPage() {
             <tbody className="text-muted-foreground">
               <tr className="border-b">
                 <td className="py-2 pr-4 font-medium">Node.js</td>
-                <td className="py-2">TypeScript, ESLint, Prettier, build, test (auto-detects npm/yarn/pnpm/bun)</td>
+                <td className="py-2">TypeScript, ESLint, Prettier, build, test (only when listed as dependencies; auto-detects npm/yarn/pnpm/bun)</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-medium">Python</td>

@@ -49,15 +49,17 @@ describe('CLI Integration Tests', () => {
   describe('status command', () => {
     test('should run status command', () => {
       const result = execSync(`node "${cliPath}" status`, { encoding: 'utf8' });
-      expect(result).toContain('ContextKit is not installed');
+      expect(result).toContain('ContextKit Status');
+      expect(result).toContain('Installation:');
     });
   });
 
   describe('error handling', () => {
     test('should handle unknown command as AI prompt', () => {
-      // Unknown commands are now treated as prompts, not errors
+      // Unknown commands are now treated as prompts (display mode when no AI_TOOL set)
       const result = execSync(`node "${cliPath}" unknown-command`, { encoding: 'utf8' });
-      expect(result).toContain('ContextKit not initialized');
+      expect(result).toContain('Using AI tool');
+      expect(result).toContain('Full Prompt');
     });
   });
 });

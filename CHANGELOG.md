@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1] - 2026-02-23
+
+### Fixed
+- **Pre-push quality gates** — TypeScript, ESLint, and Prettier gates now only run when listed as dependencies in `package.json`, not when they appear in keywords. Fixes false positives for projects that mention these tools in keywords but don't use them.
+
+---
+
 ## [0.12.0] - 2026-02-23
 
 ### Added
