@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.2] - 2026-02-26
+
+### Fixed
+- **CLI** — Register `opencode` command so `ck opencode` works (integration existed; command was documented but not registered).
+- **Tests** — CLI integration tests for `status` and unknown-command now pass in both CI (no config) and local (full install).
+
+---
+
 ## [0.12.1] - 2026-02-23
 
 ### Fixed

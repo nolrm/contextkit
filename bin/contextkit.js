@@ -276,6 +276,19 @@ program
   });
 
 program
+  .command('opencode')
+  .description('Install OpenCode integration only')
+  .option('--non-interactive', 'Skip interactive prompts')
+  .action(async (options) => {
+    try {
+      await install({ platform: 'opencode', ...options });
+    } catch (error) {
+      console.error(chalk.red('Installation failed:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
   .command('copilot')
   .description('Install GitHub Copilot integration only')
   .option('--non-interactive', 'Skip interactive prompts')
