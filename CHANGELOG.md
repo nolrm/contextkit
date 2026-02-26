@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.3] - 2026-02-26
+
+### Fixed
+- **Tests** — Unknown-command CLI test now accepts "ContextKit not initialized" when not installed (CI), so it passes in both CI and local.
+
+---
+
 ## [0.12.2] - 2026-02-26
 
 ### Fixed
