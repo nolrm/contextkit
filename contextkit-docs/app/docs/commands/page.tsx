@@ -20,7 +20,7 @@ export default function CommandsPage() {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-1">contextkit install [platform]</h3>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Install ContextKit in your current project. Creates <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/</code> directory and configures your chosen AI tool integration.
+                  Initialize ContextKit in the current project directory (run once per project). Creates <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/</code> and configures your chosen AI tool integration.
                 </p>
                 <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">contextkit install</code>
                 <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-1">contextkit install claude</code>

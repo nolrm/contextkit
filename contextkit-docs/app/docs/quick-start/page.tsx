@@ -30,11 +30,11 @@ export default function QuickStartPage() {
         </h2>
         
         <div className="space-y-3">
-          <p className="text-muted-foreground leading-relaxed">Install globally to use it across all your projects:</p>
+          <p className="text-muted-foreground leading-relaxed">Install the CLI globally (one-time). Your standards live in each project, not on your machine.</p>
           <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Terminal className="h-4 w-4" />
-              <span className="font-mono">Global install (recommended)</span>
+              <span className="font-mono">Install the CLI (one-time)</span>
             </div>
             <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">npm install -g @nolrm/contextkit</code>
           </div>
@@ -67,7 +67,12 @@ export default function QuickStartPage() {
           <p className="text-sm text-muted-foreground">
             This creates the <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with skeleton standards files (blank templates). ContextKit auto-detects your project type and prompts you to choose your AI tool. <strong>After install, run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck analyze</code> to generate content for these files.</strong>
           </p>
-          
+          <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+            <p className="text-sm font-medium mb-1">📌 Project-level only</p>
+            <p className="text-sm text-muted-foreground">
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck install</code> creates <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> in the current directory. Your standards live in git with the project — there is no global mode. To share standards across projects, use <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck pull</code>.
+            </p>
+          </div>
           <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
             <p className="text-sm font-medium mb-2">💡 Multi-Team Workflow</p>
             <p className="text-sm text-muted-foreground mb-2">

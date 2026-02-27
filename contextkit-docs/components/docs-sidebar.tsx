@@ -19,6 +19,7 @@ const docsNav = [
     title: "Features",
     items: [
       { title: "Slash Commands", href: "/docs/slash-commands" },
+      { title: "Squad Workflow", href: "/docs/squad" },
       { title: "Quality Gates", href: "/docs/quality-gates" },
     ],
   },

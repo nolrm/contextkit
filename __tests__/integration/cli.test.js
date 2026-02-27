@@ -40,7 +40,7 @@ describe('CLI Integration Tests', () => {
 
     test('should show help for install command', () => {
       const result = execSync(`node "${cliPath}" install --help`, { encoding: 'utf8' });
-      expect(result).toContain('Install ContextKit in current project');
+      expect(result).toContain('Initialize ContextKit in the current project directory');
       expect(result).toContain('--no-hooks');
       expect(result).toContain('--non-interactive');
     });

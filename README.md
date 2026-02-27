@@ -32,14 +32,18 @@ Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.m
 **Requirements:** Node.js 14.x+ (16.x+ recommended) and npm/yarn. Optional: Git for hooks, AI tools for usage.
 
 ```bash
-# Step 1: Install globally (recommended)
+# Step 1: Install the CLI globally (one-time, any machine)
 npm i -g @nolrm/contextkit
 
-# Step 2: Navigate to your project and install
+# Step 2: Initialize in your project (once per project)
 cd your-project
 contextkit install          # interactive — prompts "Which AI tool?"
 contextkit install claude   # or specify your platform directly
 ```
+
+> **Project-level only.** `ck install` creates `.contextkit/` in your current directory and commits it with your project. There is no global mode — your standards live in git, not on your machine. This keeps them portable, CI-compatible, and shared with your team.
+
+> **Tip:** Need to share standards across projects? Push your `.contextkit/` to a shared repo and pull it with `ck pull`.
 
 This creates `.contextkit/` with skeleton context files (blank templates to be filled by AI):
 

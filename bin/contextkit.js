@@ -22,7 +22,7 @@ program
 // Install command
 program
   .command('install [platform]')
-  .description('Install ContextKit in current project')
+  .description('Initialize ContextKit in the current project directory (run once per project, not global)')
   .option('--no-hooks', 'Skip Git hooks installation')
   .option('--non-interactive', 'Skip interactive prompts')
   .action(async (platform, options) => {

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect } from "react"
+import Link from "next/link"
 import { Terminal, Sparkles, Code, Bot } from "lucide-react"
 
 export default function SlashCommandsPage() {
@@ -10,7 +11,6 @@ export default function SlashCommandsPage() {
     { id: 'claude', text: 'Claude Code' },
     { id: 'cursor', text: 'Cursor' },
     { id: 'custom', text: 'Custom Commands' },
-    { id: 'squad', text: 'Squad Workflow' },
   ];
 
   useEffect(() => {
@@ -105,39 +105,9 @@ export default function SlashCommandsPage() {
                 <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/add-documentation.md</code></td>
               </tr>
               <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad</code></td>
-                <td className="py-2 pr-4">Kick off a squad task — write the PO spec</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-architect</code></td>
-                <td className="py-2 pr-4">Design the technical plan from the PO spec</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-architect.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-dev</code></td>
-                <td className="py-2 pr-4">Implement code following the architect plan</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-dev.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-test</code></td>
-                <td className="py-2 pr-4">Write and run tests against acceptance criteria</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-test.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-review</code></td>
-                <td className="py-2 pr-4">Review the full pipeline and give a verdict</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-review.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-batch</code></td>
-                <td className="py-2 pr-4">Kick off multiple tasks at once (batch PO specs)</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-batch.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-run</code></td>
-                <td className="py-2 pr-4">Auto-run the remaining pipeline for batch tasks</td>
-                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/squad-run.md</code></td>
+                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> <span className="text-xs text-muted-foreground">+ 6 more</span></td>
+                <td className="py-2 pr-4">Multi-role pipeline: PO → Architect → Dev → Test → Review</td>
+                <td className="py-2"><Link href="/docs/squad" className="text-primary hover:underline text-xs">See Squad docs →</Link></td>
               </tr>
             </tbody>
           </table>
@@ -268,112 +238,6 @@ export default function SlashCommandsPage() {
         </p>
       </div>
 
-      {/* Squad Workflow */}
-      <div id="squad" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Squad Workflow</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          The squad workflow turns a single AI session into a structured multi-role pipeline. Each role has its own slash command that reads and writes to a shared handoff file (<code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/handoff.md</code>), simulating a team of specialists.
-        </p>
-
-        {/* Pipeline Roles */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Pipeline Roles</h3>
-          <div className="overflow-x-auto">
-            <table aria-label="Squad pipeline roles" className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Step</th>
-                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Role</th>
-                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Command</th>
-                  <th scope="col" className="text-left py-2 font-semibold">What it does</th>
-                </tr>
-              </thead>
-              <tbody className="text-muted-foreground">
-                <tr className="border-b">
-                  <td className="py-2 pr-4">1</td>
-                  <td className="py-2 pr-4">Product Owner</td>
-                  <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad</code></td>
-                  <td className="py-2">Writes user story, acceptance criteria, edge cases, and scope</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4">2</td>
-                  <td className="py-2 pr-4">Architect</td>
-                  <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-architect</code></td>
-                  <td className="py-2">Designs technical approach, files to change, and implementation steps</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4">3</td>
-                  <td className="py-2 pr-4">Developer</td>
-                  <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-dev</code></td>
-                  <td className="py-2">Implements code following the architect&apos;s plan</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4">4</td>
-                  <td className="py-2 pr-4">Tester</td>
-                  <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-test</code></td>
-                  <td className="py-2">Writes and runs tests against acceptance criteria</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4">5</td>
-                  <td className="py-2 pr-4">Reviewer</td>
-                  <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-review</code></td>
-                  <td className="py-2">Reviews everything and gives a PASS or NEEDS-WORK verdict</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Single-Task Flow */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Single-Task Flow</h3>
-          <div className="rounded-lg border bg-muted/50 p-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <Terminal className="h-4 w-4" />
-              <span className="font-mono">Run each command in sequence</span>
-            </div>
-            <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode support"        # PO writes the spec
-/squad-architect                       # Architect designs the plan
-/squad-dev                             # Dev implements the code
-/squad-test                            # Tester writes and runs tests
-/squad-review                          # Reviewer gives the verdict`}</pre>
-          </div>
-        </div>
-
-        {/* Batch Flow */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Batch Flow</h3>
-          <p className="text-sm text-muted-foreground mb-3">
-            For multiple tasks, use batch mode to spec them all up front, then run the full pipeline automatically:
-          </p>
-          <div className="rounded-lg border bg-muted/50 p-4">
-            <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad-batch "add dark mode" "fix login bug" "refactor checkout"
-# PO writes specs for all three tasks
-
-/squad-run
-# Runs Architect → Dev → Test → Review for each task`}</pre>
-          </div>
-        </div>
-
-        {/* Feedback Loop */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Feedback Loop</h3>
-          <p className="text-sm text-muted-foreground mb-3">
-            Any downstream role can raise questions for an upstream role. When this happens, the pipeline pauses and directs you to the right command to provide clarifications. After clarifications are added, re-run the asking role&apos;s command to continue.
-          </p>
-          <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-            <p className="text-sm font-medium mb-2">Example escalations</p>
-            <div className="space-y-1 text-sm text-muted-foreground">
-              <p>Reviewer has questions for Dev → run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-dev</code> to clarify</p>
-              <p>Tester has questions for Architect → run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-architect</code> to clarify</p>
-              <p>Architect has questions for PO → run <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> to clarify</p>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            This prevents misunderstandings from compounding through the pipeline. The handoff file tracks all questions and answers for full traceability.
-          </p>
-        </div>
-      </div>
     </div>
   )
 }
