@@ -6,7 +6,7 @@ Give your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider
 
 ContextKit is a CLI tool that provides **context-engineering** capabilities by creating `.contextkit/` directories with project standards, guidelines, and patterns that AI assistants read automatically.
 
-**[Read the full documentation](https://contextkit-docs.vercel.app/)**
+**[Read the full documentation](https://contextkit-docs.vercel.app/)** · **[How context works](https://contextkit-docs.vercel.app/docs/how-context-works)**
 
 ## Why ContextKit?
 

@@ -12,6 +12,7 @@ const docsNav = [
       { title: "Quick Start", href: "/docs/quick-start" },
       { title: "Platform Examples", href: "/docs/platform-examples" },
       { title: "Project Structure", href: "/docs/project-structure" },
+      { title: "How Context Works", href: "/docs/how-context-works" },
       { title: "Commands", href: "/docs/commands" },
     ],
   },

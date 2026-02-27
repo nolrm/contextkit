@@ -1,10 +1,19 @@
 # Changelog
 
+## [0.12.5] - 2026-02-26
+
+### Changed
+- **README** — Add direct link to [How context works](https://contextkit-docs.vercel.app/docs/how-context-works) docs page.
+- **Docs site** — Footer copyright year 2026; sitemap and docs README include How Context Works page.
+
+---
+
 ## [0.12.4] - 2026-02-26
 
 ### Changed
 - **Docs** — Clarify that install is project-level only (README, CLI description, docs site quick-start and commands). No global mode; standards live in git with the project. Tip for sharing across projects via `ck pull`.
 - **Docs site** — New Squad Workflow page (`/docs/squad`) with pipeline roles, single-task and batch flows, and feedback loop. Slash-commands page now links to it instead of listing all squad commands inline.
+- **Docs site** — New How Context Works page (`/docs/how-context-works`) explaining the two-layer architecture (bridge file + scoped rules).
 
 ### Added
 - **Install** — Warn when running `ck install` with no `.git` or `package.json` in the current directory (reminder to run from inside a project).

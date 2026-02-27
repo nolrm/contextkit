@@ -6,7 +6,7 @@ export function Footer() {
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row">
         <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Released under the MIT License. Copyright © 2025{" "}
+            Released under the MIT License. Copyright © 2026{" "}
             <Link href="https://github.com/nolrm" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
               Marlon Maniti
             </Link>
