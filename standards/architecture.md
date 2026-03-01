@@ -1,3 +1,5 @@
+> **Reference Example** — This file is NOT installed automatically. It shows what `ck analyze` can generate for a React/Redux project. Your project gets a blank skeleton — run `ck analyze` to produce content tailored to your actual stack.
+
 # Architecture Patterns
 
 ## Project Structure

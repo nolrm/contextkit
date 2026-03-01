@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.12.6] - 2026-03-01
+
+### Changed
+- **Standards template** — `standards/glossary.md` is now a neutral project-agnostic template (`[YOUR_DOMAIN]` / `[term]` placeholders) instead of shipping with e-commerce/accounting examples that don't apply to most projects.
+- **`commands/analyze.md`** — Analysis now includes a Term & Glossary Detection step: AI scans the codebase for domain-specific vocabulary and appends discovered terms to `glossary.md`. Added Update Strategy rule: placeholder files are replaced, files with existing custom content are improved and augmented — never overwritten. Added `ai-guidelines.md`, `workflows.md`, and `glossary.md` to the list of files updated during analysis.
+- **`standards/README.md`** — Quick Reference section is now stack-neutral (removed React/TypeScript-specific "functional components" and "atomic design" advice). Added `workflows.md` to the Standards file list. Updated glossary description to "Project terminology and domain glossary".
+- **Root `standards/` reference files** — Added clear banner to `code-style.md`, `testing.md`, `architecture.md`, `ai-guidelines.md`, and `workflows.md` clarifying they are reference examples (not auto-installed) showing what `ck analyze` can generate.
+- **Docs & README** — Updated glossary description from e-commerce-specific examples to generic domain terminology. Updated quick-start and platform-examples usage snippets to reflect that glossary terms come from the user's own project.
+
+---
+
 ## [0.12.5] - 2026-02-26
 
 ### Changed

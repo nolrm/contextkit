@@ -242,7 +242,7 @@ export default function PlatformExamplesPage() {
                   <span className="font-mono">Terminal</span>
                 </div>
                 <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
-                  claude "create checkout flow for customer"
+                  claude "create [your-feature] for [your-entity]"
                 </code>
                 <p className="text-xs text-muted-foreground mt-2 italic">
                   Standards are already loaded — no need to tell Claude to read them.

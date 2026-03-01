@@ -155,7 +155,7 @@ export default function QuickStartPage() {
               Use in Cursor
             </h3>
             <p className="text-sm text-muted-foreground">
-              Cursor automatically loads all context files. Try: <code className="rounded bg-muted px-1 font-mono text-xs">Create checkout flow for customer</code>
+              Cursor automatically loads all context files. Once you've added your terms to <code className="rounded bg-muted px-1 font-mono text-xs">glossary.md</code>, try: <code className="rounded bg-muted px-1 font-mono text-xs">Create [your-feature] for [your-entity]</code>
             </p>
           </div>
 
@@ -165,7 +165,7 @@ export default function QuickStartPage() {
               Use in VS Code
             </h3>
             <p className="text-sm text-muted-foreground">
-              In Copilot Chat: <code className="rounded bg-muted px-1 font-mono text-xs">@.contextkit Create checkout flow for customer</code>
+              In Copilot Chat: <code className="rounded bg-muted px-1 font-mono text-xs">@.contextkit Create [your-feature] for [your-entity]</code> — after adding your terms to <code className="rounded bg-muted px-1 font-mono text-xs">glossary.md</code>
             </p>
           </div>
 

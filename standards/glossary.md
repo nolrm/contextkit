@@ -4,33 +4,23 @@
 
 ## Business Terms
 
-### E-commerce
-**customer** - Customer account  
-**order** - Purchase order  
-**checkout** - Checkout process  
-**cart** - Shopping cart  
-**cart-old** - Shopping cart old or legacy
-**product** - Product catalog item
-
-### Accounting
-**invoice** - Invoice document  
-**sales** - Sales transaction  
-**revenue** - Revenue entry  
-**ledger** - General ledger  
-**expense** - Expense entry
-
-
+### [YOUR_DOMAIN]
+**[term]** - [definition]
+**[term]** - [definition]
+**[term]** - [definition]
 
 ---
 
 ## How to Use
 
-In Cursor: Just use the keywords naturally - `"Create checkout flow for customer"`  
-In VS Code: Mention file first - `@.contextkit Create checkout flow for customer`  
-In CLI: Reference file - `"Read .contextkit/standards/glossary.md and create checkout flow"`
+In Cursor: Just use the keywords naturally - `"Create [term] flow"`
+In VS Code: Mention file first - `@.contextkit Create [term] flow`
+In CLI: Reference file - `"Read .contextkit/standards/glossary.md and create [term] flow"`
 
 ---
 
 ## Customize for Your Project
 
-Edit this file to add your project-specific terminology. Keep it concise - only the most important terms.
+Edit this file to add your project-specific terminology. Keep it concise — only the most important terms.
+
+Run `ck analyze` to auto-detect domain terms from your codebase.

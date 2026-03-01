@@ -17,17 +17,17 @@ Treat these files as **living documentation** that grows with your project.
 
 ## Quick Reference
 
-### Component Development
+### Module / Component Development
 
-- Use functional components with TypeScript
-- Follow atomic design principles
-- Include proper prop types and documentation
-- Ensure accessibility compliance
+- Follow your project's established component or module pattern
+- Keep units focused and small — one responsibility per file
+- Include proper types and documentation
+- Ensure accessibility compliance where applicable
 
 ### Testing
 
 - Write tests before implementation (TDD)
-- Use descriptive test names
+- Use descriptive, numbered test names (`1.`, `2.`, `3.`)
 - Include edge cases and error scenarios
 - Maintain high test coverage
 
@@ -51,7 +51,8 @@ Treat these files as **living documentation** that grows with your project.
 - `@.contextkit/standards/testing.md` - Testing patterns
 - `@.contextkit/standards/architecture.md` - Architecture patterns
 - `@.contextkit/standards/ai-guidelines.md` - AI development guidelines
-- `@.contextkit/standards/glossary.md` - **Business and technical glossary**
+- `@.contextkit/standards/workflows.md` - Development workflows and processes
+- `@.contextkit/standards/glossary.md` - **Project terminology and domain glossary**
 
 ## Commands
 

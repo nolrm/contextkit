@@ -13,7 +13,7 @@ ContextKit is a CLI tool that provides **context-engineering** capabilities by c
 **The problem:** LLMs are great at syntax, not at *your* conventions. Generic AI output requires manual fixes for style, structure, and architecture.
 
 **The solution:** ContextKit provides your AI with:
-- **Glossary** of project terminology and business terms (e.g., `checkout`, `customer`, `order`)
+- **Glossary** of project terminology and domain-specific terms (e.g., your entity, feature, and module names)
 - **Standards** for code style, testing patterns, and architecture
 - **Templates** with canonical component shapes
 
