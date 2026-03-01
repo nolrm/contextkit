@@ -8,7 +8,16 @@ You are the **Product Owner** for a squad batch workflow. The user has provided 
 
 2. Create the directory `.contextkit/squad/` if it doesn't exist.
 
-3. Create `.contextkit/squad/config.md` if it doesn't already exist:
+3. **Detect mode — check if a batch is already in progress:**
+
+   - **If `.contextkit/squad/manifest.md` does NOT exist** → **Fresh start**. Continue to step 4.
+   - **If `.contextkit/squad/manifest.md` EXISTS** → **Append mode**. Jump to step 5.
+
+---
+
+### Fresh Start
+
+4. Create `.contextkit/squad/config.md` if it doesn't already exist:
 
 ```markdown
 # Squad Config
@@ -20,7 +29,7 @@ The `checkpoint` setting controls where the pipeline pauses:
 - `po` (default) — pause only after all PO specs are done, then auto-run the rest
 - `architect` — pause after PO specs AND after all architect plans
 
-4. Create `.contextkit/squad/manifest.md` with the task list:
+Create `.contextkit/squad/manifest.md` with the task list:
 
 ```markdown
 # Squad Manifest
@@ -37,7 +46,34 @@ created: [TIMESTAMP]
 3. handoff-3.md | "[task 3 description]" | status: pending
 ```
 
-5. For each task, create `.contextkit/squad/handoff-[N].md` using this template (replacing `[TASK]` with the task description and `[TIMESTAMP]` with the current date/time):
+For each task, create `.contextkit/squad/handoff-[N].md` (see handoff template below).
+
+Then continue to step 6.
+
+---
+
+### Append Mode
+
+5. Read the existing `.contextkit/squad/manifest.md`:
+   - Find the current `total:` value — call it `EXISTING_TOTAL`
+   - New tasks will be numbered starting from `EXISTING_TOTAL + 1`
+   - Update the `total:` value to `EXISTING_TOTAL + NEW_TASK_COUNT`
+   - Append the new task lines to the `## Tasks` section, continuing the numbering:
+
+```markdown
+[EXISTING_TOTAL + 1]. handoff-[EXISTING_TOTAL + 1].md | "[new task description]" | status: pending
+[EXISTING_TOTAL + 2]. handoff-[EXISTING_TOTAL + 2].md | "[new task description]" | status: pending
+```
+
+   For each new task, create `.contextkit/squad/handoff-[N].md` (see handoff template below).
+
+   Tell the user: "Adding [N] new task(s) to the existing batch (now [NEW_TOTAL] total). Writing PO specs for the new tasks only."
+
+   Then continue to step 6 for the new tasks only — do not re-process existing handoff files.
+
+---
+
+### Handoff Template
 
 ```markdown
 # Squad Handoff
@@ -106,8 +142,10 @@ status: pending
 ### Verdict
 ```
 
-6. Now act as the **Product Owner** for each task **sequentially**. For each handoff file:
-   - Read the codebase to understand the project (you only need to do this once for the first task)
+---
+
+6. Now act as the **Product Owner** for each new task **sequentially**. For each new handoff file:
+   - Read the codebase to understand the project (you only need to do this once)
    - Fill in the **"1. PO Spec"** section:
      - Write a clear **User Story** in "As a [role], I want [feature], so that [benefit]" format
      - Write specific, testable **Acceptance Criteria** as a numbered checklist
@@ -121,4 +159,4 @@ status: pending
 
 "All PO specs ready. Review the handoff files in `.contextkit/squad/`, then run `/squad-run` to continue the pipeline."
 
-List each handoff file and its task description so the user can easily review them.
+List each new handoff file and its task description so the user can easily review them.

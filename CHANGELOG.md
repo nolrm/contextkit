@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.7] - 2026-03-01
+
+### Changed
+- **`commands/squad-batch.md`** — Batch kickoff now detects whether a manifest already exists. Fresh run creates a new manifest and handoff files as before. If a manifest exists, append mode activates: new tasks are numbered from where the existing batch left off, the manifest `total:` is updated, and PO specs are written for new tasks only — existing handoffs are never re-processed. Run `/squad-run` after to continue the full pipeline.
+
+---
+
 ## [0.12.6] - 2026-03-01
 
 ### Changed

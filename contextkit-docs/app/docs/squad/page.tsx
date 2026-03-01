@@ -173,6 +173,23 @@ export default function SquadPage() {
 /squad-run
 # Runs Architect → Dev → Test → Review for each task`}</pre>
         </div>
+        <p className="text-muted-foreground leading-relaxed">
+          Need to add more tasks after the batch is already running? Just run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-batch</code> again — it detects the existing manifest and appends automatically:
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Append tasks to an existing batch</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Batch already running with 3 tasks...
+
+/squad-batch "add export to CSV" "fix mobile layout"
+# Detects existing manifest → appends as handoff-4.md and handoff-5.md
+# Writes PO specs for the new tasks only
+
+/squad-run
+# Picks up all pending tasks and continues the pipeline`}</pre>
+        </div>
       </div>
 
       {/* Feedback Loop */}
