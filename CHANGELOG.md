@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.9] - 2026-03-03
+
+### Changed
+- **`lib/commands/install.js`** — When a user declines reinstall, the CLI now shows a hint: run `ck update` to get the latest command and squad files without overwriting customized standards.
+
+---
+
 ## [0.12.7] - 2026-03-01
 
 ### Changed

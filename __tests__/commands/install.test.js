@@ -9,6 +9,7 @@ jest.mock('chalk', () => ({
   yellow: (str) => str,
   blue: (str) => str,
   magenta: (str) => str,
+  cyan: (str) => str,
   dim: (str) => str,
   bold: (str) => str
 }));
@@ -286,6 +287,20 @@ describe('InstallCommand', () => {
       ])
     );
     expect(mockIntegration.install).toHaveBeenCalled();
+  });
+
+  it('19. shows ck update hint when user declines reinstall', async () => {
+    const install = getInstallModule();
+    // First install
+    await install({ nonInteractive: true, noHooks: true });
+
+    // Second install — user declines
+    inquirer.prompt.mockResolvedValueOnce({ shouldContinue: false });
+    await install({});
+
+    const output = console.log.mock.calls.flat().join(' ');
+    expect(output).toContain('ck update');
+    expect(output).toContain('Installation cancelled');
   });
 
   it('18. nonInteractive full install skips platform prompt', async () => {

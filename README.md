@@ -323,7 +323,7 @@ ck vscode      # alias for copilot
 
 # Analysis & Updates
 ck analyze     # customize standards to your project
-ck update      # pull latest updates
+ck update      # pull latest commands/hooks — preserves your analyzed standards
 ck status      # check install & integrations
 
 # Validation & Compliance
