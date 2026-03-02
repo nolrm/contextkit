@@ -165,6 +165,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/refactor` | Refactor code with safety checks |
 | `/test` | Generate comprehensive tests |
 | `/doc` | Add documentation |
+| `/spec` | Write a component spec (MD-first) before any code is created |
 | `/squad` | Kick off a squad task — write the PO spec |
 | `/squad-architect` | Design the technical plan from the PO spec |
 | `/squad-dev` | Implement code following the architect plan |

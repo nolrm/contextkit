@@ -105,6 +105,11 @@ export default function SlashCommandsPage() {
                 <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/add-documentation.md</code></td>
               </tr>
               <tr className="border-b">
+                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/spec</code></td>
+                <td className="py-2 pr-4">Write a component spec (MD-first) before coding begins</td>
+                <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">commands/spec.md</code></td>
+              </tr>
+              <tr className="border-b">
                 <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> <span className="text-xs text-muted-foreground">+ 6 more</span></td>
                 <td className="py-2 pr-4">Multi-role pipeline: PO → Architect → Dev → Test → Review</td>
                 <td className="py-2"><Link href="/docs/squad" className="text-primary hover:underline text-xs">See Squad docs →</Link></td>
