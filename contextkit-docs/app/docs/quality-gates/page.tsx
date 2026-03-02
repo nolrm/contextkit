@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useEffect } from "react"
-import { Terminal, Shield, GitBranch, CheckCircle2 } from "lucide-react"
+import { Terminal, Shield, GitBranch, CheckCircle2, Bot } from "lucide-react"
 
 export default function QualityGatesPage() {
   const headings = [
+    { id: 'why', text: 'Why Quality Gates?' },
     { id: 'overview', text: 'Overview' },
     { id: 'how-it-works', text: 'How It Works' },
     { id: 'pre-push', text: 'Pre-push Quality Gates' },
@@ -40,6 +41,55 @@ export default function QualityGatesPage() {
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Git Hooks & Quality Gates</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
           ContextKit provides framework-aware quality checks via Git hooks. No external dependencies like Husky required — works in any git repo, not just Node.js projects.
+        </p>
+      </div>
+
+      {/* Why Quality Gates */}
+      <div id="why" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Why Quality Gates?</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Quality gates are automated checkpoints that enforce standards before code reaches the repository.
+          They catch what human review misses under time pressure — and what AI assistants can get wrong even with good context.
+        </p>
+
+        <div className="grid gap-4 md:grid-cols-2 mt-2">
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-semibold text-base mb-2">In traditional development</h3>
+            <p className="text-sm text-muted-foreground">
+              Code review catches bugs — but review quality drops as teams scale, timelines tighten,
+              and reviewers grow fatigued. Quality gates automate the baseline so review can focus on
+              logic and design, not formatting and test coverage.
+            </p>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-semibold text-base mb-2 flex items-center gap-2">
+              <Bot className="h-4 w-4 text-primary" />
+              In the age of AI
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              AI writes code fast — sometimes faster than anyone reviews it. It can generate
+              plausible-looking code that doesn't type-check, skips tests, or violates project
+              conventions. Quality gates are the mechanical layer that enforces standards
+              regardless of how the code was written.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4 mt-2">
+          <p className="text-sm font-medium mb-3">Where quality gates fit in the ContextKit workflow</p>
+          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Context (MD-first specs + standards)
+    → reduces AI hallucination upstream
+
+Squad workflow (PO → Architect → Dev → Test → Review)
+    → structures what gets built and how
+
+Quality gates (pre-push hook)
+    → enforces it mechanically at the git layer, no exceptions`}</pre>
+        </div>
+
+        <p className="text-sm text-muted-foreground">
+          Specs and squad reduce the chance of bad code being written. Quality gates catch it if it
+          slips through anyway. They're the last line of defense — and the only one that's automatic.
         </p>
       </div>
 

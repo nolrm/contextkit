@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Shield, Zap, FileCode, GitBranch, Sparkles } from "lucide-react"
+import { Brain, FileCode, Sparkles, Users, FileText, Terminal } from "lucide-react"
 
 const features = [
   {
@@ -21,10 +21,22 @@ const features = [
       "Works with Cursor (auto-loads), VS Code (Copilot), Aider, Continue.dev, Claude CLI, Gemini, and more.",
   },
   {
-    icon: Zap,
-    title: "Easy Setup",
+    icon: Users,
+    title: "Squad Workflow",
     description:
-      "Install in minutes with npm install -g @nolrm/contextkit. Auto-detects your AI tools and configures integrations.",
+      "Multi-agent pipeline that simulates a full team: Product Owner → Architect → Dev → Test → Review. Each role reads and writes to a shared handoff file.",
+  },
+  {
+    icon: FileText,
+    title: "MD-First Development",
+    description:
+      "Write a spec before writing code. Every component gets a colocated markdown file describing its purpose, props, and logic — giving AI full context before it touches a line.",
+  },
+  {
+    icon: Terminal,
+    title: "Slash Commands",
+    description:
+      "17 reusable AI workflows installed across all platforms: /analyze, /review, /fix, /refactor, /spec, /squad, and more. One command set, every tool.",
   },
 ]
 
