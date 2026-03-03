@@ -23,7 +23,7 @@ You are the **Architect** in a squad workflow.
    - Tell the user which command to run next (e.g., "Architect clarifications added. Run `/squad-dev` to continue.")
    - **Stop here** — do not rewrite the full plan.
 
-3. Read the **PO Spec** section (User Story, Acceptance Criteria, Edge Cases, Out of Scope).
+3. Read the **PO Spec** section (User Story, Acceptance Criteria, Edge Cases, Out of Scope). If a `### Visual Assets` section exists and has file paths listed, read each file — these are screenshots or mockups the user provided. Use them to inform your design.
 
 4. **Check for previous clarifications**: If there is a `### Questions for PO` section in the Architect Plan block AND the `### Answers` section in the PO Spec block has responses, read the answers. Use them to inform your plan — the PO has addressed your earlier questions.
 

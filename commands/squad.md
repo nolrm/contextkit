@@ -28,6 +28,8 @@ status: pending
 
 ### Out of Scope
 
+### Visual Assets
+
 ### Answers
 
 ---
@@ -99,6 +101,7 @@ status: pending
    - Write specific, testable **Acceptance Criteria** as a numbered checklist
    - Identify **Edge Cases** that the dev and tester should handle
    - Define what is **Out of Scope** to prevent scope creep
+   - **Check for visual assets** (optional): If the user provided any screenshots or images in this conversation, save each one to `.contextkit/squad/assets/<descriptive-name>.png` and list every saved file path with a one-line description under `### Visual Assets`. If no images were provided, leave `### Visual Assets` empty.
 
 5. After writing the spec, update the handoff file:
    - Set `## 1. PO Spec` status to `status: done`

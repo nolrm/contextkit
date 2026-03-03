@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.12.11] - 2026-03-03
+
+### Changed
+- **`commands/squad.md`, `.contextkit/commands/squad.md`** — PO agent now checks for screenshots or images the user attached to the `/squad` invocation. If present, each image is saved to `.contextkit/squad/assets/` and listed with a one-line description under the new optional `### Visual Assets` section in the handoff. If no images are provided the section is left empty and the pipeline continues unchanged.
+- **`commands/squad-architect.md`, `.contextkit/commands/squad-architect.md`** — Architect now reads any `### Visual Assets` file paths from the PO Spec before writing the plan.
+- **`commands/squad-dev.md`, `.contextkit/commands/squad-dev.md`** — Dev now reads any `### Visual Assets` file paths from the PO Spec before implementing.
+- **`README.md`** — Added Visual Assets section to the Squad Workflow docs and updated the PO role description.
+
+---
+
 ## [0.12.9] - 2026-03-03
 
 ### Changed

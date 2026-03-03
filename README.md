@@ -173,7 +173,7 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 
 | Step | Role | Command | What it does |
 |------|------|---------|-------------|
-| 1 | Product Owner | `/squad` | Writes a user story, acceptance criteria, edge cases, and scope |
+| 1 | Product Owner | `/squad` | Writes a user story, acceptance criteria, edge cases, and scope. Optionally captures screenshots/images as visual assets. |
 | 2 | Architect | `/squad-architect` | Designs the technical approach, files to change, and implementation steps |
 | 3 | Developer | `/squad-dev` | Implements the code following the architect's plan |
 | 4 | Tester | `/squad-test` | Writes and runs tests against the PO's acceptance criteria |
@@ -222,6 +222,10 @@ Architect has questions for PO → run /squad to clarify
 ```
 
 After clarifications are added, re-run the asking role's command to continue. This prevents misunderstandings from compounding through the pipeline.
+
+### Visual Assets (Optional)
+
+If you have a screenshot, mockup, or design image relevant to the task, paste or attach it when running `/squad`. The PO agent will save it to `.contextkit/squad/assets/` and reference the path in the handoff. Architect and Dev agents automatically read any listed assets when they pick up the handoff.
 
 ---
 

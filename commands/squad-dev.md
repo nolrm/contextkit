@@ -23,7 +23,7 @@ You are the **Developer** in a squad workflow.
    - Tell the user which command to run next (e.g., "Dev clarifications added. Run `/squad-test` to continue.")
    - **Stop here** — do not re-implement.
 
-3. Read the **PO Spec** (for acceptance criteria) and **Architect Plan** (for implementation steps).
+3. Read the **PO Spec** (for acceptance criteria) and **Architect Plan** (for implementation steps). If the PO Spec has a `### Visual Assets` section with file paths listed, read each file — these are screenshots or mockups relevant to what you are building.
 
 4. **Check for previous clarifications**: If there is a `### Questions for Architect` section in the Dev Implementation block AND the Architect Plan block has answers addressing them, read the answers. Use them to inform your implementation.
 

@@ -9,6 +9,7 @@ export default function SquadPage() {
     { id: 'pipeline', text: 'Pipeline Roles' },
     { id: 'single-task', text: 'Single-Task Flow' },
     { id: 'peer-review', text: 'Peer Review (Optional)' },
+    { id: 'visual-assets', text: 'Visual Assets (Optional)' },
     { id: 'batch', text: 'Batch Flow' },
     { id: 'feedback', text: 'Feedback Loop' },
   ];
@@ -78,7 +79,7 @@ export default function SquadPage() {
                 <td className="py-2 pr-4">1</td>
                 <td className="py-2 pr-4">Product Owner</td>
                 <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad</code></td>
-                <td className="py-2">Writes user story, acceptance criteria, edge cases, and scope</td>
+                <td className="py-2">Writes user story, acceptance criteria, edge cases, and scope. Optionally captures screenshots or images as visual assets.</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4">2</td>
@@ -154,6 +155,22 @@ export default function SquadPage() {
         <p className="text-sm text-muted-foreground">
           Skipping it is fine for simple bug fixes and small changes — the Reviewer already runs a thorough audit with escalation paths.
         </p>
+      </div>
+
+      {/* Visual Assets */}
+      <div id="visual-assets" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Visual Assets <span className="text-base font-normal text-muted-foreground">(Optional)</span></h2>
+        <p className="text-muted-foreground leading-relaxed">
+          If you have a screenshot, mockup, or design image relevant to the task, paste or attach it when running <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code>. The PO agent will save it to <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/assets/</code> and reference the path in the handoff under a <code className="rounded bg-muted px-1 font-mono text-xs">### Visual Assets</code> section.
+        </p>
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium mb-2">How downstream agents use it</p>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>— Architect reads the images before writing the technical plan</p>
+            <p>— Developer reads the images before implementing</p>
+            <p>— If no images are provided, the section is left empty and the pipeline runs unchanged</p>
+          </div>
+        </div>
       </div>
 
       {/* Batch Flow */}
