@@ -80,7 +80,7 @@ export default function MonorepoPage() {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-2">3. Scope Selection</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  When running <code className="rounded bg-muted px-1 font-mono text-xs">ck analyze</code>, you'll be prompted to select:
+                  When running <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code>, you'll be prompted to select:
                 </p>
                 <div className="space-y-2">
                   <div className="rounded-lg border border-muted p-2">

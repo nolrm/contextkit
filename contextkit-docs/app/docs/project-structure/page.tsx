@@ -58,7 +58,7 @@ export default function ProjectStructurePage() {
           <div className="mt-3 rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
             <p className="text-xs font-medium text-blue-700 dark:text-blue-400 mb-1">ℹ️ Skeleton Files</p>
             <p className="text-xs text-muted-foreground">
-              Files marked "Skeleton" start as blank templates. Run <code className="rounded bg-muted px-1 font-mono">ck analyze</code> to generate content from your codebase.
+              Files marked "Skeleton" start as blank templates. Run <code className="rounded bg-muted px-1 font-mono">/analyze</code> in your AI tool to generate content from your codebase.
             </p>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function ProjectStructurePage() {
       <div className="space-y-4 pt-4">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Customization</h2>
         <p className="text-muted-foreground leading-relaxed">
-          All files in the .contextkit directory are meant to be customized for your project. After running <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck analyze</code>, modify them to match your team's specific needs:
+          All files in the .contextkit directory are meant to be customized for your project. After running <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> in your AI tool, modify them to match your team's specific needs:
         </p>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4 mt-3">
           <li>Add project-specific terminology to glossary.md</li>

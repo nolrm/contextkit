@@ -73,6 +73,9 @@ export default function CommandsPage() {
                 <p className="text-sm text-muted-foreground mb-2">
                   Analyze your project and generate customized standards based on your actual codebase. <strong>Monorepo-aware:</strong> Automatically detects and prompts for frontend/backend scope.
                 </p>
+                <p className="text-xs text-muted-foreground mb-2">
+                  💡 Prefer using <code className="rounded bg-muted px-1 font-mono">/analyze</code> directly in your AI tool — it reads your codebase and generates standards without leaving the editor.
+                </p>
                 <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">contextkit analyze</code>
                 <div className="mt-2 space-y-1">
                   <p className="text-sm text-muted-foreground">

@@ -156,7 +156,7 @@ export default function TroubleshootingPage() {
             Claude Code not loading standards automatically
           </h3>
           <p className="text-sm text-muted-foreground">
-            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. Run <code className="rounded bg-muted px-1 font-mono text-xs">/context</code> in Claude Code to verify files are loaded. If not: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist (run <code className="rounded bg-muted px-1 font-mono text-xs">ck analyze</code> to generate them).
+            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. Run <code className="rounded bg-muted px-1 font-mono text-xs">/context</code> in Claude Code to verify files are loaded. If not: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist (run <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to generate them).
           </p>
         </div>
 

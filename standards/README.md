@@ -6,7 +6,7 @@
 
 **This is not set-and-forget!** 
 
-After running `contextkit analyze`, **manually review and edit** these files to match YOUR project:
+After running `/analyze`, **manually review and edit** these files to match YOUR project:
 
 - **Fine-tune** the AI-generated content to your actual needs
 - **Remove** what doesn't apply to your project  
@@ -65,6 +65,7 @@ Treat these files as **living documentation** that grows with your project.
 
 ## Templates
 
+- `.contextkit/templates/feature-spec.md` - Feature/page spec template (Level 2)
 - `.contextkit/templates/component.md` - Component/module template
 - `.contextkit/templates/test.md` - Test file template
 - `.contextkit/templates/story.md` - Story/demo template

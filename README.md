@@ -29,41 +29,23 @@ Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.m
 
 ## Quick Start (60s)
 
-**Requirements:** Node.js 14.x+ (16.x+ recommended) and npm/yarn. Optional: Git for hooks, AI tools for usage.
-
+**1. Install the CLI**
 ```bash
-# Step 1: Install the CLI globally (one-time, any machine)
 npm i -g @nolrm/contextkit
-
-# Step 2: Initialize in your project (once per project)
-cd your-project
-contextkit install          # interactive — prompts "Which AI tool?"
-contextkit install claude   # or specify your platform directly
 ```
 
-> **Project-level only.** `ck install` creates `.contextkit/` in your current directory and commits it with your project. There is no global mode — your standards live in git, not on your machine. This keeps them portable, CI-compatible, and shared with your team.
-
-> **Tip:** Need to share standards across projects? Push your `.contextkit/` to a shared repo and pull it with `ck pull`.
-
-This creates `.contextkit/` with skeleton context files (blank templates to be filled by AI):
-
-```
-.contextkit/
-  standards/       # Skeleton files: code-style.md, testing.md, architecture.md, ai-guidelines.md, workflows.md
-                  # Real files: glossary.md (universal), README.md (overview)
-  commands/        # analyze.md (project analysis & customization)
-  templates/       # skeleton template files (component, test, story, hook, api)
-```
-
-**Generate content with AI** (recommended):
-
+**2. Set up your project**
 ```bash
-ck analyze
-# AI scans your codebase and generates content for the skeleton files
-# or in Cursor chat:  @.contextkit/commands/analyze.md
+cd your-project
+contextkit install
 ```
+Creates `.contextkit/` with skeleton standards files in your project.
 
-⚠️ **Important:** After running `ck analyze`, manually review and edit the generated content to match your exact needs. The AI provides a starting point, but you must customize it.
+**3. Generate your standards**
+
+Run `/analyze` in your AI tool — it scans your codebase and fills the skeleton files with your project's conventions.
+
+Done. Your AI tools now have project-specific context.
 
 ---
 
@@ -322,7 +304,7 @@ ck windsurf    # add Windsurf integration (.windsurfrules)
 ck vscode      # alias for copilot
 
 # Analysis & Updates
-ck analyze     # customize standards to your project
+/analyze       # customize standards to your project (slash command in your AI tool)
 ck update      # pull latest commands/hooks — preserves your analyzed standards
 ck status      # check install & integrations
 

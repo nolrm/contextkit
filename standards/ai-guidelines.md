@@ -1,4 +1,4 @@
-> **Reference Example** — This file is NOT installed automatically. It shows what `ck analyze` can generate for a React/TypeScript project. Your project gets a blank skeleton — run `ck analyze` to produce content tailored to your actual stack.
+> **Reference Example** — This file is NOT installed automatically. It shows what `/analyze` can generate for a React/TypeScript project. Your project gets a blank skeleton — run `/analyze` to produce content tailored to your actual stack.
 
 # AI Guidelines
 

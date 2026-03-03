@@ -109,7 +109,7 @@ describe('InstallCommand', () => {
     expect(await fs.pathExists('.contextkit/standards/workflows.md')).toBe(true);
 
     const testing = await fs.readFile('.contextkit/standards/testing.md', 'utf8');
-    expect(testing).toContain('ck analyze');
+    expect(testing).toContain('/analyze');
   });
 
   it('4. creates skeleton template files', async () => {

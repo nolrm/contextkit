@@ -159,7 +159,7 @@ AI receives context and generates code`}</pre>
             <h3 className="font-semibold text-base mb-1">1. Skeleton Pattern</h3>
             <p className="text-sm text-muted-foreground">
               Standards files ship as empty templates. Until you run{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">ck analyze</code>, they contribute almost
+              <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code>, they contribute almost
               nothing to the token count. Content is only generated from your real codebase when you're ready.
             </p>
           </div>
@@ -212,12 +212,12 @@ Use CSS modules, BEM naming...`}</pre>
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Typical Token Budget</h2>
         <p className="text-muted-foreground leading-relaxed">
           Here's what the actual context footprint looks like before and after running{" "}
-          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck analyze</code>:
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code>:
         </p>
 
         <div className="grid gap-4 md:grid-cols-2 mt-3">
           <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-semibold mb-3">Before <code className="font-mono text-xs">ck analyze</code></p>
+            <p className="text-sm font-semibold mb-3">Before <code className="font-mono text-xs">/analyze</code></p>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Bridge file (CLAUDE.md)</span>
@@ -239,7 +239,7 @@ Use CSS modules, BEM naming...`}</pre>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-semibold mb-3">After <code className="font-mono text-xs">ck analyze</code></p>
+            <p className="text-sm font-semibold mb-3">After <code className="font-mono text-xs">/analyze</code></p>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Bridge file (CLAUDE.md)</span>
@@ -326,7 +326,7 @@ Use CSS modules, BEM naming...`}</pre>
         <p className="text-sm font-medium mb-2">Pro Tip</p>
         <p className="text-sm text-muted-foreground">
           Start with the defaults and run{" "}
-          <code className="rounded bg-muted px-1 font-mono text-xs">ck analyze</code> to populate your standards files.
+          <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to populate your standards files.
           As your project grows, break large standards into granular sub-files and scope them with globs — this keeps
           per-session context tight without sacrificing coverage.
         </p>

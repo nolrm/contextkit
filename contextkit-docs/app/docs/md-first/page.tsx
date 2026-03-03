@@ -30,8 +30,8 @@ export default function MdFirstPage() {
 
         <div className="rounded-lg border bg-muted/50 p-4 mt-3">
           <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Level 1 — Architecture
-    How projects connect to each other and how everything fits together.
-    → .contextkit/standards/architecture.md
+    How the system is structured and how the main parts connect.
+    → docs/architecture.md
 
 Level 2 — Page / Feature
     What this page does, its folder structure, and the components it uses.
@@ -170,7 +170,10 @@ Does NOT own:
         </p>
 
         <div className="rounded-lg border bg-muted/50 p-4 mt-3">
-          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`src/
+          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`docs/
+└── architecture.md             ← Level 1 spec (system)
+
+src/
 ├── app/
 │   └── dashboard/
 │       ├── Dashboard.md        ← Level 2 spec (page)
@@ -200,7 +203,9 @@ Does NOT own:
             <h3 className="font-semibold text-base mb-1">1. Write the page spec first</h3>
             <p className="text-sm text-muted-foreground">
               Define what the page does and sketch the folder structure with component names.
-              You don't need all the details — just enough to map the shape of the work.
+              Use{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">create-feature</code>{" "}
+              to scaffold it from the template. You don't need all the details — just enough to map the shape of the work.
             </p>
           </div>
           <div className="rounded-lg border bg-card p-4">
@@ -238,6 +243,19 @@ Does NOT own:
 
         <div className="grid gap-4 md:grid-cols-2 mt-2">
           <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 2</p>
+            <h3 className="font-semibold text-base mb-1">
+              <code className="font-mono text-sm">create-feature</code>
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Scaffold a page or feature spec (Level 2). Creates{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">FeatureName/FeatureName.md</code>{" "}
+              from the feature template and waits for approval before writing any code.
+            </p>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`Create a Dashboard feature with summary, activity feed, and quick actions`}</pre>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
             <h3 className="font-semibold text-base mb-1">
               <code className="font-mono text-sm">/spec</code>
             </h3>
@@ -249,6 +267,7 @@ Does NOT own:
             <pre className="rounded bg-muted p-2 font-mono text-xs">{`/spec SummaryCard — shows a metric with label, value, optional alert`}</pre>
           </div>
           <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
             <h3 className="font-semibold text-base mb-1">
               <code className="font-mono text-sm">create-component</code>
             </h3>

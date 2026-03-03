@@ -65,7 +65,7 @@ export default function QuickStartPage() {
             <p className="text-xs text-muted-foreground mt-2 italic">Or specify your AI tool directly: <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">contextkit install claude</code></p>
           </div>
           <p className="text-sm text-muted-foreground">
-            This creates the <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with skeleton standards files (blank templates). ContextKit auto-detects your project type and prompts you to choose your AI tool. <strong>After install, run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck analyze</code> to generate content for these files.</strong>
+            This creates the <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with skeleton standards files (blank templates). ContextKit auto-detects your project type and prompts you to choose your AI tool. <strong>After install, run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> in your AI tool to generate content for these files.</strong>
           </p>
           <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
             <p className="text-sm font-medium mb-1">📌 Project-level only</p>
@@ -102,13 +102,13 @@ export default function QuickStartPage() {
         </h2>
         
         <div className="space-y-3">
-          <p className="text-muted-foreground leading-relaxed">Run analyze to customize standards to your tech stack:</p>
+          <p className="text-muted-foreground leading-relaxed">Run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> in your AI tool to customize standards to your tech stack:</p>
           <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Terminal className="h-4 w-4" />
-              <span className="font-mono">Analyze project</span>
+              <span className="font-mono">In your AI tool (Claude, Cursor, etc.)</span>
             </div>
-            <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">contextkit analyze</code>
+            <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">/analyze</code>
           </div>
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
             <p className="text-sm font-medium mb-2">🎯 What analyze does:</p>
@@ -123,7 +123,7 @@ export default function QuickStartPage() {
           <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 mt-3">
             <p className="text-sm font-medium mb-2">📦 Monorepo Support</p>
             <p className="text-sm text-muted-foreground mb-2">
-              For monorepos, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck analyze</code> automatically detects frontend/backend packages and prompts you to select which to analyze:
+              For monorepos, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> automatically detects frontend/backend packages and prompts you to select which to analyze:
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
               <li><strong>Frontend:</strong> Analyzes React/Vue/Angular packages</li>
