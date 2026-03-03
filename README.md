@@ -148,12 +148,11 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/test` | Generate comprehensive tests |
 | `/doc` | Add documentation |
 | `/spec` | Write a component spec (MD-first) before any code is created |
-| `/squad` | Kick off a squad task — write the PO spec |
+| `/squad` | Kick off a squad task — one task or many (auto-detects batch mode) |
 | `/squad-architect` | Design the technical plan from the PO spec |
 | `/squad-dev` | Implement code following the architect plan |
 | `/squad-test` | Write and run tests against acceptance criteria |
 | `/squad-review` | Review the full pipeline and give a verdict |
-| `/squad-batch` | Kick off multiple tasks at once (batch PO specs) |
 | `/squad-run` | Auto-run the remaining pipeline for batch tasks (sequential) |
 | `/squad-run-agents` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
 | `/ck` | Health check — verify setup, standards, and integrations |
@@ -191,10 +190,10 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 
 ### Batch Flow
 
-For multiple tasks, use batch mode to spec them all up front, then run the full pipeline automatically:
+Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 
 ```bash
-/squad-batch "add dark mode" "fix login bug" "refactor checkout"
+/squad "add dark mode" "fix login bug" "refactor checkout"
 # PO writes specs for all three tasks
 
 /squad-run
@@ -204,7 +203,7 @@ For multiple tasks, use batch mode to spec them all up front, then run the full 
 **Agent mode (Claude Code only):** Use `/squad-run-agents` instead of `/squad-run` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
 
 ```bash
-/squad-batch "add dark mode" "fix login bug" "refactor checkout"
+/squad "add dark mode" "fix login bug" "refactor checkout"
 
 /squad-run-agents
 # Phase 1: architect agents for all 3 tasks run in parallel

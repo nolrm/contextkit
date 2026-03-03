@@ -184,14 +184,14 @@ export default function SquadPage() {
             <Terminal className="h-4 w-4" />
             <span className="font-mono">Batch multiple tasks</span>
           </div>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad-batch "add dark mode" "fix login bug" "refactor checkout"
-# PO writes specs for all three tasks
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode" "fix login bug" "refactor checkout"
+# PO writes specs for all three tasks (batch mode auto-detected)
 
 /squad-run
 # Runs Architect → Dev → Test → Review for each task`}</pre>
         </div>
         <p className="text-muted-foreground leading-relaxed">
-          Need to add more tasks after the batch is already running? Just run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-batch</code> again — it detects the existing manifest and appends automatically:
+          Need to add more tasks after the batch is already running? Just run <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> again with the new tasks — it detects the existing manifest and appends automatically:
         </p>
         <div className="rounded-lg border bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -200,7 +200,7 @@ export default function SquadPage() {
           </div>
           <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Batch already running with 3 tasks...
 
-/squad-batch "add export to CSV" "fix mobile layout"
+/squad "add export to CSV" "fix mobile layout"
 # Detects existing manifest → appends as handoff-4.md and handoff-5.md
 # Writes PO specs for the new tasks only
 

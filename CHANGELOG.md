@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.12.12] - 2026-03-03
+
+### Changed
+- **`/squad-batch` removed** — merged into `/squad`. Pass one task for single-task mode, two or more for batch mode. `/squad` auto-detects and routes accordingly.
+- **`commands/squad.md`, `.contextkit/commands/squad.md`** — full rewrite combining single-task, batch, append, and clarification flows into one command. Adds mixed-state detection, `po` in-progress warning before overwrite, `done` archiving for both single and batch, and standardised handoff template with Visual Assets and User Clarifications sections.
+- **`lib/integrations/claude-integration.js`** — removed `.claude/commands/squad-batch.md` from generated files; added to legacy cleanup list so existing installs remove the stale file automatically.
+- **`lib/integrations/cursor-integration.js`** — same as above for `.cursor/prompts/squad-batch.md`.
+- **`lib/commands/install.js`, `lib/commands/update.js`** — removed `squad-batch.md` download.
+- **`README.md`, `contextkit-docs`** — updated all batch flow examples to use `/squad`.
+
+### Breaking
+- `/squad-batch` no longer exists as a command. Use `/squad "task 1" "task 2" ...` instead.
+
+---
+
 ## [0.12.11] - 2026-03-03
 
 ### Changed
