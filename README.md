@@ -213,6 +213,14 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 # Phase 2: dev→test→review pipeline runs in parallel per task
 ```
 
+**Model routing (Claude Code only):** Set `model_routing: true` in `.contextkit/squad/config.md` to have `/squad-auto` automatically use Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens with no quality loss — the standards files and Review gate maintain quality.
+
+```markdown
+# .contextkit/squad/config.md
+checkpoint: po
+model_routing: true   # dev + test → Haiku, architect + review → primary model
+```
+
 ### Feedback Loop
 
 Any downstream role can raise questions for an upstream role. When this happens, the pipeline pauses and directs you to the right command:
@@ -295,7 +303,7 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 ```bash
 # Installation & Setup
 ck install            # set up .contextkit + pick AI tool interactively
-ck install claude     # set up .contextkit + Claude (no prompt)
+ck install claude     # set up .contextkit + Claude, or add Claude to an existing install
 ck claude      # add Claude Code integration (CLAUDE.md + rules)
 ck cursor      # add Cursor integration (scoped .mdc rules)
 ck copilot     # add GitHub Copilot integration

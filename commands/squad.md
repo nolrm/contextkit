@@ -65,7 +65,18 @@ Create `.contextkit/squad/` if it doesn't exist.
 
 1. Create `.contextkit/squad/handoff.md` using the [Handoff Template](#handoff-template).
 
-2. **Assess idea clarity.** Read the task description:
+2. Create `.contextkit/squad/config.md`:
+
+```markdown
+# Squad Config
+
+checkpoint: po
+model_routing: false
+```
+
+> Set `model_routing: true` to have `/squad-auto` use Claude Haiku for Dev and Test phases (saves ~35% tokens). Default is `false` — no change in behavior.
+
+3. **Assess idea clarity.** Read the task description:
    - Is the outcome unambiguous?
    - Is scope clear enough to write testable acceptance criteria?
    - Are there decisions the user needs to make first?
@@ -73,20 +84,20 @@ Create `.contextkit/squad/` if it doesn't exist.
    **If clarification needed:** Ask the user up to 5 focused, numbered questions. Wait for answers. Capture Q&A under `### User Clarifications`.
    **If clear:** Continue.
 
-3. Read the codebase to understand the project.
+4. Read the codebase to understand the project.
 
-4. Fill in **"1. PO Spec"**:
+5. Fill in **"1. PO Spec"**:
    - **User Story** — "As a [role], I want [feature], so that [benefit]"
    - **Acceptance Criteria** — specific, testable, numbered checklist
    - **Edge Cases** — what dev and tester should handle
    - **Out of Scope** — prevent scope creep
    - **Visual Assets** (optional) — if the user attached screenshots or images, save each to `.contextkit/squad/assets/<descriptive-name>.png` and list paths with one-line descriptions. Leave empty if none.
 
-5. Update the handoff:
+6. Update the handoff:
    - Set `## 1. PO Spec` → `status: done`
    - Set top-level `status:` → `architect`
 
-6. Tell the user:
+7. Tell the user:
 
    > PO spec complete.
    >
@@ -108,10 +119,12 @@ Create `.contextkit/squad/` if it doesn't exist.
 # Squad Config
 
 checkpoint: po
+model_routing: false
 ```
 
 > `checkpoint: po` — pipeline pauses after all PO specs, then auto-runs the rest.
 > `checkpoint: architect` — pipeline also pauses after all architect plans.
+> `model_routing: true` — `/squad-auto` uses Claude Haiku for Dev and Test phases (saves ~35% tokens). Default is `false`.
 
 2. Create `.contextkit/squad/manifest.md`:
 

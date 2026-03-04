@@ -10,6 +10,7 @@ export default function SquadPage() {
     { id: 'single-task', text: 'Single-Task Flow' },
     { id: 'visual-assets', text: 'Visual Assets (Optional)' },
     { id: 'batch', text: 'Batch Flow' },
+    { id: 'configuration', text: 'Configuration' },
     { id: 'reset', text: 'Resetting Squad State' },
     { id: 'feedback', text: 'Feedback Loop' },
   ];
@@ -187,6 +188,36 @@ export default function SquadPage() {
 
 /squad-auto
 # Picks up all pending tasks and continues the pipeline`}</pre>
+        </div>
+      </div>
+
+      {/* Configuration */}
+      <div id="configuration" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Configuration</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          When you run <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code>, a <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/config.md</code> file is created automatically. You can edit it to control pipeline behavior:
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">.contextkit/squad/config.md</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`checkpoint: po       # pause after PO specs (or: architect)
+model_routing: false # set true to use Haiku for dev + test phases`}</pre>
+        </div>
+        <div className="space-y-3">
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm font-medium mb-1"><code className="rounded bg-muted px-1 font-mono text-xs">checkpoint</code></p>
+            <p className="text-sm text-muted-foreground">
+              Controls when <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> pauses for review. <code className="rounded bg-muted px-1 font-mono text-xs">po</code> pauses after all PO specs are written (default). <code className="rounded bg-muted px-1 font-mono text-xs">architect</code> also pauses after all architect plans.
+            </p>
+          </div>
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm font-medium mb-1"><code className="rounded bg-muted px-1 font-mono text-xs">model_routing</code> <span className="text-xs text-muted-foreground ml-1">Claude Code only</span></p>
+            <p className="text-sm text-muted-foreground">
+              When <code className="rounded bg-muted px-1 font-mono text-xs">true</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> automatically spawns Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens — the standards files and Review gate maintain output quality. Default is <code className="rounded bg-muted px-1 font-mono text-xs">false</code>.
+            </p>
+          </div>
         </div>
       </div>
 

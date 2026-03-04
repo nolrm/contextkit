@@ -10,7 +10,8 @@ jest.mock('chalk', () => ({
   blue: (str) => str,
   magenta: (str) => str,
   dim: (str) => str,
-  bold: (str) => str
+  bold: (str) => str,
+  rgb: () => (str) => str,
 }));
 
 // Mock ora

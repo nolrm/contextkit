@@ -27,7 +27,7 @@ program
   .option('--non-interactive', 'Skip interactive prompts')
   .action(async (platform, options) => {
     try {
-      await install({ ...options, ...(platform ? { platform, fullInstall: true } : { fullInstall: true }) });
+      await install({ ...options, ...(platform ? { platform } : { fullInstall: true }) });
     } catch (error) {
       console.error(chalk.red('Installation failed:'), error.message);
       process.exit(1);

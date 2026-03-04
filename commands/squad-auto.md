@@ -4,9 +4,13 @@ You are the **Pipeline Runner** for a squad batch workflow. Your job is to read 
 
 ## Instructions
 
-1. Read `.contextkit/squad/manifest.md` to get the task list and their current statuses.
+1. Determine the run mode:
 
-2. Read `.contextkit/squad/config.md` to get the `checkpoint` setting.
+   - **If `manifest.md` exists**: batch mode — read it to get the task list and their current statuses.
+   - **If no `manifest.md` but `handoff.md` exists**: single-task mode — treat it as a batch of one task with the file `handoff.md`. Read the handoff's top-level `status:` field as the task status for phase detection. Skip any manifest update steps.
+   - **If neither exists**: stop and tell the user: "No squad session found. Run `/squad 'your task'` to start."
+
+2. Read `.contextkit/squad/config.md` to get the `checkpoint` and `model_routing` settings. If the file does not exist or `model_routing` is absent, default `model_routing` to `false`.
 
 3. **Check for clarify statuses first**: Before running any phase, scan all handoff files for `*-clarify` statuses (`po-clarify`, `arch-clarify`, `dev-clarify`, `test-clarify`).
 
@@ -50,25 +54,46 @@ If any tasks have status `po`:
 For each task with status `architect` (in order), run all three steps sequentially:
 
 **Dev:**
-- Read the handoff file
-- Read the **PO Spec** and **Architect Plan**
-- Implement the code following the architect's steps
-- Fill in **"3. Dev Implementation"**:
-  - **Changes Made**: List every file changed/created
-  - **Decisions & Deviations**: Note any deviations from the plan
-- Set `## 3. Dev Implementation` status to `status: done`
-- Set the top-level `status:` to `test`
+
+- **If `model_routing: false`** (default): run inline —
+  - Read the handoff file
+  - Read the **PO Spec** and **Architect Plan**
+  - Implement the code following the architect's steps
+  - Fill in **"3. Dev Implementation"**: Changes Made, Decisions & Deviations
+  - Set `## 3. Dev Implementation` status to `status: done`
+  - Set the top-level `status:` to `test`
+
+- **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
+  ```
+  You are the Developer in a squad workflow.
+  Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+  Follow all instructions in `.contextkit/commands/squad-dev.md` steps 3–9.
+  Do not tell the user to run any command at the end.
+  After updating the handoff file, return "done" or "error: [description]".
+  ```
+  - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
+  - If `"done"`: continue to Test phase.
 
 **Test:**
-- Read the handoff file
-- Write tests against the PO's acceptance criteria
-- Run the tests
-- Fill in **"4. Test Report"**:
-  - **Tests Written**: List test files and what they cover
-  - **Results**: Pass/fail summary
-  - **Coverage Notes**: What's covered and any gaps
-- Set `## 4. Test Report` status to `status: done`
-- Set the top-level `status:` to `review`
+
+- **If `model_routing: false`** (default): run inline —
+  - Read the handoff file
+  - Write tests against the PO's acceptance criteria
+  - Run the tests
+  - Fill in **"4. Test Report"**: Tests Written, Results, Coverage Notes
+  - Set `## 4. Test Report` status to `status: done`
+  - Set the top-level `status:` to `review`
+
+- **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
+  ```
+  You are the Tester in a squad workflow.
+  Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+  Follow all instructions in `.contextkit/commands/squad-test.md` steps 3–9.
+  Do not tell the user to run any command at the end.
+  After updating the handoff file, return "done" or "error: [description]".
+  ```
+  - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
+  - If `"done"`: continue to Review phase.
 
 **Review:**
 - Read the full handoff file (spec, plan, implementation, tests)

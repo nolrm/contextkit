@@ -49,7 +49,7 @@ You are the **Tester** in a squad workflow.
    - Cover the edge cases identified by the PO
    - Use numbered test case descriptions (e.g., `it("1. ...")`)
 
-7. Run the tests and capture results.
+7. Run the full test suite (unit tests and integration tests) and capture results. All tests — new and existing — must pass.
 
 8. Fill in the **"4. Test Report"** section:
    - **Tests Written**: List each test file and the test cases within it

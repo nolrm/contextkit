@@ -51,12 +51,18 @@ You are the **Developer** in a squad workflow.
    - Reference `.contextkit/standards/` files if they exist
    - Keep changes minimal and focused — do not refactor unrelated code
 
-7. After implementing, fill in the **"3. Dev Implementation"** section:
-   - **Changes Made**: List every file changed/created with a brief description
-   - **Decisions & Deviations**: Note any places where you deviated from the architect's plan and why
+7. Run the full test suite to check for regressions:
+   - Run the project's test command (e.g., `npm test`, `pytest`, `cargo test`)
+   - If any tests fail, fix them before proceeding — do not hand off broken code
+   - Note the result (pass/fail + test count) in **Decisions & Deviations**
+   - If the project has no test runner, note that in Decisions & Deviations and continue
 
-8. Update the handoff file:
+8. After implementing, fill in the **"3. Dev Implementation"** section:
+   - **Changes Made**: List every file changed/created with a brief description
+   - **Decisions & Deviations**: Note any places where you deviated from the architect's plan and why; include the test suite result from step 7
+
+9. Update the handoff file:
    - Set `## 3. Dev Implementation` status to `status: done`
    - Set the top-level `status:` to `test`
 
-9. Tell the user: "Implementation complete. Run `/squad-test` to continue."
+10. Tell the user: "Implementation complete. Run `/squad-test` to continue."

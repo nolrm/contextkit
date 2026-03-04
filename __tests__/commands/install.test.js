@@ -11,7 +11,8 @@ jest.mock('chalk', () => ({
   magenta: (str) => str,
   cyan: (str) => str,
   dim: (str) => str,
-  bold: (str) => str
+  bold: (str) => str,
+  rgb: () => (str) => str,
 }));
 
 // Mock ora
@@ -339,5 +340,30 @@ describe('InstallCommand', () => {
     expect(config).toContain('_source:');
     expect(config).toContain('tool: "@nolrm/contextkit"');
     expect(config).toContain('npm: "https://www.npmjs.com/package/@nolrm/contextkit"');
+  });
+
+  it('22. ck install <platform> when already installed adds platform without reinstall prompt', async () => {
+    const { getIntegration } = require('../../lib/integrations');
+    const mockIntegration = {
+      install: jest.fn(),
+      displayName: 'Cursor',
+      showUsage: jest.fn(),
+    };
+    getIntegration.mockReturnValue(mockIntegration);
+
+    const install = getInstallModule();
+    // Base install first
+    await install({ nonInteractive: true, noHooks: true });
+    inquirer.prompt.mockClear();
+
+    // Platform install without fullInstall (simulates `ck install cursor`)
+    await install({ platform: 'cursor' });
+
+    expect(mockIntegration.install).toHaveBeenCalled();
+    // Reinstall prompt must NOT have been shown
+    const reinstallCalls = inquirer.prompt.mock.calls.filter(([args]) =>
+      (Array.isArray(args) ? args : [args]).some(a => a.name === 'shouldContinue')
+    );
+    expect(reinstallCalls).toHaveLength(0);
   });
 });
