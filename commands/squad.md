@@ -23,9 +23,13 @@ Check what files exist in `.contextkit/squad/`:
 | Neither `handoff.md` nor `manifest.md` exist | Fresh start — continue to Step 3 |
 | `handoff.md` exists, no `manifest.md` | Was single-task mode — continue to Step 3 |
 | `manifest.md` exists, no `handoff.md` | Was batch mode — continue to Step 3 |
-| **Both** `handoff.md` **and** `manifest.md` exist | Mixed state — **stop** |
+| **Both** `handoff.md` **and** `manifest.md` exist | Mixed state — offer to reset |
 
-**If both files exist:** Tell the user their `.contextkit/squad/` folder is in a mixed state (both a single handoff and a batch manifest coexist). Ask them to remove or archive the folder manually before running `/squad` again. **Stop here.**
+**If both files exist:** Tell the user their `.contextkit/squad/` folder is in a mixed state. If the user provided a task in this same message, offer to reset and continue:
+
+> "Your squad folder is in a mixed state (both `handoff.md` and `manifest.md` exist). I can reset it and start fresh with your task — shall I go ahead?"
+
+If the user confirms (or already said yes / said "reset"), delete `.contextkit/squad/` and continue to Step 4. If the user declines or provided no task, stop and tell them to run `/squad-reset` manually.
 
 ---
 

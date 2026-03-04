@@ -72,7 +72,7 @@ describe('ClaudeIntegration', () => {
     const commands = [
       'analyze', 'review', 'fix', 'refactor', 'test', 'doc', 'spec',
       'squad', 'squad-architect', 'squad-dev', 'squad-test', 'squad-review',
-      'squad-auto', 'squad-auto-parallel', 'ck',
+      'squad-auto', 'squad-auto-parallel', 'squad-reset', 'ck',
     ];
     for (const cmd of commands) {
       const filePath = `.claude/commands/${cmd}.md`;

@@ -288,8 +288,6 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 - ⚡ **Zero Config** - Auto-detects project type and package manager
 - ✅ **Policy Enforcement** - Configurable validation with `ck check`
 - 📝 **Corrections Tracking** - Track AI performance issues with corrections log
-- 🔄 **Workflow Orchestration** - Structured workflows with `ck run`
-- 📦 **Registry System** - Share standards across teams with `ck publish/pull`
 - 📊 **Observability Dashboard** - Visual metrics and compliance tracking
 
 ## Commands
@@ -322,23 +320,14 @@ ck check --strict  # treat warnings as errors
 ck note "message"  # add note to corrections log
 ck note "AI issue" --category "AI Behavior" --priority HIGH
 
-# Workflow Orchestration
-ck run <workflow>  # run structured workflow
-ck run create-component  # example workflow
-ck run create-component --interactive  # interactive mode
-
-# Registry & Versioning
-ck publish --name @company/react-standards --version 1.0.0
-ck pull @company/react-standards@1.0.0
-ck pull @company/react-standards@latest --backup
+# Squad — multi-role AI pipeline (slash commands in your AI tool)
+/squad "add dark mode"   # PO writes spec
+/squad-auto              # runs architect → dev → test → review hands-free
+/squad-reset             # clear stuck or mixed squad state
 
 # Observability
 ck dashboard   # start web dashboard
 ck dashboard --no-server  # CLI metrics only
-
-# AI Usage (loads .contextkit context automatically)
-ck "create a button"  # quick AI chat with context
-ck ai "create a button"  # explicit AI command
 ```
 
 ## Links

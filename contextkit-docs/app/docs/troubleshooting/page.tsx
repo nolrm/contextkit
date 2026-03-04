@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useEffect } from "react"
-import { Terminal, AlertTriangle } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 
 export default function TroubleshootingPage() {
   const headings = [
     { id: 'install', text: 'Installation Issues' },
     { id: 'hooks', text: 'Git Hooks' },
     { id: 'integrations', text: 'Platform Integrations' },
-    { id: 'commands', text: 'Slash Commands' },
+    { id: 'squad', text: 'Squad Workflow' },
   ];
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function TroubleshootingPage() {
             Download failures during install
           </h3>
           <p className="text-sm text-muted-foreground">
-            ContextKit downloads template files from GitHub. If you're behind a firewall or have network issues, try:
+            ContextKit downloads template files from GitHub. If you&apos;re behind a firewall or have network issues, try:
           </p>
           <div className="rounded-lg border bg-muted/50 p-3">
             <code className="block font-mono text-sm">ck update --force</code>
@@ -156,7 +156,17 @@ export default function TroubleshootingPage() {
             Claude Code not loading standards automatically
           </h3>
           <p className="text-sm text-muted-foreground">
-            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. Run <code className="rounded bg-muted px-1 font-mono text-xs">/context</code> in Claude Code to verify files are loaded. If not: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist (run <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to generate them).
+            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. If files aren&apos;t loading: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist — run <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to generate them.
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            Slash commands not appearing in Claude Code
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to install slash commands to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/</code>. Restart Claude Code to pick up the new commands. If commands are stale, run <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code> to pull the latest versions.
           </p>
         </div>
 
@@ -171,27 +181,37 @@ export default function TroubleshootingPage() {
         </div>
       </div>
 
-      {/* Slash Commands */}
-      <div id="commands" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Slash Commands</h2>
+      {/* Squad Workflow */}
+      <div id="squad" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Squad Workflow</h2>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Slash commands not appearing in Claude Code
+            Mixed state — both handoff.md and manifest.md exist
           </h3>
           <p className="text-sm text-muted-foreground">
-            Run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to install slash commands to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/</code>. Restart Claude Code to pick up the new commands.
+            This happens when a single-task run and a batch run overlap in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/</code>. Run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> to clear the state, or if you&apos;re running <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> with a new task, it will offer to reset inline.
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Slash commands not appearing in Cursor
+            Squad pipeline stuck mid-run
           </h3>
           <p className="text-sm text-muted-foreground">
-            Run <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code> to install prompt files to <code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/</code>. These appear as slash commands in Cursor Chat.
+            Check the <code className="rounded bg-muted px-1 font-mono text-xs">status:</code> field in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/handoff.md</code>. Run the command that matches the current status — e.g. if status is <code className="rounded bg-muted px-1 font-mono text-xs">dev</code>, run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-dev</code>. Use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> to continue automatically from where it left off.
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            Want to start over completely
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> to delete the entire <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/</code> folder. It will report what was removed before deleting. If you need to recover, check git history.
           </p>
         </div>
       </div>

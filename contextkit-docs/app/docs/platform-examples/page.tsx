@@ -285,21 +285,6 @@ export default function PlatformExamplesPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Using ContextKit Wrapper</h3>
-              <div className="rounded-lg border border-border bg-muted/50 p-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Terminal className="h-4 w-4" />
-                  <span className="font-mono">Terminal</span>
-                </div>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
-                  export AI_TOOL=codex
-                </code>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">
-                  contextkit ai "create a button component"
-                </code>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -336,21 +321,6 @@ export default function PlatformExamplesPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Using ContextKit Wrapper</h3>
-              <div className="rounded-lg border border-border bg-muted/50 p-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Terminal className="h-4 w-4" />
-                  <span className="font-mono">Terminal</span>
-                </div>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
-                  export AI_TOOL=opencode
-                </code>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">
-                  contextkit ai "create a button component"
-                </code>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -422,21 +392,6 @@ export default function PlatformExamplesPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Using ContextKit Wrapper</h3>
-              <div className="rounded-lg border border-border bg-muted/50 p-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Terminal className="h-4 w-4" />
-                  <span className="font-mono">Terminal</span>
-                </div>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
-                  export AI_TOOL=aider
-                </code>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">
-                  contextkit ai "create a button component"
-                </code>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -473,21 +428,6 @@ export default function PlatformExamplesPage() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-semibold mb-2">Using ContextKit Wrapper</h3>
-              <div className="rounded-lg border border-border bg-muted/50 p-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Terminal className="h-4 w-4" />
-                  <span className="font-mono">Terminal</span>
-                </div>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">
-                  export AI_TOOL=gemini
-                </code>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">
-                  contextkit ai "create a button component"
-                </code>
-              </div>
-            </div>
           </div>
         </div>
 

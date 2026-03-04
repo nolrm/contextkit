@@ -185,9 +185,9 @@ export default function MonorepoPage() {
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-2">3. Share Standards Across Teams</h3>
+            <h3 className="font-semibold text-base mb-2">3. Commit Standards to Git</h3>
             <p className="text-sm text-muted-foreground">
-              Use <code className="rounded bg-muted px-1 font-mono text-xs">ck publish</code> to share your monorepo standards configuration with other teams.
+              Commit the entire <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/</code> directory to git. Team members on different AI tools run their own platform command (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code>, <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>) to set up their local integration against the shared standards.
             </p>
           </div>
         </div>

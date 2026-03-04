@@ -8,9 +8,9 @@ export default function SquadPage() {
     { id: 'overview', text: 'Overview' },
     { id: 'pipeline', text: 'Pipeline Roles' },
     { id: 'single-task', text: 'Single-Task Flow' },
-    { id: 'peer-review', text: 'Peer Review (Optional)' },
     { id: 'visual-assets', text: 'Visual Assets (Optional)' },
     { id: 'batch', text: 'Batch Flow' },
+    { id: 'reset', text: 'Resetting Squad State' },
     { id: 'feedback', text: 'Feedback Loop' },
   ];
 
@@ -100,13 +100,7 @@ export default function SquadPage() {
                 <td className="py-2">Writes and runs tests against acceptance criteria</td>
               </tr>
               <tr className="border-b">
-                <td className="py-2 pr-4">5 <span className="text-xs text-muted-foreground">(optional)</span></td>
-                <td className="py-2 pr-4">Peer Reviewer</td>
-                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-peer-review</code></td>
-                <td className="py-2">Adversarial review of implementation and tests before the final verdict</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">6</td>
+                <td className="py-2 pr-4">5</td>
                 <td className="py-2 pr-4">Reviewer</td>
                 <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-review</code></td>
                 <td className="py-2">Reviews everything and gives a PASS or NEEDS-WORK verdict</td>
@@ -140,28 +134,8 @@ export default function SquadPage() {
 /squad-architect                 # Architect designs the plan
 /squad-dev                       # Dev implements the code
 /squad-test                      # Tester writes and runs tests
-/squad-peer-review               # Optional: adversarial check
 /squad-review                    # Reviewer gives the verdict`}</pre>
         </div>
-      </div>
-
-      {/* Peer Review */}
-      <div id="peer-review" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Peer Review <span className="text-base font-normal text-muted-foreground">(Optional)</span></h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-peer-review</code> between <code className="rounded bg-muted px-1 font-mono text-xs">/squad-test</code> and <code className="rounded bg-muted px-1 font-mono text-xs">/squad-review</code> to get an adversarial read on the implementation and tests before the final verdict. The Reviewer will automatically incorporate any valid findings.
-        </p>
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-          <p className="text-sm font-medium mb-2">When to use it</p>
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p>— Large or complex features where the dev and tester may be too close to the work</p>
-            <p>— Security-sensitive changes (auth, payments, data access)</p>
-            <p>— Tasks where a NEEDS-WORK verdict would be costly to fix later</p>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Skipping it is fine for simple bug fixes and small changes — the Reviewer already runs a thorough audit with escalation paths.
-        </p>
       </div>
 
       {/* Visual Assets */}
@@ -214,6 +188,30 @@ export default function SquadPage() {
 /squad-auto
 # Picks up all pending tasks and continues the pipeline`}</pre>
         </div>
+      </div>
+
+      {/* Reset */}
+      <div id="reset" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Resetting Squad State</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          If your squad folder gets into a stuck or mixed state, use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> to clear it and start fresh.
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Clear squad state</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad-reset   # reports what's removed, then deletes .contextkit/squad/`}</pre>
+        </div>
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-sm font-medium mb-1">Inline reset</p>
+          <p className="text-sm text-muted-foreground">
+            If you run <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> with a task and the folder is in a mixed state, the PO will offer to reset and continue in one step — no need to run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> separately.
+          </p>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> is a hard delete with no backup. If you need to recover, check git history.
+        </p>
       </div>
 
       {/* Feedback Loop */}

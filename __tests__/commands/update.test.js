@@ -200,7 +200,29 @@ describe('UpdateCommand', () => {
     );
   });
 
-  it('9. version comparison works correctly', async () => {
+  it('9. removes legacy squad-peer-review command on update', async () => {
+    await fs.ensureDir('.contextkit/commands');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('.contextkit/commands/squad-peer-review.md', '# old command');
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    expect(await fs.pathExists('.contextkit/commands/squad-peer-review.md')).toBe(false);
+  });
+
+  it('10. does not remove non-legacy files in commands directory', async () => {
+    await fs.ensureDir('.contextkit/commands');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('.contextkit/commands/my-custom-command.md', '# user custom command');
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    expect(await fs.pathExists('.contextkit/commands/my-custom-command.md')).toBe(true);
+  });
+
+  it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];
     const updateModule = require('../../lib/commands/update');

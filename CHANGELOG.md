@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.12.15] - 2026-03-04
+
+### Added
+- **`/squad-reset`** — new slash command to clear `.contextkit/squad/` and start fresh. Reports what was removed and flags any in-progress tasks before deleting.
+
+### Changed
+- **`/squad` mixed-state handling** — instead of hard-stopping when both `handoff.md` and `manifest.md` exist, `/squad` now offers to reset inline and continue with the provided task. Falls back to instructing `/squad-reset` if no task was given or the user declines.
+
+### Removed
+- **`/squad-peer-review`** removed from the pipeline. Existing installs have the file deleted automatically on `ck update`.
+
+### Fixed
+- **`ck update` legacy cleanup** — removes `.contextkit/commands/squad-peer-review.md` on update.
+
+---
+
 ## [0.12.14] - 2026-03-04
 
 ### Changed
