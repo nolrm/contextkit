@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.17] - 2026-03-04
+
+### Changed
+- **Banner art** — replaced "CK" initials ASCII art with full "ContextKit" slant-style logo on `ck install` and `ck update`.
+
+---
+
 ## [0.12.15] - 2026-03-04
 
 ### Added
