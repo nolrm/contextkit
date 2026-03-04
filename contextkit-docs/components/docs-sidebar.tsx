@@ -10,19 +10,24 @@ const docsNav = [
     items: [
       { title: "Introduction", href: "/docs" },
       { title: "Quick Start", href: "/docs/quick-start" },
-      { title: "Platform Examples", href: "/docs/platform-examples" },
       { title: "Project Structure", href: "/docs/project-structure" },
+    ],
+  },
+  {
+    title: "Core Concepts",
+    items: [
       { title: "How Context Works", href: "/docs/how-context-works" },
-      { title: "Commands", href: "/docs/commands" },
+      { title: "MD-First Development", href: "/docs/md-first" },
     ],
   },
   {
     title: "Features",
     items: [
+      { title: "Commands", href: "/docs/commands" },
       { title: "Slash Commands", href: "/docs/slash-commands" },
       { title: "Squad Workflow", href: "/docs/squad" },
       { title: "Quality Gates", href: "/docs/quality-gates" },
-      { title: "MD-First Development", href: "/docs/md-first" },
+      { title: "Platform Examples", href: "/docs/platform-examples" },
     ],
   },
   {

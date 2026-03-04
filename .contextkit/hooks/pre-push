@@ -69,8 +69,8 @@ run_node_gates() {
     PM="npm"
   fi
 
-  # Gate: TypeScript (check devDependencies/dependencies)
-  if grep -q '"typescript"' package.json 2>/dev/null; then
+  # Gate: TypeScript (only if listed as dependency, not keywords)
+  if grep -qE '"typescript"[[:space:]]*:' package.json 2>/dev/null; then
     if has_cmd npx; then
       run_gate "TypeScript type check" npx tsc --noEmit
     else
@@ -78,8 +78,8 @@ run_node_gates() {
     fi
   fi
 
-  # Gate: ESLint (check devDependencies/dependencies)
-  if grep -q '"eslint"' package.json 2>/dev/null; then
+  # Gate: ESLint (only if listed as dependency, not keywords)
+  if grep -qE '"eslint"[[:space:]]*:' package.json 2>/dev/null; then
     if has_cmd npx; then
       run_gate "ESLint" npx eslint .
     else
@@ -87,8 +87,8 @@ run_node_gates() {
     fi
   fi
 
-  # Gate: Prettier (check devDependencies/dependencies)
-  if grep -q '"prettier"' package.json 2>/dev/null; then
+  # Gate: Prettier (only if listed as dependency, not keywords)
+  if grep -qE '"prettier"[[:space:]]*:' package.json 2>/dev/null; then
     if has_cmd npx; then
       run_gate "Prettier format check" npx prettier --check .
     else

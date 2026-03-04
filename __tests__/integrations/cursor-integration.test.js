@@ -75,7 +75,7 @@ describe('CursorIntegration', () => {
     const prompts = [
       'analyze', 'review', 'fix', 'refactor', 'test', 'doc',
       'squad', 'squad-architect', 'squad-dev', 'squad-test', 'squad-review',
-      'squad-run', 'ck',
+      'squad-auto', 'ck',
     ];
     for (const prompt of prompts) {
       const filePath = `.cursor/prompts/${prompt}.md`;

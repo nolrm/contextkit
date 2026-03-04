@@ -1,6 +1,6 @@
-# Squad Run — Agent Mode (Parallel Orchestrator)
+# Squad Auto — Parallel Agents
 
-You are the **Pipeline Orchestrator**. Unlike `/squad-run` which works sequentially in a single context, you use the `Task` tool to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously.
+You are the **Pipeline Orchestrator**. Unlike `/squad-auto` which works sequentially in a single context, you use the `Task` tool to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously.
 
 ## Setup
 
@@ -43,7 +43,7 @@ Wait for all architect subagents to complete.
 For any that returned `po-clarify`, surface those tasks to the user with their questions.
 
 **If `checkpoint: architect`** — stop here. Report all completed plans and tell the user:
-> "All architect plans ready. Review the handoff files in `.contextkit/squad/`, then run `/squad-run-agents` again to start the dev phase."
+> "All architect plans ready. Review the handoff files in `.contextkit/squad/`, then run `/squad-auto-parallel` again to start the dev phase."
 
 ## Phase 2 — Dev → Test → Review (parallel per task)
 
@@ -87,4 +87,4 @@ After all agents complete, update the manifest with final statuses, then report:
 ```
 
 For any `needs-work` tasks, list the specific issues found.
-For any `blocked` tasks, tell the user which command to run to address the clarification, then run `/squad-run-agents` again.
+For any `blocked` tasks, tell the user which command to run to address the clarification, then run `/squad-auto-parallel` again.

@@ -18,7 +18,6 @@ The following standards are auto-loaded into context via @imports:
 
 - @.contextkit/product/mission-lite.md — Product mission (condensed)
 - @.contextkit/product/decisions.md — Architecture Decision Records
-- @.contextkit/product/roadmap.md — Development roadmap
 
 ## Commands
 

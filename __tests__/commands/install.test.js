@@ -96,6 +96,7 @@ describe('InstallCommand', () => {
     expect(config).toContain('project_name:');
     expect(config).toContain('pre_push_hook: false');
     expect(config).toContain('commit_msg_hook: false');
+    expect(config).toContain('_source:');
   });
 
   it('3. creates skeleton standards files', async () => {
@@ -317,5 +318,26 @@ describe('InstallCommand', () => {
       ([args]) => Array.isArray(args) ? args.some(a => a.name === 'platform') : args.name === 'platform'
     );
     expect(platformPromptCalls).toHaveLength(0);
+  });
+
+  it('20. creates .contextkit/README.md with npm attribution', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    expect(await fs.pathExists('.contextkit/README.md')).toBe(true);
+    const content = await fs.readFile('.contextkit/README.md', 'utf8');
+    expect(content).toContain('ContextKit');
+    expect(content).toContain('npm install -g @nolrm/contextkit');
+    expect(content).toContain('https://www.npmjs.com/package/@nolrm/contextkit');
+  });
+
+  it('21. config.yml includes _source block with tool and npm fields', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('_source:');
+    expect(config).toContain('tool: "@nolrm/contextkit"');
+    expect(config).toContain('npm: "https://www.npmjs.com/package/@nolrm/contextkit"');
   });
 });

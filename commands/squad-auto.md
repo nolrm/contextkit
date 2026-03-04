@@ -1,4 +1,4 @@
-# Squad Run — Auto-Run Pipeline
+# Squad Auto — Full Pipeline
 
 You are the **Pipeline Runner** for a squad batch workflow. Your job is to read the manifest and run the remaining pipeline steps for each task sequentially.
 
@@ -13,10 +13,10 @@ You are the **Pipeline Runner** for a squad batch workflow. Your job is to read 
    If any task has a clarify status:
    - **Pause the pipeline for that task** — do not advance it further.
    - Tell the user which task needs clarification, which role raised questions, and which command to run. For example:
-     - `po-clarify`: "Task #N needs PO clarification. Run `/squad` to address the Architect's questions, then run `/squad-run` again."
-     - `arch-clarify`: "Task #N needs Architect clarification. Run `/squad-architect` to address the Dev's questions, then run `/squad-run` again."
-     - `dev-clarify`: "Task #N needs Dev clarification. Run `/squad-dev` to address the Tester's questions, then run `/squad-run` again."
-     - `test-clarify`: "Task #N needs Tester clarification. Run `/squad-test` to address the Reviewer's questions, then run `/squad-run` again."
+     - `po-clarify`: "Task #N needs PO clarification. Run `/squad` to address the Architect's questions, then run `/squad-auto` again."
+     - `arch-clarify`: "Task #N needs Architect clarification. Run `/squad-architect` to address the Dev's questions, then run `/squad-auto` again."
+     - `dev-clarify`: "Task #N needs Dev clarification. Run `/squad-dev` to address the Tester's questions, then run `/squad-auto` again."
+     - `test-clarify`: "Task #N needs Tester clarification. Run `/squad-test` to address the Reviewer's questions, then run `/squad-auto` again."
    - **Continue processing other tasks** that are not in a clarify state.
    - If ALL remaining tasks are in a clarify state, stop and list them all.
 
@@ -41,7 +41,7 @@ If any tasks have status `po`:
   - Update the manifest: change this task's status to `architect`
 
 - **If `checkpoint: architect`**: Stop here and tell the user:
-  "All architect plans ready. Review the handoff files, then run `/squad-run` again to continue."
+  "All architect plans ready. Review the handoff files, then run `/squad-auto` again to continue."
 
 - **If `checkpoint: po`**: Continue immediately to the Dev phase below.
 

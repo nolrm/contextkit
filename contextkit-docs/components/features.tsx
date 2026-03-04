@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, FileCode, Sparkles, Users, FileText, Terminal } from "lucide-react"
+import { Brain, FileCode, Layers, Users, FileText, Terminal } from "lucide-react"
 
 const features = [
   {
@@ -12,13 +12,13 @@ const features = [
     icon: FileCode,
     title: "Project-Specific Standards",
     description:
-      "Auto-detect your tech stack and customize standards. Glossary, code style, testing patterns—all tailored to your project.",
+      "Auto-detect your tech stack and customize standards. Glossary, code style, testing patterns—all tailored specifically to your project's needs.",
   },
   {
-    icon: Sparkles,
+    icon: Layers,
     title: "Multi-Platform Support",
     description:
-      "Works with Cursor (auto-loads), VS Code (Copilot), Aider, Continue.dev, Claude CLI, Gemini, and more.",
+      "Works with Cursor (auto-loads), VS Code (Copilot), Aider, Continue.dev, UX Pilot CLI, Gemini, and more. One context source for all tools.",
   },
   {
     icon: Users,
@@ -36,7 +36,7 @@ const features = [
     icon: Terminal,
     title: "Slash Commands",
     description:
-      "17 reusable AI workflows installed across all platforms: /analyze, /review, /fix, /refactor, /spec, /squad, and more. One command set, every tool.",
+      "17 reusable AI workflows installed across all platforms: /analyze, /fix, /refactor, /spec, /squad, and more. One command set, every tool.",
   },
 ]
 
@@ -49,7 +49,7 @@ export function Features() {
             Key Features
           </h2>
           <p className="text-balance text-lg text-muted-foreground max-w-2xl">
-            Context-aware AI development that works with your existing tools and patterns.
+            Context-aware AI development that works seamlessly with your existing tools and engineering patterns.
           </p>
         </div>
 
@@ -57,15 +57,17 @@ export function Features() {
           {features.map((feature) => {
             const Icon = feature.icon
             return (
-              <Card key={feature.title} className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur">
+              <Card key={feature.title} className="relative overflow-hidden border-border bg-card">
                 <CardHeader>
-                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <Icon className="h-6 w-6 text-primary" />
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-md bg-primary/15">
+                    <Icon className="h-5 w-5 text-primary" />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <CardTitle className="text-lg font-bold">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base leading-relaxed">{feature.description}</CardDescription>
+                  <CardDescription className="text-sm leading-relaxed text-muted-foreground">
+                    {feature.description}
+                  </CardDescription>
                 </CardContent>
               </Card>
             )

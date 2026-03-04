@@ -10,8 +10,8 @@ export function Logo() {
     >
       <defs>
         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#2b62ef" />
-          <stop offset="100%" stopColor="#4d79f0" />
+          <stop offset="0%" stopColor="#00b4cc" />
+          <stop offset="100%" stopColor="#0090ae" />
         </linearGradient>
       </defs>
       

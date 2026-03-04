@@ -120,21 +120,28 @@ export default function SquadPage() {
       <div id="single-task" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Single-Task Flow</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Run each command in sequence in the same AI session:
+          After kickoff, run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> to let the pipeline run hands-free, or step through manually if you want to review each stage:
         </p>
         <div className="rounded-lg border bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             <Terminal className="h-4 w-4" />
-            <span className="font-mono">Run each command in sequence</span>
+            <span className="font-mono">Recommended: auto-run</span>
           </div>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode support"        # PO writes the spec
-/squad-architect                       # Architect designs the plan
-/squad-dev                             # Dev implements the code
-/squad-test                            # Tester writes and runs tests
-/squad-review                          # Reviewer gives the verdict
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode support"   # PO writes the spec
 
-# Optional: insert peer review before the final verdict
-/squad-peer-review                     # Adversarial check (between test and review)`}</pre>
+/squad-auto                      # Runs architect → dev → test → review hands-free`}</pre>
+        </div>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Manual: step through each role</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode support"   # PO writes the spec
+/squad-architect                 # Architect designs the plan
+/squad-dev                       # Dev implements the code
+/squad-test                      # Tester writes and runs tests
+/squad-peer-review               # Optional: adversarial check
+/squad-review                    # Reviewer gives the verdict`}</pre>
         </div>
       </div>
 
@@ -187,7 +194,7 @@ export default function SquadPage() {
           <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode" "fix login bug" "refactor checkout"
 # PO writes specs for all three tasks (batch mode auto-detected)
 
-/squad-run
+/squad-auto
 # Runs Architect → Dev → Test → Review for each task`}</pre>
         </div>
         <p className="text-muted-foreground leading-relaxed">
@@ -204,7 +211,7 @@ export default function SquadPage() {
 # Detects existing manifest → appends as handoff-4.md and handoff-5.md
 # Writes PO specs for the new tasks only
 
-/squad-run
+/squad-auto
 # Picks up all pending tasks and continues the pipeline`}</pre>
         </div>
       </div>

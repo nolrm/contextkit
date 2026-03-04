@@ -39,7 +39,7 @@ npm i -g @nolrm/contextkit
 cd your-project
 contextkit install
 ```
-Creates `.contextkit/` with skeleton standards files in your project.
+Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and an attribution block in `config.yml` so any developer who encounters the folder knows what manages it.
 
 **3. Generate your standards**
 
@@ -153,8 +153,8 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-dev` | Implement code following the architect plan |
 | `/squad-test` | Write and run tests against acceptance criteria |
 | `/squad-review` | Review the full pipeline and give a verdict |
-| `/squad-run` | Auto-run the remaining pipeline for batch tasks (sequential) |
-| `/squad-run-agents` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
+| `/squad-auto` | Auto-run the full pipeline after kickoff (recommended, sequential) |
+| `/squad-auto-parallel` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
 | `/ck` | Health check — verify setup, standards, and integrations |
 
 **Claude Code** — available as `/analyze`, `/review`, etc. in `.claude/commands/`
@@ -181,11 +181,14 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 ### Single-Task Flow
 
 ```bash
-/squad "add dark mode support"        # PO writes the spec
-/squad-architect                       # Architect designs the plan
-/squad-dev                             # Dev implements the code
-/squad-test                            # Tester writes and runs tests
-/squad-review                          # Reviewer gives the verdict
+/squad "add dark mode support"   # PO writes the spec
+
+/squad-auto                      # Auto-runs architect → dev → test → review (recommended)
+# — or step through manually —
+/squad-architect                 # Architect designs the plan
+/squad-dev                       # Dev implements the code
+/squad-test                      # Tester writes and runs tests
+/squad-review                    # Reviewer gives the verdict
 ```
 
 ### Batch Flow
@@ -196,16 +199,16 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 /squad "add dark mode" "fix login bug" "refactor checkout"
 # PO writes specs for all three tasks
 
-/squad-run
+/squad-auto
 # Runs Architect → Dev → Test → Review for each task sequentially
 ```
 
-**Agent mode (Claude Code only):** Use `/squad-run-agents` instead of `/squad-run` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
+**Parallel mode (Claude Code only):** Use `/squad-auto-parallel` instead of `/squad-auto` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
 
 ```bash
 /squad "add dark mode" "fix login bug" "refactor checkout"
 
-/squad-run-agents
+/squad-auto-parallel
 # Phase 1: architect agents for all 3 tasks run in parallel
 # Phase 2: dev→test→review pipeline runs in parallel per task
 ```

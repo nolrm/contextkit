@@ -82,7 +82,13 @@ Create `.contextkit/squad/` if it doesn't exist.
    - Set `## 1. PO Spec` → `status: done`
    - Set top-level `status:` → `architect`
 
-6. Tell the user: "PO spec complete. Run `/squad-architect` to continue."
+6. Tell the user:
+
+   > PO spec complete.
+   >
+   > **Recommended:** Run `/squad-auto` to auto-run the full pipeline (architect → dev → test → review) hands-free.
+   >
+   > **Or step through manually:** `/squad-architect` → `/squad-dev` → `/squad-test` → `/squad-review`
 
 ---
 
@@ -127,7 +133,7 @@ created: [TIMESTAMP]
    - Set each top-level `status:` → `architect`
    - Update each task in the manifest from `status: pending` → `status: po`
 
-5. Tell the user: "All [N] PO specs ready. Run `/squad-run` to continue the pipeline." List each handoff file and task description.
+5. Tell the user: "All [N] PO specs ready. Run `/squad-auto` to continue the pipeline." List each handoff file and task description.
 
 ---
 
@@ -141,7 +147,7 @@ created: [TIMESTAMP]
 4. Append new task lines to `## Tasks`.
 5. Create new `handoff-[N].md` files using the [Handoff Template](#handoff-template).
 6. Write PO specs for new tasks only — do not touch existing handoff files.
-7. Tell the user: "Added [N] new task(s) to the batch (now [NEW_TOTAL] total). Run `/squad-run` to continue."
+7. Tell the user: "Added [N] new task(s) to the batch (now [NEW_TOTAL] total). Run `/squad-auto` to continue."
 
 ---
 
