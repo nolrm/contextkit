@@ -78,4 +78,11 @@ describe('Download manifest validation', () => {
     );
     expect(unreferenced).toEqual([]);
   });
+
+  it('5. commands/health-check.md contains the update check step', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/health-check.md'), 'utf8');
+    expect(content).toContain('npm view @nolrm/contextkit version');
+    expect(content).toContain('status.json');
+    expect(content).toContain('ck update');
+  });
 });

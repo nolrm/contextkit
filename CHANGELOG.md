@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.12.18] - 2026-03-06
+
+### Added
+- **Passive update notifications** — `ck` now checks npm for newer versions of `@nolrm/contextkit` once per 24 hours and prints a non-blocking one-liner after any command if an update is available. Suppressed automatically in CI environments.
+- **ContextKit version stamp in CLAUDE.md** — the generated `CLAUDE.md` now includes the installed version (`Version: X.Y.Z`) so AI tools can report it and check for updates when running `/ck`.
+- **`/ck` update check step** — the health-check command now runs `npm view @nolrm/contextkit version`, compares to the installed version in `status.json`, and adds an update row to the status table.
+
+### Changed
+- **`health-check.md` now downloaded from GitHub** (like all other command files) instead of being written inline at install time. Existing users get the updated file via `ck update`.
+
+---
+
 ## [0.12.17] - 2026-03-04
 
 ### Changed

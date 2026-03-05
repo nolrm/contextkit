@@ -112,4 +112,13 @@ describe('ClaudeIntegration', () => {
     expect(result.valid).toBe(false);
     expect(result.missing.length).toBeGreaterThan(0);
   });
+
+  test('9. CLAUDE.md includes ContextKit version stamp matching package.json', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const { version } = require('../../package.json');
+    const content = await fs.readFile('CLAUDE.md', 'utf-8');
+    expect(content).toContain(`Version: ${version}`);
+  });
 });

@@ -65,4 +65,24 @@ describe('CLI Integration Tests', () => {
       expect(asPrompt || notInitialized).toBe(true);
     });
   });
+
+  describe('update-notifier', () => {
+    test('CLI exits with code 0 and notifier does not break output', () => {
+      // update-notifier is suppressed in CI (CI=true env var); verify the CLI still runs cleanly
+      const result = execSync(`node "${cliPath}" --version`, {
+        encoding: 'utf8',
+        env: { ...process.env, CI: 'true' },
+      });
+      expect(result.trim()).toBe(packageJson.version);
+    });
+
+    test('CLI --help output is unaffected by notifier', () => {
+      const result = execSync(`node "${cliPath}" --help`, {
+        encoding: 'utf8',
+        env: { ...process.env, CI: 'true' },
+      });
+      expect(result).toContain('Context Engineering for AI Development');
+      expect(result).toContain('Commands:');
+    });
+  });
 });

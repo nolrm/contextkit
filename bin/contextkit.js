@@ -12,6 +12,9 @@ const publish = require('../lib/commands/publish');
 const pull = require('../lib/commands/pull');
 const dashboard = require('../lib/commands/dashboard');
 const packageJson = require('../package.json');
+const { checkForUpdates } = require('../lib/utils/notifier');
+
+checkForUpdates();
 
 // Set up the CLI
 program

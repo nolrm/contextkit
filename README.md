@@ -318,6 +318,7 @@ ck vscode      # alias for copilot
 # Analysis & Updates
 /analyze       # customize standards to your project (slash command in your AI tool)
 ck update      # pull latest commands/hooks — preserves your analyzed standards
+               # updates are also flagged automatically after each ck command (24h cache)
 ck status      # check install & integrations
 
 # Validation & Compliance
