@@ -50,15 +50,17 @@ export function DocsSidebar() {
           <nav className="grid items-start gap-2">
             {docsNav.map((section) => (
               <div key={section.title} className="pb-4">
-                <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">{section.title}</h4>
+                <h4 className="mb-2 px-2 py-1 text-xs font-semibold uppercase tracking-widest text-foreground">{section.title}</h4>
                 <div className="grid grid-flow-row auto-rows-max text-sm">
                   {section.items.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        "group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline",
-                        pathname === item.href ? "font-medium text-foreground" : "text-muted-foreground",
+                        "group flex w-full items-center py-1 transition-colors",
+                        pathname === item.href
+                          ? "border-l-2 border-primary pl-3 -ml-3.5 font-medium text-primary"
+                          : "text-muted-foreground hover:text-foreground px-2",
                       )}
                     >
                       {item.title}

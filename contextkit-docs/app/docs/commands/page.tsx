@@ -1,9 +1,49 @@
-import { Terminal, CheckCircle2, ArrowRight } from "lucide-react"
+'use client'
+
+import React, { useEffect } from "react"
+import { Terminal, CheckCircle2, ArrowRight, ChevronRight, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function CommandsPage() {
+  const headings = [
+    { id: 'updates', text: 'Updates & Maintenance' },
+    { id: 'status', text: 'Status & Health' },
+    { id: 'analysis', text: 'Analysis' },
+    { id: 'corrections', text: 'Corrections Logging' },
+    { id: 'observability', text: 'Observability' },
+  ]
+
+  useEffect(() => {
+    const tocContainer = document.getElementById('toc-container')
+    if (tocContainer) {
+      tocContainer.innerHTML = `
+        <nav class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
+          <div class="grid grid-flow-row auto-rows-max text-sm">
+            ${headings.map(h => `
+              <a
+                href="#${h.id}"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                ${h.text}
+              </a>
+            `).join('')}
+          </div>
+        </nav>
+      `
+    }
+  }, [headings])
+
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Features</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">Commands</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Commands Reference</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -19,7 +59,7 @@ export default function CommandsPage() {
         </Link>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="updates" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Updates & Maintenance</h2>
 
         <div className="space-y-3">
@@ -39,7 +79,7 @@ export default function CommandsPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="status" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Status & Health</h2>
 
         <div className="space-y-3">
@@ -80,7 +120,7 @@ export default function CommandsPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="analysis" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Analysis</h2>
 
         <div className="space-y-3">
@@ -118,7 +158,7 @@ export default function CommandsPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="corrections" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Corrections Logging</h2>
 
         <div className="space-y-3">
@@ -150,7 +190,7 @@ export default function CommandsPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="observability" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Observability</h2>
 
         <div className="space-y-3">
@@ -189,6 +229,35 @@ export default function CommandsPage() {
           </div>
         </div>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/md-first"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">MD-First Development</div>
+          </div>
+        </Link>
+        <Link
+          href="/docs/slash-commands"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">Slash Commands</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

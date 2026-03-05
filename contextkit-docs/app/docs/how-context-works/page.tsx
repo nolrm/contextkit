@@ -1,8 +1,48 @@
-import { AlertTriangle } from "lucide-react"
+'use client'
+
+import React, { useEffect } from "react"
+import Link from "next/link"
+import { AlertTriangle, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 
 export default function HowContextWorksPage() {
+  const headings = [
+    { id: 'two-layer', text: 'The Two-Layer Architecture' },
+    { id: 'always-vs-conditional', text: 'Always Loaded vs. Conditionally Loaded' },
+    { id: 'token-optimization', text: 'Token Optimization Strategies' },
+    { id: 'token-budget', text: 'Typical Token Budget' },
+    { id: 'enforced-vs-convention', text: "What's Enforced vs. Convention-Based" },
+  ]
+
+  useEffect(() => {
+    const tocContainer = document.getElementById('toc-container')
+    if (tocContainer) {
+      tocContainer.innerHTML = `
+        <nav class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
+          <div class="grid grid-flow-row auto-rows-max text-sm">
+            ${headings.map(h => `
+              <a
+                href="#${h.id}"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                ${h.text}
+              </a>
+            `).join('')}
+          </div>
+        </nav>
+      `
+    }
+  }, [headings])
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Core Concepts</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">How Context Works</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">How Context Works</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -12,7 +52,7 @@ export default function HowContextWorksPage() {
       </div>
 
       {/* Layer Architecture */}
-      <div className="space-y-4 pt-4">
+      <div id="two-layer" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The Two-Layer Architecture</h2>
         <p className="text-muted-foreground leading-relaxed">
           Every session goes through two layers before context reaches the AI:
@@ -78,7 +118,7 @@ AI receives context and generates code`}</pre>
       </div>
 
       {/* Always vs Conditionally loaded */}
-      <div className="space-y-4 pt-4">
+      <div id="always-vs-conditional" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Always Loaded vs. Conditionally Loaded</h2>
         <p className="text-muted-foreground leading-relaxed">
           Not all context files load every session. Here's what fires when:
@@ -148,7 +188,7 @@ AI receives context and generates code`}</pre>
       </div>
 
       {/* Token optimization */}
-      <div className="space-y-4 pt-4">
+      <div id="token-optimization" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Token Optimization Strategies</h2>
         <p className="text-muted-foreground leading-relaxed">
           ContextKit is designed to keep the base context footprint small. Here's how:
@@ -208,7 +248,7 @@ Use CSS modules, BEM naming...`}</pre>
       </div>
 
       {/* Token budget */}
-      <div className="space-y-4 pt-4">
+      <div id="token-budget" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Typical Token Budget</h2>
         <p className="text-muted-foreground leading-relaxed">
           Here's what the actual context footprint looks like before and after running{" "}
@@ -266,7 +306,7 @@ Use CSS modules, BEM naming...`}</pre>
       </div>
 
       {/* Honest callout */}
-      <div className="space-y-4 pt-4">
+      <div id="enforced-vs-convention" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">What's Enforced vs. Convention-Based</h2>
         <p className="text-muted-foreground leading-relaxed">
           Not all loading mechanisms have the same level of enforcement. It's important to understand the difference:
@@ -331,6 +371,36 @@ Use CSS modules, BEM naming...`}</pre>
           per-session context tight without sacrificing coverage.
         </p>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/project-structure"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">Project Structure</div>
+          </div>
+        </Link>
+
+        <Link
+          href="/docs/md-first"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">MD-First Development</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

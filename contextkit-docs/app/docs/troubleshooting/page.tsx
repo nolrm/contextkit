@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect } from "react"
-import { AlertTriangle } from "lucide-react"
+import Link from "next/link"
+import { AlertTriangle, ChevronRight, ArrowLeft } from "lucide-react"
 
 export default function TroubleshootingPage() {
   const headings = [
@@ -16,12 +17,12 @@ export default function TroubleshootingPage() {
     if (tocContainer) {
       tocContainer.innerHTML = `
         <nav class="space-y-2">
-          <p class="font-medium text-sm mb-3">On this page</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
           <div class="grid grid-flow-row auto-rows-max text-sm">
             ${headings.map(h => `
               <a
                 href="#${h.id}"
-                class="group flex w-full items-center rounded-md border border-transparent pr-2 py-1.5 hover:underline text-sm text-muted-foreground"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 ${h.text}
               </a>
@@ -34,6 +35,14 @@ export default function TroubleshootingPage() {
 
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Advanced</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">Troubleshooting</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Troubleshooting</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -222,6 +231,23 @@ export default function TroubleshootingPage() {
           Run <code className="rounded bg-muted px-1 font-mono text-xs">ck status</code> to see your installation status, or <a href="https://github.com/nolrm/contextkit/issues" className="text-primary hover:underline">open an issue on GitHub</a>.
         </p>
       </div>
+
+      {/* Prev navigation (last page — no next) */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-start items-center">
+        <Link
+          href="/docs/enterprise-features"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">Enterprise Features</div>
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

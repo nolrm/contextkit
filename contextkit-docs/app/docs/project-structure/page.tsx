@@ -1,6 +1,47 @@
+'use client'
+
+import React, { useEffect } from "react"
+import Link from "next/link"
+import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
+
 export default function ProjectStructurePage() {
+  const headings = [
+    { id: 'directory-overview', text: 'Directory Overview' },
+    { id: 'contextkit-dir', text: 'The .contextkit Directory' },
+    { id: 'platform-integrations', text: 'Platform-Specific Integrations' },
+    { id: 'customization', text: 'Customization' },
+  ]
+
+  useEffect(() => {
+    const tocContainer = document.getElementById('toc-container')
+    if (tocContainer) {
+      tocContainer.innerHTML = `
+        <nav class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
+          <div class="grid grid-flow-row auto-rows-max text-sm">
+            ${headings.map(h => `
+              <a
+                href="#${h.id}"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                ${h.text}
+              </a>
+            `).join('')}
+          </div>
+        </nav>
+      `
+    }
+  }, [headings])
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Getting Started</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">Project Structure</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Project Structure</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -9,7 +50,7 @@ export default function ProjectStructurePage() {
         </p>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="directory-overview" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Directory Overview</h2>
         <p className="text-muted-foreground leading-relaxed">
           When you run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">contextkit install</code>, ContextKit creates a comprehensive directory structure:
@@ -64,7 +105,7 @@ export default function ProjectStructurePage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="contextkit-dir" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The .contextkit Directory</h2>
         <p className="text-muted-foreground leading-relaxed">
           This is the main directory where all your project standards and context files live:
@@ -186,7 +227,7 @@ export default function ProjectStructurePage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="platform-integrations" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Platform-Specific Integrations</h2>
         <p className="text-muted-foreground leading-relaxed">ContextKit integrates with multiple AI platforms:</p>
 
@@ -235,7 +276,7 @@ export default function ProjectStructurePage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="customization" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Customization</h2>
         <p className="text-muted-foreground leading-relaxed">
           All files in the .contextkit directory are meant to be customized for your project. After running <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> in your AI tool, modify them to match your team's specific needs:
@@ -260,6 +301,36 @@ export default function ProjectStructurePage() {
           and generate code that matches your exact patterns and preferences.
         </p>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/quick-start"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">Quick Start</div>
+          </div>
+        </Link>
+
+        <Link
+          href="/docs/how-context-works"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">How Context Works</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

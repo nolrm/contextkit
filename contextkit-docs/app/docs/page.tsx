@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Brain, Terminal, Zap, Github } from "lucide-react"
 
+
 export default function DocsPage() {
   return (
     <div className="space-y-10">
@@ -82,6 +83,23 @@ export default function DocsPage() {
           </Link>
         </Button>
       </div>
+
+      {/* Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-end items-center">
+        <Link
+          href="/docs/quick-start"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">Quick Start</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

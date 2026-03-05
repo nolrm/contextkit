@@ -8,14 +8,7 @@ export function Logo() {
       xmlns="http://www.w3.org/2000/svg"
       className="h-8 w-8"
     >
-      <defs>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#00b4cc" />
-          <stop offset="100%" stopColor="#0090ae" />
-        </linearGradient>
-      </defs>
-      
-      <rect width="32" height="32" rx="4" fill="url(#logoGradient)" />
+      <rect width="32" height="32" rx="4" fill="#0ea5e9" />
       <text 
         x="16" 
         y="22" 

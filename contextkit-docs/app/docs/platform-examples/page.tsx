@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect } from "react"
-import { Terminal, Monitor, Code, Sparkles, Bot, CheckCircle2, Zap } from "lucide-react"
+import Link from "next/link"
+import { Terminal, Monitor, Code, Sparkles, Bot, CheckCircle2, Zap, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 
 export default function PlatformExamplesPage() {
   const headings = [
@@ -22,12 +23,12 @@ export default function PlatformExamplesPage() {
     if (tocContainer) {
       tocContainer.innerHTML = `
         <nav class="space-y-2">
-          <p class="font-medium text-sm mb-3">On this page</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
           <div class="grid grid-flow-row auto-rows-max text-sm">
             ${headings.map(h => `
               <a
                 href="#${h.id}"
-                class="group flex w-full items-center rounded-md border border-transparent pr-2 py-1.5 hover:underline text-sm text-muted-foreground"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 ${h.text}
               </a>
@@ -40,6 +41,14 @@ export default function PlatformExamplesPage() {
 
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Features</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">Platform Examples</span>
+      </nav>
+
         <div className="space-y-3">
           <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Platform Examples</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
@@ -503,6 +512,36 @@ export default function PlatformExamplesPage() {
           </div>
         </div>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/quality-gates"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">Quality Gates</div>
+          </div>
+        </Link>
+
+        <Link
+          href="/docs/monorepo"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">Monorepo Support</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

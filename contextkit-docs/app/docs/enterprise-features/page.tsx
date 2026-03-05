@@ -1,9 +1,48 @@
-import { CheckCircle2, Shield, BarChart3, FileText } from "lucide-react"
+'use client'
+
+import React, { useEffect } from "react"
+import { CheckCircle2, Shield, BarChart3, FileText, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 export default function EnterpriseFeaturesPage() {
+  const headings = [
+    { id: 'policy', text: 'Policy Enforcement' },
+    { id: 'observability', text: 'Observability Dashboard' },
+    { id: 'corrections', text: 'Corrections Logging' },
+    { id: 'monorepo-support', text: 'Monorepo Support' },
+  ]
+
+  useEffect(() => {
+    const tocContainer = document.getElementById('toc-container')
+    if (tocContainer) {
+      tocContainer.innerHTML = `
+        <nav class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
+          <div class="grid grid-flow-row auto-rows-max text-sm">
+            ${headings.map(h => `
+              <a
+                href="#${h.id}"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                ${h.text}
+              </a>
+            `).join('')}
+          </div>
+        </nav>
+      `
+    }
+  }, [headings])
+
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Advanced</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">Enterprise Features</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Enterprise Features</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -11,7 +50,7 @@ export default function EnterpriseFeaturesPage() {
         </p>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="policy" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Policy Enforcement</h2>
 
         <div className="rounded-lg border bg-card p-4">
@@ -46,7 +85,7 @@ export default function EnterpriseFeaturesPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="observability" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Observability Dashboard</h2>
 
         <div className="rounded-lg border bg-card p-4">
@@ -75,7 +114,7 @@ export default function EnterpriseFeaturesPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="corrections" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Corrections Logging</h2>
 
         <div className="rounded-lg border bg-card p-4">
@@ -99,7 +138,7 @@ export default function EnterpriseFeaturesPage() {
         </div>
       </div>
 
-      <div className="space-y-4 pt-4">
+      <div id="monorepo-support" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Monorepo Support</h2>
 
         <div className="rounded-lg border bg-card p-4">
@@ -136,6 +175,35 @@ export default function EnterpriseFeaturesPage() {
           </Link>
         </div>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/monorepo"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">Monorepo Support</div>
+          </div>
+        </Link>
+        <Link
+          href="/docs/troubleshooting"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">Troubleshooting</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }

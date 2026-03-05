@@ -26,7 +26,7 @@ const steps = [
 
 export function StructuredContextFiles() {
   return (
-    <section className="bg-muted/30 py-24 md:py-32">
+    <section className="bg-muted py-24 md:py-32">
       <div className="container mx-auto max-w-screen-xl">
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-24 items-center">
           {/* Left column */}
@@ -71,7 +71,7 @@ export function StructuredContextFiles() {
             </div>
 
             {/* Code content */}
-            <div className="p-6 font-mono text-sm leading-7 overflow-auto">
+            <div className="bg-[#0a0f1c] p-6 font-mono text-sm leading-7 overflow-auto">
               <p>
                 <span className="text-primary font-bold"># Tech Stack &amp; Architecture</span>
               </p>

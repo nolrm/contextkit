@@ -1,6 +1,50 @@
+'use client'
+
+import React, { useEffect } from "react"
+import Link from "next/link"
+import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
+
 export default function MdFirstPage() {
+  const headings = [
+    { id: 'why', text: 'Why Specs First?' },
+    { id: 'hierarchy', text: 'The 3-Level Hierarchy' },
+    { id: 'level-2', text: 'Level 2: The Page Spec' },
+    { id: 'level-3', text: 'Level 3: The Component Spec' },
+    { id: 'in-practice', text: 'What It Looks Like in Practice' },
+    { id: 'workflow', text: 'The Workflow' },
+    { id: 'commands', text: 'Commands' },
+  ]
+
+  useEffect(() => {
+    const tocContainer = document.getElementById('toc-container')
+    if (tocContainer) {
+      tocContainer.innerHTML = `
+        <nav class="space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
+          <div class="grid grid-flow-row auto-rows-max text-sm">
+            ${headings.map(h => `
+              <a
+                href="#${h.id}"
+                class="flex w-full items-center py-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                ${h.text}
+              </a>
+            `).join('')}
+          </div>
+        </nav>
+      `
+    }
+  }, [headings])
   return (
     <div className="space-y-6">
+
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        <span>Core Concepts</span>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-primary font-medium">MD-First Development</span>
+      </nav>
+
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">MD-First Development</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
@@ -11,7 +55,7 @@ export default function MdFirstPage() {
       </div>
 
       {/* Why */}
-      <div className="space-y-4 pt-4">
+      <div id="why" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Why Specs First?</h2>
         <p className="text-muted-foreground leading-relaxed">
           AI tools hallucinate when they lack context. A spec file gives the AI everything it needs
@@ -22,7 +66,7 @@ export default function MdFirstPage() {
       </div>
 
       {/* The 3 Levels */}
-      <div className="space-y-4 pt-4">
+      <div id="hierarchy" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The 3-Level Hierarchy</h2>
         <p className="text-muted-foreground leading-relaxed">
           Specs exist at three levels. Each level answers a different question.
@@ -71,7 +115,7 @@ Level 3 — Component
       </div>
 
       {/* Level 2 detail — the key insight */}
-      <div className="space-y-4 pt-4">
+      <div id="level-2" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Level 2: The Page Spec</h2>
         <p className="text-muted-foreground leading-relaxed">
           When a page is made up of multiple components, the page spec does two things: it describes
@@ -118,7 +162,7 @@ No component fetches independently.`}</pre>
       </div>
 
       {/* Level 3 detail */}
-      <div className="space-y-4 pt-4">
+      <div id="level-3" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Level 3: The Component Spec</h2>
         <p className="text-muted-foreground leading-relaxed">
           Each component spec lives in the same folder as the component. It is written before any code
@@ -161,7 +205,7 @@ Does NOT own:
       </div>
 
       {/* File structure visual */}
-      <div className="space-y-4 pt-4">
+      <div id="in-practice" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">What It Looks Like in Practice</h2>
         <p className="text-muted-foreground leading-relaxed">
           Every folder that contains code also contains a spec. The{" "}
@@ -195,7 +239,7 @@ src/
       </div>
 
       {/* The workflow */}
-      <div className="space-y-4 pt-4">
+      <div id="workflow" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The Workflow</h2>
 
         <div className="space-y-3 mt-2">
@@ -238,7 +282,7 @@ src/
       </div>
 
       {/* Commands */}
-      <div className="space-y-4 pt-4">
+      <div id="commands" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Commands</h2>
 
         <div className="grid gap-4 md:grid-cols-2 mt-2">
@@ -293,6 +337,36 @@ src/
           section is enough to give the AI meaningful context.
         </p>
       </div>
+
+      {/* Prev / Next navigation */}
+      <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
+        <Link
+          href="/docs/how-context-works"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </div>
+          <div className="text-left">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
+            <div className="text-sm font-medium">How Context Works</div>
+          </div>
+        </Link>
+
+        <Link
+          href="/docs/commands"
+          className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <div className="text-right">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
+            <div className="text-sm font-medium">Commands</div>
+          </div>
+          <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      </div>
+
     </div>
   )
 }
