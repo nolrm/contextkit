@@ -29,9 +29,6 @@ jobs:
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
 
-      - name: Clear setup-node auth token
-        run: npm config delete //registry.npmjs.org/:_authToken || true
-
       - name: Install dependencies
         run: npm ci
 
