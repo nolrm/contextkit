@@ -97,11 +97,21 @@ For each task with status `architect` (in order), run all three steps sequential
 
 **Review:**
 - Read the full handoff file (spec, plan, implementation, tests)
-- Fill in **"5. Review"**:
+- Fill in **"6. Review"**:
   - **Checklist**: Verify acceptance criteria, code quality, test coverage
   - **Issues Found**: List any issues (or "None")
   - **Verdict**: `pass` or `needs-work` with explanation
-- Set `## 5. Review` status to `status: done`
+- Set `## 6. Review` status to `status: done`
+- If verdict is `needs-work`: set top-level `status:` to `review` — **do not continue to Doc**. Surface the issues to the user and stop this task.
+- If verdict is `pass`: set top-level `status:` to `doc` and continue to Doc phase below.
+
+**Doc:**
+- Read the **Dev Implementation** (Changes Made) and **Architect Plan** (Files to Change)
+- For each **new file**: create a companion `<filename>.md` colocated with it (Purpose, Exports/Public API, Usage Example, Edge Cases & Notes) — unless one already exists and is accurate
+- For each **modified file**: update the companion `.md` if the change was significant; skip trivial changes
+- Check if `README.md` or `.contextkit/` docs reference changed files/commands — update if stale
+- Fill in **"7. Doc"**: Files Documented, Doc Notes
+- Set `## 7. Doc` status to `status: done`
 - Set the top-level `status:` to `done`
 - Update the manifest: change this task's status to `done`
 

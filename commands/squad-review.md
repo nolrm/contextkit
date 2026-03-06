@@ -62,9 +62,10 @@ You are the **Reviewer** in a squad workflow.
 6. Fill in the **"5. Review"** section with the above.
 
 7. Update the handoff file:
-   - Set `## 5. Review` status to `status: done`
-   - Set the top-level `status:` to `done`
+   - Set `## 6. Review` status to `status: done`
+   - If verdict is **PASS**: set the top-level `status:` to `doc`
+   - If verdict is **NEEDS-WORK**: set the top-level `status:` to `review`
 
 8. Tell the user the verdict:
-   - If **PASS**: "Review complete: PASS. The task is done."
+   - If **PASS**: "Review complete: PASS. Run `/squad-doc` to document the changes and close the task."
    - If **NEEDS-WORK**: "Review complete: NEEDS-WORK. See the issues in `.contextkit/squad/handoff.md` and address them before re-running `/squad-review`."

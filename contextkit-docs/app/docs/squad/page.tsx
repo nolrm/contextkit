@@ -115,6 +115,12 @@ export default function SquadPage() {
                 <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-review</code></td>
                 <td className="py-2">Reviews everything and gives a PASS or NEEDS-WORK verdict</td>
               </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4">6</td>
+                <td className="py-2 pr-4">Doc Writer</td>
+                <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-doc</code></td>
+                <td className="py-2">Creates companion <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> files for every new or significantly modified code file</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -133,7 +139,7 @@ export default function SquadPage() {
           </div>
           <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad "add dark mode support"   # PO writes the spec
 
-/squad-auto                      # Runs architect → dev → test → review hands-free`}</pre>
+/squad-auto                      # Runs architect → dev → test → review → doc hands-free`}</pre>
         </div>
         <div className="rounded-lg border bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -144,7 +150,8 @@ export default function SquadPage() {
 /squad-architect                 # Architect designs the plan
 /squad-dev                       # Dev implements the code
 /squad-test                      # Tester writes and runs tests
-/squad-review                    # Reviewer gives the verdict`}</pre>
+/squad-review                    # Reviewer gives the verdict
+/squad-doc                       # Doc Writer creates companion .md files`}</pre>
         </div>
       </div>
 
@@ -179,7 +186,7 @@ export default function SquadPage() {
 # PO writes specs for all three tasks (batch mode auto-detected)
 
 /squad-auto
-# Runs Architect → Dev → Test → Review for each task`}</pre>
+# Runs Architect → Dev → Test → Review → Doc for each task`}</pre>
         </div>
         <p className="text-muted-foreground leading-relaxed">
           Need to add more tasks after the batch is already running? Just run <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> again with the new tasks — it detects the existing manifest and appends automatically:

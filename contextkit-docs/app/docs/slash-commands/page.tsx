@@ -123,9 +123,9 @@ export default function SlashCommandsPage() {
               <tr className="hover:bg-card transition-colors">
                 <td className="py-3 px-4">
                   <span className="font-mono text-sm text-primary">/squad</span>
-                  <span className="text-xs text-muted-foreground ml-1">+ 7 more</span>
+                  <span className="text-xs text-muted-foreground ml-1">+ 8 more</span>
                 </td>
-                <td className="py-3 px-4">Multi-role pipeline: PO → Architect → Dev → Test → Review</td>
+                <td className="py-3 px-4">Multi-role pipeline: PO → Architect → Dev → Test → Review → Doc</td>
                 <td className="py-3 px-4"><Link href="/docs/squad" className="text-primary hover:underline text-xs">See Squad docs →</Link></td>
               </tr>
             </tbody>

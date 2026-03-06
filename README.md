@@ -153,6 +153,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-dev` | Implement code following the architect plan |
 | `/squad-test` | Write and run tests against acceptance criteria |
 | `/squad-review` | Review the full pipeline and give a verdict |
+| `/squad-doc` | Create companion `.md` files for new/modified code after review passes |
 | `/squad-auto` | Auto-run the full pipeline after kickoff (recommended, sequential) |
 | `/squad-auto-parallel` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
 | `/ck` | Health check — verify setup, standards, and integrations |
@@ -177,18 +178,20 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 | 3 | Developer | `/squad-dev` | Implements the code following the architect's plan |
 | 4 | Tester | `/squad-test` | Writes and runs tests against the PO's acceptance criteria |
 | 5 | Reviewer | `/squad-review` | Reviews everything and gives a PASS or NEEDS-WORK verdict |
+| 6 | Doc Writer | `/squad-doc` | Creates companion `.md` files for every new/modified code file |
 
 ### Single-Task Flow
 
 ```bash
 /squad "add dark mode support"   # PO writes the spec
 
-/squad-auto                      # Auto-runs architect → dev → test → review (recommended)
+/squad-auto                      # Auto-runs architect → dev → test → review → doc (recommended)
 # — or step through manually —
 /squad-architect                 # Architect designs the plan
 /squad-dev                       # Dev implements the code
 /squad-test                      # Tester writes and runs tests
 /squad-review                    # Reviewer gives the verdict
+/squad-doc                       # Doc Writer creates companion .md files
 ```
 
 ### Batch Flow
@@ -200,7 +203,7 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 # PO writes specs for all three tasks
 
 /squad-auto
-# Runs Architect → Dev → Test → Review for each task sequentially
+# Runs Architect → Dev → Test → Review → Doc for each task sequentially
 ```
 
 **Parallel mode (Claude Code only):** Use `/squad-auto-parallel` instead of `/squad-auto` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
@@ -210,7 +213,7 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 
 /squad-auto-parallel
 # Phase 1: architect agents for all 3 tasks run in parallel
-# Phase 2: dev→test→review pipeline runs in parallel per task
+# Phase 2: dev→test→review pipeline runs in parallel per task; Phase 3: doc runs sequentially
 ```
 
 **Model routing (Claude Code only):** Set `model_routing: true` in `.contextkit/squad/config.md` to have `/squad-auto` automatically use Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens with no quality loss — the standards files and Review gate maintain quality.
@@ -331,7 +334,7 @@ ck note "AI issue" --category "AI Behavior" --priority HIGH
 
 # Squad — multi-role AI pipeline (slash commands in your AI tool)
 /squad "add dark mode"   # PO writes spec
-/squad-auto              # runs architect → dev → test → review hands-free
+/squad-auto              # runs architect → dev → test → review → doc hands-free
 /squad-reset             # clear stuck or mixed squad state
 
 # Observability

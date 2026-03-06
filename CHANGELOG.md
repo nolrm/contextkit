@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.12.20] - 2026-03-06
+
+### Added
+- **`/squad-doc` phase** — new final pipeline step that runs after review passes. Creates companion `.md` files for every new code file and updates existing ones for significant modifications. Enforces MD-first as a quality gate rather than an afterthought.
+- **`commands/squad-doc.md`** — new command file distributed via `ck install` and `ck update`.
+- **`/squad-doc` slash command** — available in Claude Code after `ck claude`.
+
+### Changed
+- **Squad pipeline flow** — now `architect → dev → test → review → doc → done`. Review PASS routes to `doc` status instead of directly to `done`.
+- **`squad-auto`** — runs the Doc phase inline after each task's review passes.
+- **`squad-auto-parallel`** — runs a sequential Doc pass after all parallel agents complete.
+- **Handoff template** — includes new `## 7. Doc` section.
+
+---
+
 ## [0.12.19] - 2026-03-06
 
 ### Added

@@ -85,4 +85,13 @@ describe('Download manifest validation', () => {
     expect(content).toContain('status.json');
     expect(content).toContain('ck update');
   });
+
+  it('6. commands/squad-doc.md is in both install and update manifests and contains doc instructions', () => {
+    expect(installPaths).toContain('commands/squad-doc.md');
+    expect(updatePaths).toContain('commands/squad-doc.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-doc.md'), 'utf8');
+    expect(content).toContain('companion');
+    expect(content).toContain('`doc`');
+    expect(content).toContain('## 7. Doc');
+  });
 });

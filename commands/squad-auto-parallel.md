@@ -72,9 +72,24 @@ Use this prompt for each subagent, substituting the actual handoff file path and
 
 Wait for all pipeline subagents to complete.
 
+## Phase 3 — Doc (sequential, after all parallel agents)
+
+For each task whose subagent returned `"pass"`:
+- Read the handoff file
+- The top-level `status:` should now be `doc`
+- For each **new file** in Changes Made: create a companion `<filename>.md` colocated with it (Purpose, Exports/Public API, Usage Example, Edge Cases & Notes) — skip if one already exists and is accurate
+- For each **modified file**: update the companion `.md` if the change was significant
+- Check `README.md` and `.contextkit/` docs for staleness — update if needed
+- Fill in `## 7. Doc`: Files Documented, Doc Notes
+- Set `## 7. Doc` status to `status: done`
+- Set top-level `status:` to `done`
+- Update manifest: change this task's status to `done`
+
+For tasks that returned `"needs-work"` or `"blocked"`: skip Doc — they are not done yet.
+
 ## Summary
 
-After all agents complete, update the manifest with final statuses, then report:
+After all agents and Doc passes complete, update the manifest with final statuses, then report:
 
 ```
 ## Squad Batch Results
