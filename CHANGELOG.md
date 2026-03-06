@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.18] - 2026-03-06
+## [0.12.19] - 2026-03-06
 
 ### Added
 - **Passive update notifications** — `ck` now checks npm for newer versions of `@nolrm/contextkit` once per 24 hours and prints a non-blocking one-liner after any command if an update is available. Suppressed automatically in CI environments.
