@@ -175,17 +175,28 @@ created: [TIMESTAMP]
 ### Single-task clarification (`handoff.md`)
 
 1. Read `handoff.md`.
-2. Find `### Questions for PO` in any role's block.
-3. Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
-4. Add answers under `### Answers` in the PO Spec block:
+2. Find `### Questions for PO` in any role's block (Architect Plan, Review, etc.).
+3. **Check for a split recommendation**: Look for `### Recommended Split` in the Architect Plan block.
+
+   **If `### Recommended Split` exists** (Architect flagged task as too complex):
+   - Read the recommended sub-tasks and reason.
+   - Present the two options to the user:
+     - **Option A — Approve split**: Run `/squad "sub-task A" "sub-task B" ...` with the proposed sub-tasks. The current handoff will be superseded by the new batch.
+     - **Option B — Proceed as-is**: Add a note in the PO Spec `### Answers` block: `- Split recommendation from Architect → "Proceed as one task"`. Set the top-level `status:` back to `architect`. Tell the user: "Noted. Run `/squad-architect` to continue — the Architect will write the full plan."
+   - **Stop here** — do not run the standard Q&A answer flow below.
+
+   **If no `### Recommended Split`**: Continue to step 4.
+
+4. Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
+5. Add answers under `### Answers` in the PO Spec block:
    ```
    - Q1 from [Role]: "[question]" → "[answer]"
    - Q2 from [Role]: "[question]" → "[answer]"
    ```
-5. Set top-level `status:` back to the asking role:
+6. Set top-level `status:` back to the asking role:
    - Questions from Architect → `architect`
    - Questions from Reviewer → `review`
-6. Tell the user which command to run next.
+7. Tell the user which command to run next.
 
 ### Batch clarification (`handoff-[N].md`)
 
