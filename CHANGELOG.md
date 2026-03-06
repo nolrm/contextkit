@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.22] - 2026-03-06
+
+### Fixed
+- **`commit-msg` hook** — merge commits (`Merge branch ...`), revert commits, fixup, and squash commits are now skipped automatically instead of being rejected with a conventional format error.
+- **`commit-msg` hook** — added `improve` as a valid commit type (was already listed in ContextKit's own standards but missing from the hook regex).
+
+---
+
 ## [0.12.21] - 2026-03-06
 
 ### Added
