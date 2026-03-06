@@ -87,4 +87,10 @@ describe('squad command source/installed sync — dev and test', () => {
     const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-test.md'), 'utf8');
     expect(source).toBe(installed);
   });
+
+  itInstalled('10. commands/squad-architect.md and .contextkit/commands/squad-architect.md are identical', async () => {
+    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-architect.md'), 'utf8');
+    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-architect.md'), 'utf8');
+    expect(source).toBe(installed);
+  });
 });

@@ -94,4 +94,25 @@ describe('Download manifest validation', () => {
     expect(content).toContain('`doc`');
     expect(content).toContain('## 7. Doc');
   });
+
+  it('7. commands/squad-architect.md contains the complexity check step and split signal', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-architect.md'), 'utf8');
+    expect(content).toContain('Evaluate complexity');
+    expect(content).toContain('### Recommended Split');
+    expect(content).toContain('po-clarify');
+    expect(content).toContain('7 files');
+  });
+
+  it('8. commands/squad.md Clarification Mode handles split recommendation', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad.md'), 'utf8');
+    expect(content).toContain('### Recommended Split');
+    expect(content).toContain('Approve split');
+    expect(content).toContain('Proceed as-is');
+  });
+
+  it('9. commands/squad-auto.md po-clarify message covers split scenario', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-auto.md'), 'utf8');
+    expect(content).toContain('split recommendation');
+  });
+
 });

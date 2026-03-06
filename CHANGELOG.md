@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.12.21] - 2026-03-06
+
+### Added
+- **Architect split signal** — the Architect now evaluates task complexity before writing the plan. If a task is too large (>~7 files, multiple independent concerns, or significant wasted effort risk), it writes a `### Recommended Split` with proposed sub-tasks and sets `status: po-clarify`. The PO then approves the split (running `/squad` as a batch) or dismisses it and proceeds as-is — no code is written until the PO decides.
+
+### Changed
+- **`/squad` Clarification Mode** — detects `### Recommended Split` in the Architect Plan block and guides the PO through the two response options (approve split or proceed as-is), separate from the standard spec Q&A flow.
+- **`/squad-auto` `po-clarify` message** — updated to mention the split recommendation scenario so users understand what to expect when running `/squad`.
+
+---
+
 ## [0.12.20] - 2026-03-06
 
 ### Added
