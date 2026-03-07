@@ -143,7 +143,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/test` | Generate comprehensive tests |
 | `/doc` | Add documentation |
 | `/spec` | Write a component spec (MD-first) before any code is created |
-| `/squad` | Kick off a squad task — one task or many (auto-detects batch mode) |
+| `/squad` | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
 | `/squad-architect` | Design the technical plan from the PO spec |
 | `/squad-dev` | Implement code following the architect plan |
 | `/squad-test` | Write and run tests against acceptance criteria |
@@ -168,7 +168,7 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 
 | Step | Role | Command | What it does |
 |------|------|---------|-------------|
-| 1 | Product Owner | `/squad` | Writes a user story, acceptance criteria, edge cases, and scope. Optionally captures screenshots/images as visual assets. |
+| 1 | Product Owner | `/squad` | Writes a user story, acceptance criteria, edge cases, and scope. If the task is ambiguous, asks up to 5 clarifying questions before writing the spec. Optionally captures screenshots/images as visual assets. |
 | 2 | Architect | `/squad-architect` | Designs the technical approach, files to change, and implementation steps |
 | 3 | Developer | `/squad-dev` | Implements the code following the architect's plan |
 | 4 | Tester | `/squad-test` | Writes and runs tests against the PO's acceptance criteria |

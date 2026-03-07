@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13.1] - 2026-03-07
+
+### Fixed
+- **`ck ai` stale reference** — removed leftover `ck ai <cmd>` line from post-install Quick Reference output (command was removed in 0.13.0)
+- **Install "In CLI" example** — replaced `ck ai "..."` example with generic slash command guidance
+
+### Added
+- **OpenCode auto-detection** — `ck install` now detects the `opencode` binary in PATH and suggests the OpenCode integration automatically, consistent with how `claude`, `codex`, and `gemini` CLI tools are detected
+
+### Changed
+- **`/squad` vague task handling** — PO now pushes back with up to 5 clarifying questions when a task description is too ambiguous to spec. Sets `status: po-clarify`, writes questions to the handoff, and pauses the pipeline. Running `/squad` again (no args) with answers resumes and writes the full spec.
+- **`/squad` Clarification Mode** — split into two paths: kickoff clarification (questions in PO Spec block → write spec, advance to architect) and downstream clarification (questions from Architect/Reviewer → existing behavior)
+
+---
+
 ## [0.13.0] - 2026-03-07
 
 ### Removed

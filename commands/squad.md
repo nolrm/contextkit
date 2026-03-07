@@ -81,7 +81,13 @@ model_routing: false
    - Is scope clear enough to write testable acceptance criteria?
    - Are there decisions the user needs to make first?
 
-   **If clarification needed:** Ask the user up to 5 focused, numbered questions. Wait for answers. Capture Q&A under `### User Clarifications`.
+   **If clarification needed:**
+   - Write up to 5 focused, numbered questions under `### Questions for PO` in the handoff's PO Spec block
+   - Set `## 1. PO Spec` → `status: po-clarify`
+   - Set top-level `status:` → `po-clarify`
+   - Tell the user: "I need some clarification before writing the spec. Please answer these questions and run `/squad` again (no args)."
+   - **Stop here.** Do not write the spec yet.
+
    **If clear:** Continue.
 
 4. Read the codebase to understand the project.
@@ -175,32 +181,48 @@ created: [TIMESTAMP]
 ### Single-task clarification (`handoff.md`)
 
 1. Read `handoff.md`.
-2. Find `### Questions for PO` in any role's block (Architect Plan, Review, etc.).
-3. **Check for a split recommendation**: Look for `### Recommended Split` in the Architect Plan block.
+2. Find `### Questions for PO` — note **which block** it appears in:
+   - **In `## 1. PO Spec`** → kickoff clarification (PO needs more info before writing the spec). Continue to step 3a.
+   - **In `## 2. Architect Plan` or `## 6. Review`** → downstream clarification (Architect or Reviewer raised questions). Skip to step 3b.
 
-   **If `### Recommended Split` exists** (Architect flagged task as too complex):
-   - Read the recommended sub-tasks and reason.
-   - Present the two options to the user:
-     - **Option A — Approve split**: Run `/squad "sub-task A" "sub-task B" ...` with the proposed sub-tasks. The current handoff will be superseded by the new batch.
-     - **Option B — Proceed as-is**: Add a note in the PO Spec `### Answers` block: `- Split recommendation from Architect → "Proceed as one task"`. Set the top-level `status:` back to `architect`. Tell the user: "Noted. Run `/squad-architect` to continue — the Architect will write the full plan."
-   - **Stop here** — do not run the standard Q&A answer flow below.
+3a. **Kickoff clarification path** (questions in PO Spec block):
+   - Read the questions from `### Questions for PO` and the user's answers (from their message or from `### User Clarifications`).
+   - Write the full PO Spec using the answers: User Story, Acceptance Criteria, Edge Cases, Out of Scope.
+   - Capture Q&A under `### User Clarifications`:
+     ```
+     - Q: "[question]" → A: "[answer]"
+     ```
+   - Set `## 1. PO Spec` → `status: done`
+   - Set top-level `status:` → `architect`
+   - Tell the user: "Spec written. Run `/squad-auto` to continue the pipeline."
+   - **Stop here.**
 
-   **If no `### Recommended Split`**: Continue to step 4.
+3b. **Downstream clarification path** (questions in Architect Plan or Review block):
+   - **Check for a split recommendation**: Look for `### Recommended Split` in the Architect Plan block.
 
-4. Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
-5. Add answers under `### Answers` in the PO Spec block:
-   ```
-   - Q1 from [Role]: "[question]" → "[answer]"
-   - Q2 from [Role]: "[question]" → "[answer]"
-   ```
-6. Set top-level `status:` back to the asking role:
-   - Questions from Architect → `architect`
-   - Questions from Reviewer → `review`
-7. Tell the user which command to run next.
+     **If `### Recommended Split` exists** (Architect flagged task as too complex):
+     - Read the recommended sub-tasks and reason.
+     - Present the two options to the user:
+       - **Option A — Approve split**: Run `/squad "sub-task A" "sub-task B" ...` with the proposed sub-tasks. The current handoff will be superseded by the new batch.
+       - **Option B — Proceed as-is**: Add a note in the PO Spec `### Answers` block: `- Split recommendation from Architect → "Proceed as one task"`. Set the top-level `status:` back to `architect`. Tell the user: "Noted. Run `/squad-architect` to continue — the Architect will write the full plan."
+     - **Stop here** — do not run the Q&A answer flow below.
+
+     **If no `### Recommended Split`**: Continue.
+
+   - Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
+   - Add answers under `### Answers` in the PO Spec block:
+     ```
+     - Q1 from [Role]: "[question]" → "[answer]"
+     - Q2 from [Role]: "[question]" → "[answer]"
+     ```
+   - Set top-level `status:` back to the asking role:
+     - Questions from Architect → `architect`
+     - Questions from Reviewer → `review`
+   - Tell the user which command to run next.
 
 ### Batch clarification (`handoff-[N].md`)
 
-Follow the same steps above, but target the specific `handoff-[N].md` file that has `status: po-clarify`.
+Follow the same steps above, targeting the specific `handoff-[N].md` that has `status: po-clarify`. Apply the kickoff path (3a) or downstream path (3b) based on which block the questions appear in.
 
 ---
 
@@ -227,6 +249,8 @@ status: pending
 ### Out of Scope
 
 ### Visual Assets
+
+### Questions for PO
 
 ### User Clarifications
 
