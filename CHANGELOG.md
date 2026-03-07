@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.13.0] - 2026-03-07
+
+### Removed
+- **`ck ai`** — removed AI chat fallback command; users interact via Cursor, Claude Code, OpenCode, etc.
+- **`ck dashboard`** — removed observability dashboard command
+- **`ck pull` / `ck publish`** — removed local registry commands (no shared registry was implemented; feature deferred)
+- Unknown commands no longer silently forward to AI; now print an error and exit with code 1
+
+### Added
+- **`format_version` field** in `.contextkit/config.yml` — written as `format_version: 1` on `ck install`
+- **Migration runner** (`lib/utils/migrations.js`) — `ck update` detects outdated format versions and migrates automatically; v0→v1 migration bootstraps the field on existing pre-1.0.0 installs
+
+### Changed
+- **Node.js engine** requirement bumped to `>=18.0.0` (Node 14/16 are EOL)
+- **`improve`** added as a valid commit type in README (was already in `workflows.md` and the `commit-msg` hook)
+
+---
+
 ## [0.12.22] - 2026-03-06
 
 ### Fixed
@@ -152,7 +170,7 @@
 ## [0.12.4] - 2026-02-26
 
 ### Changed
-- **Docs** — Clarify that install is project-level only (README, CLI description, docs site quick-start and commands). No global mode; standards live in git with the project. Tip for sharing across projects via `ck pull`.
+- **Docs** — Clarify that install is project-level only (README, CLI description, docs site quick-start and commands). No global mode; standards live in git with the project.
 - **Docs site** — New Squad Workflow page (`/docs/squad`) with pipeline roles, single-task and batch flows, and feedback loop. Slash-commands page now links to it instead of listing all squad commands inline.
 - **Docs site** — New How Context Works page (`/docs/how-context-works`) explaining the two-layer architecture (bridge file + scoped rules).
 

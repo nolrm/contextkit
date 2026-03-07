@@ -57,12 +57,18 @@ describe('CLI Integration Tests', () => {
   });
 
   describe('error handling', () => {
-    test('should handle unknown command as AI prompt or not-initialized', () => {
-      // Unknown commands: when installed → prompt (display mode); when not installed → "ContextKit not initialized"
-      const result = execSync(`node "${cliPath}" unknown-command`, { encoding: 'utf8' });
-      const asPrompt = result.includes('Using AI tool') && result.includes('Full Prompt');
-      const notInitialized = result.includes('ContextKit not initialized');
-      expect(asPrompt || notInitialized).toBe(true);
+    test('should print error and exit non-zero for unknown commands', () => {
+      let threw = false;
+      try {
+        execSync(`node "${cliPath}" unknown-command`, { encoding: 'utf8' });
+      } catch (err) {
+        threw = true;
+        const output = (err.stdout || '') + (err.stderr || '');
+        expect(output).toMatch(/Unknown command: unknown-command/);
+        expect(output).toMatch(/ck --help/);
+        expect(err.status).toBe(1);
+      }
+      expect(threw).toBe(true);
     });
   });
 

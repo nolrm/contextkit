@@ -128,11 +128,6 @@ codex "create checkout flow for customer"
 opencode "create checkout flow for customer"
 ```
 
-**CLI** (Chat with AI)
-```bash
-ck ai "create a button"
-```
-
 ---
 
 ## Slash Commands
@@ -275,7 +270,7 @@ When the `commit-msg` hook is enabled, all commits must follow this format:
 <type>(<scope>): <description>
 ```
 
-**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+**Types:** `feat`, `fix`, `improve`, `docs`, `style`, `refactor`, `test`, `chore`
 
 **Examples:**
 ```bash
@@ -299,7 +294,6 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 - ⚡ **Zero Config** - Auto-detects project type and package manager
 - ✅ **Policy Enforcement** - Configurable validation with `ck check`
 - 📝 **Corrections Tracking** - Track AI performance issues with corrections log
-- 📊 **Observability Dashboard** - Visual metrics and compliance tracking
 
 ## Commands
 
@@ -337,9 +331,6 @@ ck note "AI issue" --category "AI Behavior" --priority HIGH
 /squad-auto              # runs architect → dev → test → review → doc hands-free
 /squad-reset             # clear stuck or mixed squad state
 
-# Observability
-ck dashboard   # start web dashboard
-ck dashboard --no-server  # CLI metrics only
 ```
 
 ## Links

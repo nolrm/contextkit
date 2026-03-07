@@ -4,13 +4,10 @@ const { program } = require('commander');
 const chalk = require('chalk');
 const { install, update, status } = require('../lib');
 const analyze = require('../lib/commands/analyze');
-const ai = require('../lib/commands/ai');
 const check = require('../lib/commands/check');
 const note = require('../lib/commands/note');
 const run = require('../lib/commands/run');
-const publish = require('../lib/commands/publish');
-const pull = require('../lib/commands/pull');
-const dashboard = require('../lib/commands/dashboard');
+
 const packageJson = require('../package.json');
 const { checkForUpdates } = require('../lib/utils/notifier');
 
@@ -81,20 +78,6 @@ program
     }
   });
 
-// AI command with "ai" keyword
-program
-  .command('ai <prompt>')
-  .description('Chat with AI using ContextKit context')
-  .option('--ai <tool>', 'AI tool to use (aider, claude, gemini)')
-  .action(async (prompt, options) => {
-    try {
-      await ai(prompt, options);
-    } catch (error) {
-      console.error(chalk.red('AI chat failed:'), error.message);
-      process.exit(1);
-    }
-  });
-
 // Check command
 program
   .command('check')
@@ -137,51 +120,6 @@ program
       await run(workflow, options);
     } catch (error) {
       console.error(chalk.red('Workflow failed:'), error.message);
-      process.exit(1);
-    }
-  });
-
-// Publish command
-program
-  .command('publish')
-  .description('Publish current ContextKit configuration to registry')
-  .option('--name <name>', 'Package name (e.g., @company/react-standards)')
-  .option('--version <version>', 'Version (e.g., 1.0.0)')
-  .action(async (options) => {
-    try {
-      await publish(options);
-    } catch (error) {
-      console.error(chalk.red('Publish failed:'), error.message);
-      process.exit(1);
-    }
-  });
-
-// Pull command
-program
-  .command('pull <package>')
-  .description('Pull ContextKit configuration from registry')
-  .option('--force', 'Force overwrite existing .contextkit')
-  .option('--backup', 'Backup existing .contextkit before pulling')
-  .action(async (packageSpec, options) => {
-    try {
-      await pull(packageSpec, options);
-    } catch (error) {
-      console.error(chalk.red('Pull failed:'), error.message);
-      process.exit(1);
-    }
-  });
-
-// Dashboard command
-program
-  .command('dashboard')
-  .description('Start observability dashboard')
-  .option('--port <port>', 'Port number', '3001')
-  .option('--no-server', 'Display metrics only (no web server)')
-  .action(async (options) => {
-    try {
-      await dashboard(options);
-    } catch (error) {
-      console.error(chalk.red('Dashboard failed:'), error.message);
       process.exit(1);
     }
   });
@@ -317,23 +255,11 @@ program
     }
   });
 
-// Catch-all for unknown commands (treats them as prompts)
-// This MUST be registered AFTER all commands but BEFORE parse()
+// Catch-all for unknown commands
 program.on('command:*', function(args) {
-  // The command wasn't found, treat it as a prompt
-  const prompt = args.join(' ');
-
-  if (prompt) {
-    try {
-      ai(prompt, {}).catch(error => {
-        console.error(chalk.red('AI chat failed:'), error.message);
-        process.exit(1);
-      });
-    } catch (error) {
-      console.error(chalk.red('AI chat failed:'), error.message);
-      process.exit(1);
-    }
-  }
+  console.error(chalk.red(`Unknown command: ${args[0]}`));
+  console.log(chalk.yellow('Run `ck --help` to see available commands.'));
+  process.exit(1);
 });
 
 // Parse command line arguments
