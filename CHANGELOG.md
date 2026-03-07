@@ -15,6 +15,7 @@
 ### Changed
 - **Node.js engine** requirement bumped to `>=18.0.0` (Node 14/16 are EOL)
 - **`improve`** added as a valid commit type in README (was already in `workflows.md` and the `commit-msg` hook)
+- **Docs site** — removed observability/dashboard sections from Commands and Enterprise pages; quick-start and docs README now require Node 18.x
 
 ---
 

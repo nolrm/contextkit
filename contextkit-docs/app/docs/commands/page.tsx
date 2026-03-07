@@ -10,7 +10,6 @@ export default function CommandsPage() {
     { id: 'status', text: 'Status & Health' },
     { id: 'analysis', text: 'Analysis' },
     { id: 'corrections', text: 'Corrections Logging' },
-    { id: 'observability', text: 'Observability' },
   ]
 
   useEffect(() => {
@@ -184,34 +183,6 @@ export default function CommandsPage() {
                 <p className="text-sm text-muted-foreground mt-2 italic">
                   Example: <code className="rounded bg-muted px-1 font-mono text-xs">ck note "always use named exports" --category "Preferences" --priority LOW</code>
                 </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="observability" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Observability</h2>
-
-        <div className="space-y-3">
-          <div className="rounded-lg border bg-card p-4">
-            <div className="flex items-start gap-3">
-              <Terminal className="h-5 w-5 text-primary mt-0.5" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-1">contextkit dashboard</h3>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Start a web-based observability dashboard to visualize standards freshness, corrections log analytics, and policy compliance.
-                </p>
-                <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">contextkit dashboard</code>
-                <div className="mt-2 space-y-1">
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Options:</strong>
-                  </p>
-                  <ul className="text-sm text-muted-foreground list-disc list-inside ml-2 space-y-0.5">
-                    <li><code className="rounded bg-muted px-1 font-mono text-xs">--port &lt;port&gt;</code> - Custom port (default: 3001)</li>
-                    <li><code className="rounded bg-muted px-1 font-mono text-xs">--no-server</code> - Display metrics in CLI only</li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>

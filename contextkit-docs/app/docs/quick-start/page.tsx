@@ -25,7 +25,7 @@ export default function QuickStartPage() {
           <li className="flex items-start gap-2">
             <span className="text-primary mt-0.5">✓</span>
             <div>
-              <strong className="text-foreground">Node.js 16.x or higher</strong>
+              <strong className="text-foreground">Node.js 18.x or higher</strong>
               <span className="block text-xs text-muted-foreground mt-0.5">Required for running the CLI tools.</span>
             </div>
           </li>

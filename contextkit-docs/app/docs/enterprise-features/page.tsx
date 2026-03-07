@@ -1,13 +1,12 @@
 'use client'
 
 import React, { useEffect } from "react"
-import { CheckCircle2, Shield, BarChart3, FileText, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
+import { CheckCircle2, Shield, FileText, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 export default function EnterpriseFeaturesPage() {
   const headings = [
     { id: 'policy', text: 'Policy Enforcement' },
-    { id: 'observability', text: 'Observability Dashboard' },
     { id: 'corrections', text: 'Corrections Logging' },
     { id: 'monorepo-support', text: 'Monorepo Support' },
   ]
@@ -46,7 +45,7 @@ export default function EnterpriseFeaturesPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Enterprise Features</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          ContextKit includes features for policy enforcement, observability, corrections tracking, and monorepo support.
+          ContextKit includes features for policy enforcement, corrections tracking, and monorepo support.
         </p>
       </div>
 
@@ -80,35 +79,6 @@ export default function EnterpriseFeaturesPage() {
               <p className="text-sm text-muted-foreground mt-3">
                 Enforcement levels: <code className="rounded bg-muted px-1 font-mono text-xs">off</code> (no check), <code className="rounded bg-muted px-1 font-mono text-xs">warn</code> (warning), <code className="rounded bg-muted px-1 font-mono text-xs">block</code> (error).
               </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="observability" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Observability Dashboard</h2>
-
-        <div className="rounded-lg border bg-card p-4">
-          <div className="flex items-start gap-3">
-            <BarChart3 className="h-5 w-5 text-primary mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-lg mb-2">contextkit dashboard</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Visualize standards freshness, corrections log analytics, and policy compliance.
-              </p>
-
-              <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mb-2">contextkit dashboard</code>
-              <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mb-3">contextkit dashboard --no-server  # CLI metrics only</code>
-
-              <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
-                <p className="text-xs font-medium text-blue-700 dark:text-blue-400 mb-2">Dashboard Metrics:</p>
-                <ul className="text-xs text-muted-foreground list-disc list-inside space-y-1">
-                  <li>Standards freshness (last updated dates)</li>
-                  <li>Corrections log statistics</li>
-                  <li>Policy compliance status</li>
-                  <li>Product context completeness</li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>

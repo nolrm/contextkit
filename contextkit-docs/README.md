@@ -82,7 +82,7 @@ contextkit-docs/
 
 ### Prerequisites
 
-- Node.js 16.x or higher
+- Node.js 18.x or higher
 - pnpm (or npm/yarn)
 
 ### Installation

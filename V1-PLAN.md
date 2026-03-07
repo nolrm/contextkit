@@ -33,7 +33,6 @@
 
 ### Medium Priority
 - [ ] `lib/commands/ai.js` — test prompt construction, tool routing (aider, claude, gemini)
-- [ ] `lib/commands/dashboard.js` — test status rendering and data aggregation
 - [ ] `lib/commands/publish.js` — test package validation and registry write
 - [ ] `lib/commands/note.js` — test file append and corrections log format
 

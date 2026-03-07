@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Github, Package } from "lucide-react"
 import { Logo } from "./logo"
 
-const VERSION = "v0.12.12"
+const VERSION = "v0.13.0"
 
 export function Header() {
   return (
