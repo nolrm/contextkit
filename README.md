@@ -270,7 +270,7 @@ When the `commit-msg` hook is enabled, all commits must follow this format:
 <type>(<scope>): <description>
 ```
 
-**Types:** `feat`, `fix`, `improve`, `docs`, `style`, `refactor`, `test`, `chore`
+**Types:** `feat`, `fix`, `improve`, `docs`, `refactor`, `test`, `chore`
 
 **Examples:**
 ```bash

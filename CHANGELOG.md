@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.13.2] - 2026-03-13
+
+### Fixed
+- **`commit-msg` hook** — length check now tests the subject line only (`head -n1`), not the full message including body. A short subject with a long body previously passed incorrectly.
+- **`commit-msg` hook** — length check now runs before the format check (was unreachable dead code — any message passing the format regex was already >10 chars).
+- **`pre-push` hook** — fixed variable-width content inside box borders; `Project type` and success summary lines moved outside the box to prevent broken border alignment.
+
+### Added
+- **`pre-push` hook** — ERR trap prints a clear `❌ Quality Gates FAILED — push blocked.` banner when any gate fails, replacing silent exit.
+
+### Changed
+- **`commit-msg` hook** — removed `style` from allowed commit types (not used in this project; was inconsistent with documented types in `workflows.md` and `ai-guidelines.md`).
+- **README** — commit types list updated to remove `style`, matching the hook and standards files.
+
+---
+
 ## [0.13.1] - 2026-03-07
 
 ### Fixed

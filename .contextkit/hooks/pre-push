@@ -12,6 +12,13 @@ GATE=0
 PASSED=0
 SKIPPED=0
 
+on_gate_failure() {
+  echo ""
+  echo "  ❌ Quality Gates FAILED — push blocked."
+  echo ""
+}
+trap on_gate_failure ERR
+
 run_gate() {
   GATE=$((GATE + 1))
   local label="$1"
