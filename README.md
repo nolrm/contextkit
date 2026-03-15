@@ -142,6 +142,9 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/refactor` | Refactor code with safety checks |
 | `/test` | Generate comprehensive tests |
 | `/doc` | Add documentation |
+| `/doc-arch` | Generate architecture docs (`docs/architecture.md`) — stack-aware (Level 1) |
+| `/doc-feature` | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2) |
+| `/doc-component` | Generate component-level docs colocated with the target file — stack-aware (Level 3) |
 | `/spec` | Write a component spec (MD-first) before any code is created |
 | `/squad` | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
 | `/squad-architect` | Design the technical plan from the PO spec |

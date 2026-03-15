@@ -13,6 +13,7 @@ export default function MdFirstPage() {
     { id: 'in-practice', text: 'What It Looks Like in Practice' },
     { id: 'workflow', text: 'The Workflow' },
     { id: 'commands', text: 'Commands' },
+    { id: 'doc-commands', text: 'Generating Docs' },
   ]
 
   useEffect(() => {
@@ -321,6 +322,97 @@ src/
             </p>
             <pre className="rounded bg-muted p-2 font-mono text-xs">{`Create a SummaryCard component`}</pre>
           </div>
+        </div>
+      </div>
+
+      {/* Generating Docs */}
+      <div id="doc-commands" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Generating Docs</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Once code exists, these three commands generate documentation at each level of the hierarchy
+          — automatically tailored to your project's stack (React, Vue, Go, Python, and more).
+        </p>
+
+        <div className="rounded-lg border bg-muted/50 p-4 mt-1">
+          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Level 1  /doc-arch       → docs/architecture.md
+Level 2  /doc-feature    → docs/features/<name>.md
+Level 3  /doc-component  → <path>/<name>.md  (colocated)`}</pre>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3 mt-2">
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 1</p>
+            <h3 className="font-semibold text-base mb-1">
+              <code className="font-mono text-sm">/doc-arch</code>
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Generates or updates <code className="rounded bg-muted px-1 font-mono text-xs">docs/architecture.md</code> —
+              system overview, key flows, Mermaid diagrams, and architecture decisions.
+            </p>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-arch
+/doc-arch 142  # from PR #142`}</pre>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 2</p>
+            <h3 className="font-semibold text-base mb-1">
+              <code className="font-mono text-sm">/doc-feature</code>
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Generates or updates <code className="rounded bg-muted px-1 font-mono text-xs">docs/features/{'<name>'}.md</code> —
+              purpose, components used, data flow, and user flows for a specific feature area.
+            </p>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-feature auth
+/doc-feature apps/billing`}</pre>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
+            <h3 className="font-semibold text-base mb-1">
+              <code className="font-mono text-sm">/doc-component</code>
+            </h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Creates a colocated <code className="rounded bg-muted px-1 font-mono text-xs">{'<name>'}.md</code> next
+              to the target file — API/props, usage example, behavior, and edge cases.
+            </p>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-component src/components/Button.tsx
+/doc-component lib/utils/parser.js`}</pre>
+          </div>
+        </div>
+
+        <h3 className="font-semibold text-base mt-6 mb-3">When to use which</h3>
+        <div className="rounded-lg border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">Scenario</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground">Command</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Merged a PR that changed system boundaries or added a service', '/doc-arch'],
+                ['Shipped a new feature — want to document how it works end-to-end', '/doc-feature'],
+                ['Wrote a new component, utility, or module', '/doc-component'],
+                ['Reviewing a PR and want to understand architecture impact', '/doc-arch <PR number>'],
+                ['Backfilling docs on existing code', '/doc-component <path>'],
+              ].map(([scenario, cmd], i) => (
+                <tr key={i} className={i % 2 === 0 ? '' : 'bg-muted/30'}>
+                  <td className="px-4 py-2 text-muted-foreground">{scenario}</td>
+                  <td className="px-4 py-2 font-mono text-xs">{cmd}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 mt-2">
+          <p className="text-sm font-medium mb-1">Squad integration</p>
+          <p className="text-sm text-muted-foreground">
+            When using the squad pipeline (<code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code>),
+            the Doc Writer step (<code className="rounded bg-muted px-1 font-mono text-xs">/squad-doc</code>) generates
+            companion docs automatically after review passes — you don't need to run these commands manually
+            after a squad task. Use them directly when patching code outside the pipeline, backfilling docs,
+            or documenting a PR from another team.
+          </p>
         </div>
       </div>
 

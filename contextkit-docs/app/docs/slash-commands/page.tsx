@@ -116,6 +116,21 @@ export default function SlashCommandsPage() {
                 <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/add-documentation.md</code></td>
               </tr>
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-arch</span></td>
+                <td className="py-3 px-4">Generate architecture docs — stack-aware (Level 1)</td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-arch.md</code></td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-card transition-colors">
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-feature</span></td>
+                <td className="py-3 px-4">Generate feature-level docs — stack-aware (Level 2)</td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-feature.md</code></td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-card transition-colors">
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-component</span></td>
+                <td className="py-3 px-4">Generate component-level docs colocated with the target — stack-aware (Level 3)</td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-component.md</code></td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-card transition-colors">
                 <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/spec</span></td>
                 <td className="py-3 px-4">Write a component spec (MD-first) before coding begins</td>
                 <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/spec.md</code></td>
