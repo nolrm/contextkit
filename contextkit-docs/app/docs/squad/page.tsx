@@ -280,6 +280,20 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
         </p>
       </div>
 
+      {/* CI Squad callout */}
+      <div className="rounded-lg border border-primary/20 bg-primary/5 p-5 mt-4">
+        <p className="text-sm font-semibold mb-1">Want squad to run automatically from GitHub Issues?</p>
+        <p className="text-sm text-muted-foreground mb-3">
+          CI Squad lets you label any issue <code className="rounded bg-muted px-1 font-mono text-xs">squad-ready</code> and have the full pipeline run in GitHub Actions — no local setup required. A draft PR is opened when it&apos;s done.
+        </p>
+        <Link
+          href="/docs/ci-squad"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+        >
+          Learn about CI Squad <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
       {/* Prev / Next navigation */}
       <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
         <Link
@@ -296,12 +310,12 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
         </Link>
 
         <Link
-          href="/docs/quality-gates"
+          href="/docs/ci-squad"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="text-right">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
-            <div className="text-sm font-medium">Quality Gates</div>
+            <div className="text-sm font-medium">CI Squad</div>
           </div>
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
             <ArrowRight className="h-3.5 w-3.5" />

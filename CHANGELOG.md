@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.13.3] - 2026-03-16
+
+### Added
+- **CI Squad** — label any GitHub issue `squad-ready` to trigger a full squad pipeline in GitHub Actions (PO → Architect → Dev → Test → Review → Doc) and open a draft PR automatically. No local setup required.
+- **`ck install` CI Squad prompt** — opt-in prompt during install downloads `squad-issue.yml` to `.github/workflows/` and records `squad_ci_workflow: true` in config
+- **`ck update` CI Squad sync** — re-downloads `squad-issue.yml` on `ck update` when `squad_ci_workflow` flag is set
+- **`squad-ci.md` command** — new command distributed via install/update; instructs Claude Code CLI to run the full pipeline non-interactively in CI mode. On clarify: posts a GitHub comment and exits 0. On completion: writes `ci-result.md` for the PR body.
+- **`templates/github-actions/squad-issue.yml`** — new GitHub Actions workflow template with branch creation, clarify comment flow, concurrency guard, and draft PR creation
+- **Docs: CI Squad page** — new website page covering setup, how it works, writing good issues, clarify flow, and behaviour table
+
+### Fixed
+- **Website: commit types** — quality-gates page was showing stale `style` type; updated to `improve` (matches CLI and standards)
+
+---
+
 ## [0.13.2] - 2026-03-13
 
 ### Fixed

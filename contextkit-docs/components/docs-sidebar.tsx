@@ -26,6 +26,7 @@ const docsNav = [
       { title: "Commands", href: "/docs/commands" },
       { title: "Slash Commands", href: "/docs/slash-commands" },
       { title: "Squad Workflow", href: "/docs/squad" },
+      { title: "CI Squad", href: "/docs/ci-squad" },
       { title: "Quality Gates", href: "/docs/quality-gates" },
       { title: "Platform Examples", href: "/docs/platform-examples" },
     ],

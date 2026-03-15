@@ -1,0 +1,290 @@
+name: Squad — Issue to PR
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: squad-issue-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  squad:
+    if: github.event.label.name == 'squad-ready'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Validate API key
+        run: |
+          if [ -z "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "❌ ANTHROPIC_API_KEY secret is not set."
+            echo "   Add it in: Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create feature branch
+        id: branch
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          # Determine prefix
+          if echo "$ISSUE_TITLE" | grep -qiE "^feat"; then
+            PREFIX="feat"
+          else
+            PREFIX="fix"
+          fi
+
+          # Slugify title: lowercase, replace non-alphanumeric with dashes, trim
+          SLUG=$(echo "$ISSUE_TITLE" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed 's/[^a-z0-9]/-/g' \
+            | sed 's/-\+/-/g' \
+            | sed 's/^-//;s/-$//' \
+            | cut -c1-50)
+
+          BRANCH="${PREFIX}/issue-${ISSUE_NUMBER}-${SLUG}"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+
+          # Reuse branch if it already exists
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            echo "Branch $BRANCH already exists — checking out"
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+      - name: Write handoff from issue
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          mkdir -p .contextkit/squad
+          cat > .contextkit/squad/handoff.md << 'HANDOFF_EOF'
+          # Squad Handoff
+
+          task: ${{ github.event.issue.title }}
+          status: po
+          created: $(date +%Y-%m-%d)
+
+          ---
+
+          ## 1. PO Spec
+          status: pending
+
+          ### User Story
+
+          ### Acceptance Criteria
+
+          ### Edge Cases
+
+          ### Out of Scope
+
+          ### Visual Assets
+
+          ### Questions for PO
+
+          ### User Clarifications
+
+          ### Answers
+
+          > **Issue context (from GitHub issue #${{ github.event.issue.number }}):**
+          >
+          ${{ github.event.issue.body }}
+
+          ---
+
+          ## 2. Architect Plan
+          status: pending
+
+          ### Approach
+
+          ### Files to Change
+
+          ### Trade-offs
+
+          ### Implementation Steps
+
+          ---
+
+          ## 3. Dev Implementation
+          status: pending
+
+          ### Changes Made
+
+          ### Decisions & Deviations
+
+          ---
+
+          ## 4. Test Report
+          status: pending
+
+          ### Tests Written
+
+          ### Results
+
+          ### Coverage Notes
+
+          ---
+
+          ## 5. Peer Review (Optional)
+          status: pending
+
+          ### Valid Findings
+
+          ### Dismissed Findings
+
+          ### Verdict
+
+          ---
+
+          ## 6. Review
+          status: pending
+
+          ### Checklist
+
+          ### Issues Found
+
+          ### Verdict
+
+          ---
+
+          ## 7. Doc
+          status: pending
+
+          ### Files Documented
+
+          ### Doc Notes
+          HANDOFF_EOF
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run squad CI pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          claude --dangerously-skip-permissions -p \
+            "Read .contextkit/commands/squad-ci.md and run the CI pipeline for issue #${ISSUE_NUMBER}."
+
+      - name: Check for clarify state
+        id: check_result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.branch.outputs.issue_number }}
+        run: |
+          if [ -f ".contextkit/squad/ci-result.md" ]; then
+            STATUS=$(grep "^status:" .contextkit/squad/ci-result.md | head -1 | cut -d' ' -f2)
+            echo "pipeline_status=$STATUS" >> "$GITHUB_OUTPUT"
+
+            if [ "$STATUS" = "clarify" ]; then
+              QUESTIONS=$(grep -A100 "^### Questions" .contextkit/squad/ci-result.md | tail -n +2)
+              gh issue comment "$ISSUE_NUMBER" --body "## 🤔 Squad needs clarification
+
+          The squad pipeline needs more information before it can proceed. Please answer the following and re-apply the \`squad-ready\` label when ready:
+
+          ${QUESTIONS}
+
+          ---
+          *Automated by [ContextKit Squad CI](https://github.com/nolrm/contextkit)*"
+              echo "Posted clarification comment on issue #${ISSUE_NUMBER}"
+              exit 0
+            fi
+          else
+            echo "pipeline_status=unknown" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.check_result.outputs.pipeline_status != 'clarify'
+        id: commit
+        env:
+          BRANCH: ${{ steps.branch.outputs.branch }}
+        run: |
+          # Capture ci-result.md content before removing it from the commit
+          if [ -f ".contextkit/squad/ci-result.md" ]; then
+            CI_RESULT_CONTENT=$(cat .contextkit/squad/ci-result.md)
+          else
+            CI_RESULT_CONTENT=""
+          fi
+
+          # Write to step output (use EOF delimiter for multi-line)
+          {
+            echo "ci_result<<EOF_CI_RESULT"
+            echo "$CI_RESULT_CONTENT"
+            echo "EOF_CI_RESULT"
+          } >> "$GITHUB_OUTPUT"
+
+          # Remove scratch file before committing
+          rm -f .contextkit/squad/ci-result.md
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          ISSUE_NUMBER="${{ steps.branch.outputs.issue_number }}"
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          git commit -m "feat(issue-${ISSUE_NUMBER}): ${ISSUE_TITLE} — squad pipeline"
+          git push origin "$BRANCH"
+
+      - name: Create draft PR
+        if: steps.check_result.outputs.pipeline_status != 'clarify'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.branch.outputs.issue_number }}
+          BRANCH: ${{ steps.branch.outputs.branch }}
+        run: |
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+
+          # Build PR body from captured ci-result content, else generic
+          CI_RESULT="${{ steps.commit.outputs.ci_result }}"
+          if [ -n "$CI_RESULT" ]; then
+            PR_BODY="$CI_RESULT"
+          else
+            PR_BODY="Automated squad pipeline run for issue #${ISSUE_NUMBER}."
+          fi
+
+          PR_BODY="${PR_BODY}
+
+          ---
+          Closes #${ISSUE_NUMBER}
+          *Generated by [ContextKit Squad CI](https://github.com/nolrm/contextkit)*"
+
+          gh pr create \
+            --draft \
+            --title "${ISSUE_TITLE}" \
+            --body "$PR_BODY" \
+            --head "$BRANCH" \
+            --base main

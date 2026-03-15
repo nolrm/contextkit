@@ -273,14 +273,19 @@ describe('InstallCommand', () => {
     };
     getIntegration.mockReturnValue(mockIntegration);
 
-    // First prompt: platform choice, second: git hooks (prePush), third: git hooks (commitMsg)
-    inquirer.prompt
-      .mockResolvedValueOnce({ platform: 'cursor' })
-      .mockResolvedValueOnce({ prePush: false })
-      .mockResolvedValueOnce({ commitMsg: false });
+    // Force CI=true so promptGitHubActionsWorkflow() returns early (no prompt consumed)
+    const savedCI = process.env.CI;
+    process.env.CI = 'true';
+    inquirer.prompt.mockReset();
+    inquirer.prompt.mockResolvedValueOnce({ platform: 'cursor' });
 
     const install = getInstallModule();
-    await install({ fullInstall: true });
+    try {
+      await install({ fullInstall: true, noHooks: true });
+    } finally {
+      if (savedCI === undefined) delete process.env.CI;
+      else process.env.CI = savedCI;
+    }
 
     // Should have prompted for platform
     expect(inquirer.prompt).toHaveBeenCalledWith(
@@ -340,6 +345,58 @@ describe('InstallCommand', () => {
     expect(config).toContain('_source:');
     expect(config).toContain('tool: "@nolrm/contextkit"');
     expect(config).toContain('npm: "https://www.npmjs.com/package/@nolrm/contextkit"');
+  });
+
+  it('23. CI squad workflow is installed when prompt returns yes', async () => {
+    // Temporarily unset CI env so promptGitHubActionsWorkflow runs interactively
+    const savedCI = process.env.CI;
+    delete process.env.CI;
+
+    try {
+      inquirer.prompt.mockReset();
+      // noHooks=true skips hook prompts; mock squad CI (yes) then platform (none)
+      inquirer.prompt
+        .mockResolvedValueOnce({ squadCi: true })
+        .mockResolvedValueOnce({ platform: null });
+
+      const install = getInstallModule();
+      await install({ noHooks: true });
+
+      expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(true);
+      const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+      expect(config).toContain('squad_ci_workflow: true');
+    } finally {
+      process.env.CI = savedCI;
+    }
+  });
+
+  it('24. config.yml sets squad_ci_workflow: false when prompt declined', async () => {
+    const savedCI = process.env.CI;
+    delete process.env.CI;
+
+    try {
+      inquirer.prompt.mockReset();
+      inquirer.prompt
+        .mockResolvedValueOnce({ squadCi: false })
+        .mockResolvedValueOnce({ platform: null });
+
+      const install = getInstallModule();
+      await install({ noHooks: true });
+
+      expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(false);
+      const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+      expect(config).toContain('squad_ci_workflow: false');
+    } finally {
+      process.env.CI = savedCI;
+    }
+  });
+
+  it('25. config.yml sets squad_ci_workflow: false by default', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('squad_ci_workflow: false');
   });
 
   it('22. ck install <platform> when already installed adds platform without reinstall prompt', async () => {

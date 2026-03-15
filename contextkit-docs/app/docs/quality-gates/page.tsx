@@ -248,7 +248,7 @@ Quality gates (pre-push hook)
         <div className="rounded-lg border bg-muted/50 p-4">
           <pre className="font-mono text-sm overflow-x-auto">{`<type>(<scope>): <description>
 
-Types: feat, fix, docs, style, refactor, test, chore`}</pre>
+Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
         </div>
 
         <div className="space-y-2">
@@ -322,7 +322,7 @@ Types: feat, fix, docs, style, refactor, test, chore`}</pre>
       {/* Prev / Next navigation */}
       <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
         <Link
-          href="/docs/squad"
+          href="/docs/ci-squad"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
@@ -330,7 +330,7 @@ Types: feat, fix, docs, style, refactor, test, chore`}</pre>
           </div>
           <div className="text-left">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
-            <div className="text-sm font-medium">Squad Workflow</div>
+            <div className="text-sm font-medium">CI Squad</div>
           </div>
         </Link>
 

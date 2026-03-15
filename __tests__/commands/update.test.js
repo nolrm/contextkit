@@ -223,6 +223,46 @@ describe('UpdateCommand', () => {
     expect(await fs.pathExists('.contextkit/commands/my-custom-command.md')).toBe(true);
   });
 
+  it('12. always downloads squad-ci.md command on update', async () => {
+    const DownloadManager = require('../../lib/utils/download');
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const downloadMock = DownloadManager.mock.results.at(-1).value;
+    const downloadedUrls = downloadMock.downloadFile.mock.calls.map(c => c[0]);
+    expect(downloadedUrls.some(u => u.includes('squad-ci.md'))).toBe(true);
+  });
+
+  it('13. updates squad-issue.yml when squad_ci_workflow feature is enabled', async () => {
+    const DownloadManager = require('../../lib/utils/download');
+    const configWithSquadCi = baseConfig + '  squad_ci_workflow: true\n';
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', configWithSquadCi);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const downloadMock = DownloadManager.mock.results.at(-1).value;
+    const downloadedDests = downloadMock.downloadFile.mock.calls.map(c => c[1]);
+    expect(downloadedDests.some(d => d.includes('squad-issue.yml'))).toBe(true);
+  });
+
+  it('14. does not update squad-issue.yml when squad_ci_workflow is false', async () => {
+    const DownloadManager = require('../../lib/utils/download');
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const downloadMock = DownloadManager.mock.results.at(-1).value;
+    const downloadedDests = downloadMock.downloadFile.mock.calls.map(c => c[1]);
+    expect(downloadedDests.some(d => d.includes('squad-issue.yml'))).toBe(false);
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];

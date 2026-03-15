@@ -284,6 +284,36 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 
 ---
 
+## CI Squad — GitHub Issues → PR
+
+ContextKit can automatically turn GitHub issues into pull requests — no local development required.
+
+**How it works:**
+
+1. Label any issue `squad-ready`
+2. GitHub Actions runs the full squad pipeline (architect → dev → test → review) using Claude
+3. A draft PR is opened, linked to the issue
+
+**Setup:**
+
+```bash
+ck install   # answer "yes" to the CI squad prompt
+```
+
+Then add your Anthropic API key as a repository secret:
+
+> **Settings → Secrets and variables → Actions → New repository secret**
+> Name: `ANTHROPIC_API_KEY`
+
+**Tips:**
+
+- Write issues with clear acceptance criteria for the best results
+- If the issue is too vague, the workflow posts a comment asking for clarification instead of generating a bad PR
+- PRs always open as **draft** — you review and merge manually
+- Re-apply the `squad-ready` label after answering a clarification comment to re-trigger the pipeline
+
+---
+
 ## Key Features
 
 - 🧠 **Context Engineering** - Structured MD files your AI reads automatically
