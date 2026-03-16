@@ -40,7 +40,7 @@ function runCommitMsgHook(message) {
   try {
     execSync(path.join(hookPath, 'commit-msg') + ` "${msgFile}"`, {
       stdio: 'pipe',
-      encoding: 'utf8'
+      encoding: 'utf8',
     });
     return { success: true, output: '' };
   } catch (error) {
@@ -130,9 +130,9 @@ this should fail because the subject "fix: bug" is only 8 characters.`;
       const validTypes = [
         'refactor(utils): simplify logic',
         'test(integration): add new test case',
-        'chore(deps): update dependencies'
+        'chore(deps): update dependencies',
       ];
-      validTypes.forEach(msg => {
+      validTypes.forEach((msg) => {
         const result = runCommitMsgHook(msg);
         expect(result.success).toBe(true);
       });

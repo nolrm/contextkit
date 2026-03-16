@@ -6,14 +6,14 @@ jest.mock('fs-extra');
 
 describe('ProjectDetector', () => {
   let detector;
-  let mockPackageJson;
+  let _mockPackageJson;
 
   beforeEach(() => {
     detector = new ProjectDetector();
-    mockPackageJson = {
+    _mockPackageJson = {
       name: 'test-project',
       dependencies: {},
-      devDependencies: {}
+      devDependencies: {},
     };
     jest.clearAllMocks();
   });
@@ -24,9 +24,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { react: '^18.0.0' }
+        dependencies: { react: '^18.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -38,9 +38,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { react: '^18.0.0', vite: '^4.0.0' }
+        dependencies: { react: '^18.0.0', vite: '^4.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -52,9 +52,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { vue: '^3.0.0' }
+        dependencies: { vue: '^3.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -66,9 +66,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { next: '^13.0.0' }
+        dependencies: { next: '^13.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -80,9 +80,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { '@angular/core': '^15.0.0' }
+        dependencies: { '@angular/core': '^15.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -94,9 +94,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        dependencies: { express: '^4.0.0' }
+        dependencies: { express: '^4.0.0' },
       });
 
       const result = detector.detectProjectType();
@@ -183,7 +183,7 @@ describe('ProjectDetector', () => {
   describe('hasDependency', () => {
     test('should find dependency in dependencies', () => {
       const packageJson = {
-        dependencies: { react: '^18.0.0' }
+        dependencies: { react: '^18.0.0' },
       };
 
       const result = detector.hasDependency(packageJson, 'react');
@@ -192,7 +192,7 @@ describe('ProjectDetector', () => {
 
     test('should find dependency in devDependencies', () => {
       const packageJson = {
-        devDependencies: { jest: '^29.0.0' }
+        devDependencies: { jest: '^29.0.0' },
       };
 
       const result = detector.hasDependency(packageJson, 'jest');
@@ -201,7 +201,7 @@ describe('ProjectDetector', () => {
 
     test('should return undefined for missing dependency', () => {
       const packageJson = {
-        dependencies: { react: '^18.0.0' }
+        dependencies: { react: '^18.0.0' },
       };
 
       const result = detector.hasDependency(packageJson, 'vue');
@@ -253,9 +253,9 @@ describe('ProjectDetector', () => {
         if (file === 'package.json') return true;
         return false;
       });
-      
+
       detector.readPackageJson = jest.fn().mockReturnValue({
-        name: 'my-awesome-project'
+        name: 'my-awesome-project',
       });
 
       const result = detector.getProjectName();

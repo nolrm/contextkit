@@ -66,21 +66,21 @@ describe('RunCommand', () => {
 
   it('1. logs error when workflow file is not found', async () => {
     await run('nonexistent-workflow', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/Workflow not found/);
     expect(logged).toMatch(/nonexistent-workflow/);
   });
 
   it('2. searched paths are listed when workflow not found', async () => {
     await run('missing', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/\.contextkit\/commands\/missing\.md/);
   });
 
   it('3. parseWorkflow extracts steps from XML-tagged content', async () => {
     await writeWorkflow('test-flow', WORKFLOW_WITH_STEPS);
     await run('test-flow', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/Executing 2 step/);
   });
 
@@ -88,28 +88,28 @@ describe('RunCommand', () => {
     await writeWorkflow('plain-flow', WORKFLOW_PLAIN);
     await run('plain-flow', {});
     // Should not crash — just no steps to execute
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/completed successfully/i);
   });
 
   it('5. extractInstructions picks up ACTION directives from step content', async () => {
     await writeWorkflow('action-flow', WORKFLOW_WITH_STEPS);
     await run('action-flow', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/initialize the project/);
   });
 
   it('6. extractInstructions picks up numbered steps from step content', async () => {
     await writeWorkflow('numbered-flow', WORKFLOW_WITH_STEPS);
     await run('numbered-flow', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/run the tests/);
   });
 
   it('7. non-interactive run with found workflow completes without error', async () => {
     await writeWorkflow('simple-flow', WORKFLOW_WITH_STEPS);
     await expect(run('simple-flow', {})).resolves.not.toThrow();
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/completed successfully/i);
   });
 });

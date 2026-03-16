@@ -40,16 +40,12 @@ const updatePaths = extractDownloadPaths(updateSource);
 
 describe('Download manifest validation', () => {
   it('1. every download URL in install.js points to a file that exists in the repo', () => {
-    const missing = installPaths.filter(
-      (p) => !fs.existsSync(path.join(ROOT, p))
-    );
+    const missing = installPaths.filter((p) => !fs.existsSync(path.join(ROOT, p)));
     expect(missing).toEqual([]);
   });
 
   it('2. every download URL in update.js points to a file that exists in the repo', () => {
-    const missing = updatePaths.filter(
-      (p) => !fs.existsSync(path.join(ROOT, p))
-    );
+    const missing = updatePaths.filter((p) => !fs.existsSync(path.join(ROOT, p)));
     expect(missing).toEqual([]);
   });
 
@@ -58,9 +54,7 @@ describe('Download manifest validation', () => {
     // so we only compare the shared directories: standards, commands, hooks, types, legacy
     const sharedDirs = ['standards', 'commands', 'hooks', 'types', 'legacy'];
     const filterShared = (paths) =>
-      paths
-        .filter((p) => sharedDirs.some((d) => p.startsWith(d + '/')))
-        .sort();
+      paths.filter((p) => sharedDirs.some((d) => p.startsWith(d + '/'))).sort();
 
     const installShared = filterShared(installPaths);
     const updateShared = filterShared(updatePaths);
@@ -73,9 +67,7 @@ describe('Download manifest validation', () => {
     const downloadDirs = ['hooks', 'commands', 'types'];
     const repoFiles = downloadDirs.flatMap(listRepoFiles);
 
-    const unreferenced = repoFiles.filter(
-      (f) => !installPaths.includes(f)
-    );
+    const unreferenced = repoFiles.filter((f) => !installPaths.includes(f));
     expect(unreferenced).toEqual([]);
   });
 
@@ -114,5 +106,4 @@ describe('Download manifest validation', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/squad-auto.md'), 'utf8');
     expect(content).toContain('split recommendation');
   });
-
 });

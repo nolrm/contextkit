@@ -19,11 +19,14 @@ describe('squad command source/installed sync', () => {
     expect(source).toBe(installed);
   });
 
-  itInstalled('2. commands/squad-auto.md and .contextkit/commands/squad-auto.md are identical', async () => {
-    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
-    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-auto.md'), 'utf8');
-    expect(source).toBe(installed);
-  });
+  itInstalled(
+    '2. commands/squad-auto.md and .contextkit/commands/squad-auto.md are identical',
+    async () => {
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
+      const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-auto.md'), 'utf8');
+      expect(source).toBe(installed);
+    }
+  );
 });
 
 describe('squad config.md — content validation', () => {
@@ -76,21 +79,30 @@ describe('squad config.md — content validation', () => {
 });
 
 describe('squad command source/installed sync — dev and test', () => {
-  itInstalled('8. commands/squad-dev.md and .contextkit/commands/squad-dev.md are identical', async () => {
-    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-dev.md'), 'utf8');
-    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-dev.md'), 'utf8');
-    expect(source).toBe(installed);
-  });
+  itInstalled(
+    '8. commands/squad-dev.md and .contextkit/commands/squad-dev.md are identical',
+    async () => {
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-dev.md'), 'utf8');
+      const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-dev.md'), 'utf8');
+      expect(source).toBe(installed);
+    }
+  );
 
-  itInstalled('9. commands/squad-test.md and .contextkit/commands/squad-test.md are identical', async () => {
-    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-test.md'), 'utf8');
-    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-test.md'), 'utf8');
-    expect(source).toBe(installed);
-  });
+  itInstalled(
+    '9. commands/squad-test.md and .contextkit/commands/squad-test.md are identical',
+    async () => {
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-test.md'), 'utf8');
+      const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-test.md'), 'utf8');
+      expect(source).toBe(installed);
+    }
+  );
 
-  itInstalled('10. commands/squad-architect.md and .contextkit/commands/squad-architect.md are identical', async () => {
-    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-architect.md'), 'utf8');
-    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-architect.md'), 'utf8');
-    expect(source).toBe(installed);
-  });
+  itInstalled(
+    '10. commands/squad-architect.md and .contextkit/commands/squad-architect.md are identical',
+    async () => {
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-architect.md'), 'utf8');
+      const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-architect.md'), 'utf8');
+      expect(source).toBe(installed);
+    }
+  );
 });

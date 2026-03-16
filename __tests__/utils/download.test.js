@@ -14,7 +14,7 @@ describe('DownloadManager', () => {
     downloadManager = new DownloadManager();
     mockStream = {
       pipe: jest.fn(),
-      on: jest.fn()
+      on: jest.fn(),
     };
     jest.clearAllMocks();
   });
@@ -22,9 +22,9 @@ describe('DownloadManager', () => {
   describe('downloadFile', () => {
     test('should download file successfully', async () => {
       const mockResponse = {
-        data: mockStream
+        data: mockStream,
       };
-      
+
       axios.mockResolvedValue(mockResponse);
       fs.ensureDir.mockResolvedValue();
       fs.createWriteStream.mockReturnValue(mockStream);
@@ -36,8 +36,9 @@ describe('DownloadManager', () => {
         }
       });
 
-      await expect(downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt'))
-        .resolves.toBeUndefined();
+      await expect(
+        downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt')
+      ).resolves.toBeUndefined();
 
       expect(axios).toHaveBeenCalledWith({
         method: 'GET',
@@ -45,8 +46,8 @@ describe('DownloadManager', () => {
         responseType: 'stream',
         timeout: 30000,
         headers: {
-          'User-Agent': 'contextkit-cli/1.0.0'
-        }
+          'User-Agent': 'contextkit-cli/1.0.0',
+        },
       });
       expect(fs.ensureDir).toHaveBeenCalled();
       expect(fs.createWriteStream).toHaveBeenCalledWith('./test-file.txt');
@@ -54,15 +55,15 @@ describe('DownloadManager', () => {
 
     test('should retry on failure', async () => {
       const mockError = new Error('Network error');
-      
+
       axios.mockRejectedValueOnce(mockError);
       axios.mockRejectedValueOnce(mockError);
-      
+
       const mockResponse = {
-        data: mockStream
+        data: mockStream,
       };
       axios.mockResolvedValueOnce(mockResponse);
-      
+
       fs.ensureDir.mockResolvedValue();
       fs.createWriteStream.mockReturnValue(mockStream);
 
@@ -75,8 +76,9 @@ describe('DownloadManager', () => {
 
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-      await expect(downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt'))
-        .resolves.toBeUndefined();
+      await expect(
+        downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt')
+      ).resolves.toBeUndefined();
 
       expect(axios).toHaveBeenCalledTimes(3); // 2 failures + 1 success
       expect(consoleSpy).toHaveBeenCalledWith('Retrying download (1/3)...');
@@ -92,8 +94,9 @@ describe('DownloadManager', () => {
 
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
 
-      await expect(downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt'))
-        .rejects.toThrow('Failed to download https://example.com/file.txt: Network error');
+      await expect(
+        downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt')
+      ).rejects.toThrow('Failed to download https://example.com/file.txt: Network error');
 
       expect(axios).toHaveBeenCalledTimes(4); // 3 retries + 1 initial
       expect(consoleSpy).toHaveBeenCalledWith('Retrying download (1/3)...');
@@ -105,9 +108,9 @@ describe('DownloadManager', () => {
 
     test('should handle write stream error', async () => {
       const mockResponse = {
-        data: mockStream
+        data: mockStream,
       };
-      
+
       axios.mockResolvedValue(mockResponse);
       fs.ensureDir.mockResolvedValue();
       fs.createWriteStream.mockReturnValue(mockStream);
@@ -119,8 +122,9 @@ describe('DownloadManager', () => {
         }
       });
 
-      await expect(downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt'))
-        .rejects.toThrow('Write error');
+      await expect(
+        downloadManager.downloadFile('https://example.com/file.txt', './test-file.txt')
+      ).rejects.toThrow('Write error');
     });
   });
 
@@ -128,13 +132,13 @@ describe('DownloadManager', () => {
     test('should download multiple files', async () => {
       const files = [
         { url: 'https://example.com/file1.txt', path: './file1.txt' },
-        { url: 'https://example.com/file2.txt', path: './file2.txt' }
+        { url: 'https://example.com/file2.txt', path: './file2.txt' },
       ];
 
       const mockResponse = {
-        data: mockStream
+        data: mockStream,
       };
-      
+
       axios.mockResolvedValue(mockResponse);
       fs.ensureDir.mockResolvedValue();
       fs.createWriteStream.mockReturnValue(mockStream);
@@ -146,8 +150,10 @@ describe('DownloadManager', () => {
         }
       });
 
-      await expect(downloadManager.downloadMultiple(files))
-        .resolves.toEqual([undefined, undefined]);
+      await expect(downloadManager.downloadMultiple(files)).resolves.toEqual([
+        undefined,
+        undefined,
+      ]);
 
       expect(axios).toHaveBeenCalledTimes(2);
       expect(fs.ensureDir).toHaveBeenCalledTimes(2);
@@ -156,17 +162,17 @@ describe('DownloadManager', () => {
     test('should handle mixed success and failure', async () => {
       const files = [
         { url: 'https://example.com/file1.txt', path: './file1.txt' },
-        { url: 'https://example.com/file2.txt', path: './file2.txt' }
+        { url: 'https://example.com/file2.txt', path: './file2.txt' },
       ];
 
       const mockResponse = {
-        data: mockStream
+        data: mockStream,
       };
-      
+
       // First file succeeds, second file fails after retries
       axios.mockResolvedValueOnce(mockResponse);
       axios.mockRejectedValue(new Error('Network error')); // All subsequent calls fail
-      
+
       fs.ensureDir.mockResolvedValue();
       fs.createWriteStream.mockReturnValue(mockStream);
 
@@ -178,8 +184,9 @@ describe('DownloadManager', () => {
       });
 
       // downloadMultiple uses Promise.all, so it will reject if any promise rejects
-      await expect(downloadManager.downloadMultiple(files))
-        .rejects.toThrow('Failed to download https://example.com/file2.txt: Network error');
+      await expect(downloadManager.downloadMultiple(files)).rejects.toThrow(
+        'Failed to download https://example.com/file2.txt: Network error'
+      );
     });
   });
 });

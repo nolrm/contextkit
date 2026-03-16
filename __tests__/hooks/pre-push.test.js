@@ -38,14 +38,19 @@ function runPrePushHook() {
     const output = execSync(path.join(hookPath, 'pre-push'), {
       stdio: ['pipe', 'pipe', 'pipe'],
       encoding: 'utf8',
-      shell: '/bin/bash'
+      shell: '/bin/bash',
     });
     return { success: true, output };
   } catch (error) {
     // When bash script fails, both stdout and stderr are in the same message
     // Try to get combined output from various sources
     const allOutput = (error.stdout || '') + (error.stderr || '') + (error.message || '');
-    return { success: false, output: allOutput, stdout: error.stdout || '', stderr: error.stderr || '' };
+    return {
+      success: false,
+      output: allOutput,
+      stdout: error.stdout || '',
+      stderr: error.stderr || '',
+    };
   }
 }
 
@@ -82,14 +87,14 @@ describe('pre-push hook', () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
         scripts: {
-          test: 'false'
-        }
+          test: 'false',
+        },
       });
 
       try {
         execSync(path.join(hookPath, 'pre-push'), {
           stdio: 'pipe',
-          shell: '/bin/bash'
+          shell: '/bin/bash',
         });
         // Should not reach here
         expect(true).toBe(false);
@@ -105,7 +110,7 @@ describe('pre-push hook', () => {
       // Create a Node project where all gates will pass
       await fs.writeJSON('package.json', {
         name: 'test-project',
-        scripts: {}
+        scripts: {},
       });
 
       const result = runPrePushHook();
@@ -117,7 +122,7 @@ describe('pre-push hook', () => {
     it('6. does not print failure banner when all gates pass', async () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
-        scripts: {}
+        scripts: {},
       });
 
       const result = runPrePushHook();
@@ -130,8 +135,8 @@ describe('pre-push hook', () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
         scripts: {
-          test: 'true'
-        }
+          test: 'true',
+        },
       });
 
       const result = runPrePushHook();
@@ -148,9 +153,9 @@ describe('pre-push hook', () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
         devDependencies: {
-          typescript: '^5.0.0'
+          typescript: '^5.0.0',
         },
-        scripts: {}
+        scripts: {},
       });
 
       // Save original PATH
@@ -169,7 +174,7 @@ describe('pre-push hook', () => {
     it('9. skip_gate function increments counter without running command', async () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
-        scripts: {}
+        scripts: {},
       });
 
       const result = runPrePushHook();
@@ -217,7 +222,7 @@ describe('pre-push hook', () => {
     it('14. trap does not fire on exit code 0 (success)', async () => {
       await fs.writeJSON('package.json', {
         name: 'test-project',
-        scripts: {}
+        scripts: {},
       });
 
       const result = runPrePushHook();
@@ -363,7 +368,10 @@ describe('pre-push hook', () => {
 
   describe('AC11: Swift stack detection', () => {
     it('27. Package.swift is detected as swift project type', async () => {
-      await fs.writeFile('Package.swift', '// swift-tools-version:5.0\nimport PackageDescription\nlet package = Package(name: "Test", targets: [])');
+      await fs.writeFile(
+        'Package.swift',
+        '// swift-tools-version:5.0\nimport PackageDescription\nlet package = Package(name: "Test", targets: [])'
+      );
       const result = runPrePushHook();
       expect(result.output).toContain('Project: swift');
     });
@@ -380,7 +388,10 @@ describe('pre-push hook', () => {
 
   describe('AC12: Kotlin stack detection', () => {
     it('29. build.gradle with kotlin plugin is detected as kotlin project type', async () => {
-      await fs.writeFile('build.gradle', 'plugins { id "org.jetbrains.kotlin.jvm" version "1.9.0" }\n');
+      await fs.writeFile(
+        'build.gradle',
+        'plugins { id "org.jetbrains.kotlin.jvm" version "1.9.0" }\n'
+      );
       const result = runPrePushHook();
       expect(result.output).toContain('Project: kotlin');
     });
@@ -448,6 +459,74 @@ describe('pre-push hook', () => {
       const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
       const content = fs.readFileSync(hooksFile, 'utf8');
       expect(content).toContain('skipped silently');
+    });
+  });
+
+  describe('Format and lint script gates', () => {
+    it('37. lint script gate runs when lint script exists in package.json', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { lint: 'true' } });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toMatch(/\[\d+\] Lint/);
+    });
+
+    it('38. lint gate is skipped when no lint script in package.json', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: {} });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toMatch(/\[\d+\] Lint/);
+    });
+
+    it('39. format script gate runs when format script exists in package.json', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { format: 'true' } });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toMatch(/\[\d+\] Format/);
+    });
+
+    it('40. format gate blocks push when formatter changes tracked files', async () => {
+      // Create and commit a tracked file
+      await fs.writeFile('src.js', 'const x = 1;');
+      execSync('git add src.js && git commit -m "init"', { stdio: 'pipe', shell: true });
+
+      // Format script modifies the tracked file — simulates a formatter rewriting it
+      await fs.writeJSON('package.json', {
+        name: 'test',
+        scripts: { format: 'echo "reformatted" > src.js' },
+      });
+
+      const result = runPrePushHook();
+      expect(result.success).toBe(false);
+      expect(result.output).toContain('Formatter changed files');
+    });
+
+    it('41. format gate passes when formatter changes nothing', async () => {
+      await fs.writeJSON('package.json', {
+        name: 'test',
+        scripts: { format: 'true' }, // no-op formatter
+      });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toMatch(/\[\d+\] Format/);
+      expect(result.output).not.toContain('Formatter changed files');
+    });
+
+    it('42. lint gate can be disabled via quality-gates.yml', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { lint: 'true' } });
+      await fs.ensureDir('.contextkit');
+      await fs.writeFile('.contextkit/quality-gates.yml', 'disable:\n  - lint\n');
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toMatch(/\[\d+\] Lint/);
+    });
+
+    it('43. format gate can be disabled via quality-gates.yml', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { format: 'true' } });
+      await fs.ensureDir('.contextkit');
+      await fs.writeFile('.contextkit/quality-gates.yml', 'disable:\n  - format\n');
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toMatch(/\[\d+\] Format/);
     });
   });
 });

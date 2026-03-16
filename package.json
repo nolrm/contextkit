@@ -1,6 +1,6 @@
 {
   "name": "@nolrm/contextkit",
-  "version": "0.13.5",
+  "version": "0.13.6",
   "description": "ContextKit - Context Engineering for AI Development. Provide rich context to AI through structured MD files with standards, code guides, and documentation. Works with Cursor, Claude, Aider, VS Code Copilot, and more.",
   "main": "lib/index.js",
   "bin": {
@@ -10,6 +10,8 @@
     "vk": "bin/vibe-kit.js"
   },
   "scripts": {
+    "format": "prettier --write \"lib/**/*.js\" \"bin/**/*.js\" \"__tests__/**/*.js\"",
+    "lint": "eslint lib/ bin/ __tests__/",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -81,7 +83,11 @@
   ],
   "preferGlobal": true,
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
-    "jest": "^30.2.0"
+    "eslint": "^10.0.3",
+    "globals": "^17.4.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.8.1"
   }
 }

@@ -39,7 +39,7 @@ describe('banner', () => {
   });
 
   it('3. hslToRgb converts primary hues correctly', () => {
-    const [r0, g0, b0] = hslToRgb(0, 100, 50);   // hue 0 = red
+    const [r0, g0, b0] = hslToRgb(0, 100, 50); // hue 0 = red
     expect(r0).toBe(255);
     expect(g0).toBe(0);
     expect(b0).toBe(0);

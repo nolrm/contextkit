@@ -52,7 +52,7 @@ describe('squad.md — source command file', () => {
       content.indexOf('## Batch Mode')
     );
     // Extract numbered steps like "1. ", "2. ", etc.
-    const steps = [...singleTaskSection.matchAll(/^\d+\. /gm)].map(m => parseInt(m[0]));
+    const steps = [...singleTaskSection.matchAll(/^\d+\. /gm)].map((m) => parseInt(m[0]));
     for (let i = 0; i < steps.length; i++) {
       expect(steps[i]).toBe(i + 1);
     }
@@ -78,7 +78,7 @@ describe('squad-auto.md — source command file', () => {
 
   it('3. step 1 handles missing squad session (neither manifest nor handoff)', () => {
     expect(content).toContain('neither exists');
-    expect(content).toContain("Run `/squad");
+    expect(content).toContain('Run `/squad');
   });
 
   it('4. step 2 reads model_routing from config with default false', () => {
@@ -87,29 +87,20 @@ describe('squad-auto.md — source command file', () => {
   });
 
   it('5. dev phase has model_routing: false inline branch', () => {
-    const devSection = content.slice(
-      content.indexOf('**Dev:**'),
-      content.indexOf('**Test:**')
-    );
+    const devSection = content.slice(content.indexOf('**Dev:**'), content.indexOf('**Test:**'));
     expect(devSection).toContain('model_routing: false');
     expect(devSection).toContain('run inline');
   });
 
   it('6. dev phase spawns haiku sub-agent when model_routing: true', () => {
-    const devSection = content.slice(
-      content.indexOf('**Dev:**'),
-      content.indexOf('**Test:**')
-    );
+    const devSection = content.slice(content.indexOf('**Dev:**'), content.indexOf('**Test:**'));
     expect(devSection).toContain('model_routing: true');
     expect(devSection).toContain('claude-haiku-4-5-20251001');
     expect(devSection).toContain('squad-dev.md');
   });
 
   it('7. test phase spawns haiku sub-agent when model_routing: true', () => {
-    const testSection = content.slice(
-      content.indexOf('**Test:**'),
-      content.indexOf('**Review:**')
-    );
+    const testSection = content.slice(content.indexOf('**Test:**'), content.indexOf('**Review:**'));
     expect(testSection).toContain('model_routing: true');
     expect(testSection).toContain('claude-haiku-4-5-20251001');
     expect(testSection).toContain('squad-test.md');

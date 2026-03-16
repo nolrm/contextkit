@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.13.6] - 2026-03-17
+
+### Added
+- **Quality Gates: `format` script gate** — if `package.json` has a `format` script, runs it in write mode then blocks the push if any tracked files changed, with a remediation message (`git add -A && git commit -m 'chore: format'`)
+- **Quality Gates: `lint` script gate** — if `package.json` has a `lint` script, runs it and blocks on non-zero exit
+- Both gates respect `quality-gates.yml` (`disable: [format]` / `disable: [lint]`)
+- **`ck install`: quality tooling scaffold** — when the pre-push hook is enabled on a Node.js project with no `format`/`lint` scripts, prompts to scaffold a minimal prettier + eslint setup (adds scripts, `.prettierrc`, `.prettierignore`, `eslint.config.js`, and installs devDependencies using the detected package manager); default No; skipped in CI/non-interactive mode; respects existing configs
+
+### Improved
+- **ContextKit own tooling** — added `prettier` + `eslint` (flat config) as devDependencies; `npm run format` and `npm run lint` scripts now active so the gates fire on ContextKit development too; initial format pass applied to all source files
+
+### Fixed
+- **`analyze.js`** — `const hasBackend` reassigned in loop; changed to `let` (surfaced by eslint)
+- **`install.js`** — two useless escape sequences in shell template literal (`\$@` → `$@`, `\$(` → `$(`)
+
+---
+
 ## [0.13.5] - 2026-03-16
 
 ### Added

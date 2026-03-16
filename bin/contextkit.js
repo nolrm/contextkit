@@ -22,7 +22,9 @@ program
 // Install command
 program
   .command('install [platform]')
-  .description('Initialize ContextKit in the current project directory (run once per project, not global)')
+  .description(
+    'Initialize ContextKit in the current project directory (run once per project, not global)'
+  )
   .option('--no-hooks', 'Skip Git hooks installation')
   .option('--non-interactive', 'Skip interactive prompts')
   .action(async (platform, options) => {
@@ -256,7 +258,7 @@ program
   });
 
 // Catch-all for unknown commands
-program.on('command:*', function(args) {
+program.on('command:*', function (args) {
   console.error(chalk.red(`Unknown command: ${args[0]}`));
   console.log(chalk.yellow('Run `ck --help` to see available commands.'));
   process.exit(1);

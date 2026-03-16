@@ -20,15 +20,15 @@ jest.mock('ora', () => {
     start: jest.fn().mockReturnThis(),
     succeed: jest.fn().mockReturnThis(),
     fail: jest.fn().mockReturnThis(),
-    stop: jest.fn().mockReturnThis()
+    stop: jest.fn().mockReturnThis(),
   });
 });
 
 // Mock axios
 jest.mock('axios', () => ({
   get: jest.fn().mockResolvedValue({
-    data: { tag_name: 'v1.1.0' }
-  })
+    data: { tag_name: 'v1.1.0' },
+  }),
 }));
 
 // Mock download manager — create empty files so chmod doesn't fail
@@ -38,14 +38,14 @@ jest.mock('../../lib/utils/download', () => {
     downloadFile: jest.fn().mockImplementation(async (url, dest) => {
       await realFs.ensureDir(require('path').dirname(dest));
       await realFs.writeFile(dest, '# mocked download\n');
-    })
+    }),
   }));
 });
 
 // Mock git-hooks manager
 jest.mock('../../lib/utils/git-hooks', () => {
   return jest.fn().mockImplementation(() => ({
-    installHooks: jest.fn().mockResolvedValue(undefined)
+    installHooks: jest.fn().mockResolvedValue(undefined),
   }));
 });
 
@@ -53,9 +53,9 @@ jest.mock('../../lib/utils/git-hooks', () => {
 jest.mock('../../lib/integrations', () => ({
   getIntegration: jest.fn().mockReturnValue({
     validate: jest.fn().mockResolvedValue({ present: [], missing: [] }),
-    install: jest.fn().mockResolvedValue(undefined)
+    install: jest.fn().mockResolvedValue(undefined),
   }),
-  getAllIntegrationNames: jest.fn().mockReturnValue([])
+  getAllIntegrationNames: jest.fn().mockReturnValue([]),
 }));
 
 let tmpDir;
@@ -169,7 +169,7 @@ describe('UpdateCommand', () => {
     const { getAllIntegrationNames, getIntegration } = require('../../lib/integrations');
     const mockIntegration = {
       validate: jest.fn().mockResolvedValue({ present: ['CLAUDE.md'], missing: [] }),
-      install: jest.fn().mockResolvedValue(undefined)
+      install: jest.fn().mockResolvedValue(undefined),
     };
     getAllIntegrationNames.mockReturnValue(['claude']);
     getIntegration.mockReturnValue(mockIntegration);
@@ -232,8 +232,8 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const downloadMock = DownloadManager.mock.results.at(-1).value;
-    const downloadedUrls = downloadMock.downloadFile.mock.calls.map(c => c[0]);
-    expect(downloadedUrls.some(u => u.includes('squad-ci.md'))).toBe(true);
+    const downloadedUrls = downloadMock.downloadFile.mock.calls.map((c) => c[0]);
+    expect(downloadedUrls.some((u) => u.includes('squad-ci.md'))).toBe(true);
   });
 
   it('13. updates squad-issue.yml when squad_ci_workflow feature is enabled', async () => {
@@ -246,8 +246,8 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const downloadMock = DownloadManager.mock.results.at(-1).value;
-    const downloadedDests = downloadMock.downloadFile.mock.calls.map(c => c[1]);
-    expect(downloadedDests.some(d => d.includes('squad-issue.yml'))).toBe(true);
+    const downloadedDests = downloadMock.downloadFile.mock.calls.map((c) => c[1]);
+    expect(downloadedDests.some((d) => d.includes('squad-issue.yml'))).toBe(true);
   });
 
   it('14. does not update squad-issue.yml when squad_ci_workflow is false', async () => {
@@ -259,8 +259,8 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const downloadMock = DownloadManager.mock.results.at(-1).value;
-    const downloadedDests = downloadMock.downloadFile.mock.calls.map(c => c[1]);
-    expect(downloadedDests.some(d => d.includes('squad-issue.yml'))).toBe(false);
+    const downloadedDests = downloadMock.downloadFile.mock.calls.map((c) => c[1]);
+    expect(downloadedDests.some((d) => d.includes('squad-issue.yml'))).toBe(false);
   });
 
   it('11. version comparison works correctly', async () => {

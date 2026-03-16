@@ -23,7 +23,7 @@ afterEach(async () => {
 function runPrePush() {
   return execSync(`bash "${prePushScript}"`, {
     encoding: 'utf8',
-    env: { ...process.env, PATH: process.env.PATH }
+    env: { ...process.env, PATH: process.env.PATH },
   });
 }
 
@@ -31,7 +31,7 @@ function runPrePush() {
 function runPrePushMinimalPath() {
   return execSync(`bash "${prePushScript}"`, {
     encoding: 'utf8',
-    env: { ...process.env, PATH: '/usr/bin:/bin' }
+    env: { ...process.env, PATH: '/usr/bin:/bin' },
   });
 }
 

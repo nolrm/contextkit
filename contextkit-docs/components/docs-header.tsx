@@ -36,6 +36,7 @@ export function DocsHeader() {
               type="text"
               placeholder="Search docs..."
               readOnly
+              aria-label="Search docs"
               className="w-48 lg:w-64 rounded-md border border-border bg-card pl-9 pr-20 py-1.5 text-sm text-muted-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">

@@ -380,11 +380,12 @@ Level 3  /doc-component  → <path>/<name>.md  (colocated)`}</pre>
 
         <h3 className="font-semibold text-base mt-6 mb-3">When to use which</h3>
         <div className="rounded-lg border overflow-hidden">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="When to use which documentation command">
+            <caption className="sr-only">When to use which documentation command</caption>
             <thead>
               <tr className="border-b bg-muted/50">
-                <th className="text-left px-4 py-2 font-medium text-muted-foreground">Scenario</th>
-                <th className="text-left px-4 py-2 font-medium text-muted-foreground">Command</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground" scope="col">Scenario</th>
+                <th className="text-left px-4 py-2 font-medium text-muted-foreground" scope="col">Command</th>
               </tr>
             </thead>
             <tbody>

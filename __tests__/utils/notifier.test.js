@@ -25,13 +25,17 @@ describe('notifier', () => {
   });
 
   it('3. checkForUpdates does not throw when notify() throws', () => {
-    mockNotify.mockImplementation(() => { throw new Error('network error'); });
+    mockNotify.mockImplementation(() => {
+      throw new Error('network error');
+    });
     const { checkForUpdates } = require('../../lib/utils/notifier');
     expect(() => checkForUpdates()).not.toThrow();
   });
 
   it('4. checkForUpdates does not throw when updateNotifier() throws', () => {
-    mockUpdateNotifier.mockImplementation(() => { throw new Error('init error'); });
+    mockUpdateNotifier.mockImplementation(() => {
+      throw new Error('init error');
+    });
     const { checkForUpdates } = require('../../lib/utils/notifier');
     expect(() => checkForUpdates()).not.toThrow();
   });

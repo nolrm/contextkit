@@ -43,13 +43,13 @@ describe('NoteCommand', () => {
 
   it('1. returns early when no message is provided', async () => {
     await note(undefined, {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/Please provide a message/);
   });
 
   it('2. returns early when corrections.md does not exist', async () => {
     await note('some note', {});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/Corrections log not found/);
   });
 
@@ -65,7 +65,9 @@ describe('NoteCommand', () => {
   it('4. adds note to existing session when one already exists for today', async () => {
     const today = new Date().toISOString().split('T')[0];
     const existingSession = `### ${today} - Development Session\n\n**Changes**: work\n\n#### AI Behavior\n\n- existing note [MEDIUM]\n\n`;
-    await writeCorrections(`# ContextKit Corrections Log\n\n## Recent Sessions\n\n${existingSession}`);
+    await writeCorrections(
+      `# ContextKit Corrections Log\n\n## Recent Sessions\n\n${existingSession}`
+    );
 
     await note('new note', { category: 'AI Behavior' });
 

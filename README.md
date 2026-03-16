@@ -246,6 +246,8 @@ ContextKit can optionally install Git hooks during `ck install`. Uses `git confi
 
 For **Node.js projects**, a `prepare` script is automatically added to `package.json` so hooks activate for all developers after `npm install` — no need for everyone to run `ck install`.
 
+If you enable the pre-push hook on a Node.js project that has no `format` or `lint` scripts, `ck install` will offer to scaffold a minimal **prettier + eslint** setup for you (adds scripts, `.prettierrc`, `.prettierignore`, `eslint.config.js`, and installs the devDependencies). Answer No to skip and set it up manually later.
+
 | Hook | What it does |
 |------|-------------|
 | **pre-push** | **Quality Gates** — auto-detects your project framework and runs the appropriate checks |
@@ -257,7 +259,7 @@ The pre-push hook detects your project type and runs the right quality checks au
 
 | Framework | Checks |
 |-----------|--------|
-| **Node.js** | TypeScript, ESLint, Prettier, build, test, e2e — each only runs when present in `package.json`; auto-detects npm/yarn/pnpm/bun |
+| **Node.js** | TypeScript, ESLint, Prettier, `format` script, `lint` script, build, test, e2e — each only runs when present in `package.json` scripts or dependencies; auto-detects npm/yarn/pnpm/bun |
 | **Python** | ruff/flake8, mypy, black/ruff format, pytest |
 | **Rust** | cargo check, clippy, cargo test |
 | **Go** | go vet, golangci-lint, go test |

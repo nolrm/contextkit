@@ -97,19 +97,21 @@ describe('GitHooksManager - core.hooksPath', () => {
   it('8. appends to existing prepare script', async () => {
     await fs.writeJson('package.json', {
       name: 'test-project',
-      scripts: { prepare: 'some-other-tool' }
+      scripts: { prepare: 'some-other-tool' },
     });
 
     await manager.installHooks('npm', { prePush: true, commitMsg: true });
 
     const pkg = await fs.readJson('package.json');
-    expect(pkg.scripts.prepare).toBe('some-other-tool && git config core.hooksPath .contextkit/hooks');
+    expect(pkg.scripts.prepare).toBe(
+      'some-other-tool && git config core.hooksPath .contextkit/hooks'
+    );
   });
 
   it('9. does not duplicate prepare script on re-install', async () => {
     await fs.writeJson('package.json', {
       name: 'test-project',
-      scripts: { prepare: 'git config core.hooksPath .contextkit/hooks' }
+      scripts: { prepare: 'git config core.hooksPath .contextkit/hooks' },
     });
 
     await manager.installHooks('npm', { prePush: true, commitMsg: true });
@@ -150,7 +152,7 @@ describe('GitHooksManager - core.hooksPath', () => {
   it('13. uninstallHooks removes core.hooksPath and prepare script', async () => {
     await fs.writeJson('package.json', {
       name: 'test-project',
-      scripts: { prepare: 'git config core.hooksPath .contextkit/hooks' }
+      scripts: { prepare: 'git config core.hooksPath .contextkit/hooks' },
     });
     execSync('git config core.hooksPath .contextkit/hooks', { stdio: 'pipe' });
 

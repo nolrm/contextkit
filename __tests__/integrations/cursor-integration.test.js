@@ -73,9 +73,19 @@ describe('CursorIntegration', () => {
     await integration.install();
 
     const prompts = [
-      'analyze', 'review', 'fix', 'refactor', 'test', 'doc',
-      'squad', 'squad-architect', 'squad-dev', 'squad-test', 'squad-review',
-      'squad-auto', 'ck',
+      'analyze',
+      'review',
+      'fix',
+      'refactor',
+      'test',
+      'doc',
+      'squad',
+      'squad-architect',
+      'squad-dev',
+      'squad-test',
+      'squad-review',
+      'squad-auto',
+      'ck',
     ];
     for (const prompt of prompts) {
       const filePath = `.cursor/prompts/${prompt}.md`;

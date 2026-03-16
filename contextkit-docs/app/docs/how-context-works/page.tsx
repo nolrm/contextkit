@@ -125,12 +125,13 @@ AI receives context and generates code`}</pre>
         </p>
 
         <div className="rounded-lg border overflow-hidden mt-3">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" aria-label="Always loaded vs conditionally loaded context files">
+            <caption className="sr-only">Always loaded vs conditionally loaded context files</caption>
             <thead className="bg-muted/50">
               <tr>
-                <th className="text-left p-3 font-semibold">File</th>
-                <th className="text-left p-3 font-semibold">Trigger</th>
-                <th className="text-left p-3 font-semibold">Why</th>
+                <th className="text-left p-3 font-semibold" scope="col">File</th>
+                <th className="text-left p-3 font-semibold" scope="col">Trigger</th>
+                <th className="text-left p-3 font-semibold" scope="col">Why</th>
               </tr>
             </thead>
             <tbody className="divide-y">

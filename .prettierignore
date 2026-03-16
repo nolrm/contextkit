@@ -1,0 +1,5 @@
+node_modules/
+coverage/
+templates/
+.contextkit/
+contextkit-docs/

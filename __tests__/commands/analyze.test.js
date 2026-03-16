@@ -59,7 +59,7 @@ describe('AnalyzeCommand', () => {
 
   it('1. exits early when .contextkit/commands/analyze.md does not exist', async () => {
     await analyze({});
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/ContextKit not found/);
   });
 
@@ -72,7 +72,7 @@ describe('AnalyzeCommand', () => {
     await setupInstalled();
     await analyze({ package: '/nonexistent/path/xyz' });
     // spinner.fail() is mocked; verify the run completes without logging success
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).not.toMatch(/completed successfully/i);
     expect(logged).not.toMatch(/Analysis Instructions/i);
   });
@@ -101,7 +101,7 @@ describe('AnalyzeCommand', () => {
     await fs.ensureDir(pkgDir);
     await fs.writeJson(path.join(pkgDir, 'package.json'), { name: 'ui' });
     await expect(analyze({ nonInteractive: true })).resolves.not.toThrow();
-    const logged = consoleSpy.mock.calls.map(c => c.join(' ')).join(' ');
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     // spinner.succeed() is mocked; monorepo path shows via displayScopeInfo
     expect(logged).toMatch(/Monorepo Structure/i);
   });

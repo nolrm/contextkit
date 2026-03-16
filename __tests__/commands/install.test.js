@@ -21,13 +21,13 @@ jest.mock('ora', () => {
     start: jest.fn().mockReturnThis(),
     succeed: jest.fn().mockReturnThis(),
     fail: jest.fn().mockReturnThis(),
-    stop: jest.fn().mockReturnThis()
+    stop: jest.fn().mockReturnThis(),
   });
 });
 
 // Mock inquirer
 jest.mock('inquirer', () => ({
-  prompt: jest.fn()
+  prompt: jest.fn(),
 }));
 
 // Mock download manager — create empty files so chmod doesn't fail
@@ -37,14 +37,14 @@ jest.mock('../../lib/utils/download', () => {
     downloadFile: jest.fn().mockImplementation(async (url, dest) => {
       await realFs.ensureDir(require('path').dirname(dest));
       await realFs.writeFile(dest, '# mocked download\n');
-    })
+    }),
   }));
 });
 
 // Mock integrations registry
 jest.mock('../../lib/integrations', () => ({
   getIntegration: jest.fn().mockReturnValue(null),
-  getAllIntegrationNames: jest.fn().mockReturnValue([])
+  getAllIntegrationNames: jest.fn().mockReturnValue([]),
 }));
 
 const inquirer = require('inquirer');
@@ -193,9 +193,7 @@ describe('InstallCommand', () => {
     await install({});
 
     expect(inquirer.prompt).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'shouldContinue' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ name: 'shouldContinue' })])
     );
   });
 
@@ -221,7 +219,7 @@ describe('InstallCommand', () => {
     const mockIntegration = {
       install: jest.fn(),
       displayName: 'Claude',
-      showUsage: jest.fn()
+      showUsage: jest.fn(),
     };
     getIntegration.mockReturnValue(mockIntegration);
 
@@ -251,7 +249,7 @@ describe('InstallCommand', () => {
       displayName: 'Claude',
       showUsage: jest.fn(),
       bridgeFiles: ['CLAUDE.md'],
-      generatedFiles: []
+      generatedFiles: [],
     };
     getIntegration.mockReturnValue(mockIntegration);
 
@@ -269,7 +267,7 @@ describe('InstallCommand', () => {
       displayName: 'Cursor',
       showUsage: jest.fn(),
       bridgeFiles: ['.cursor/rules/contextkit-standards.md'],
-      generatedFiles: []
+      generatedFiles: [],
     };
     getIntegration.mockReturnValue(mockIntegration);
 
@@ -289,9 +287,7 @@ describe('InstallCommand', () => {
 
     // Should have prompted for platform
     expect(inquirer.prompt).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ name: 'platform', type: 'list' })
-      ])
+      expect.arrayContaining([expect.objectContaining({ name: 'platform', type: 'list' })])
     );
     expect(mockIntegration.install).toHaveBeenCalled();
   });
@@ -320,8 +316,8 @@ describe('InstallCommand', () => {
 
     expect(await fs.pathExists('.contextkit/config.yml')).toBe(true);
     // Should not have prompted for platform choice
-    const platformPromptCalls = inquirer.prompt.mock.calls.filter(
-      ([args]) => Array.isArray(args) ? args.some(a => a.name === 'platform') : args.name === 'platform'
+    const platformPromptCalls = inquirer.prompt.mock.calls.filter(([args]) =>
+      Array.isArray(args) ? args.some((a) => a.name === 'platform') : args.name === 'platform'
     );
     expect(platformPromptCalls).toHaveLength(0);
   });
@@ -419,8 +415,194 @@ describe('InstallCommand', () => {
     expect(mockIntegration.install).toHaveBeenCalled();
     // Reinstall prompt must NOT have been shown
     const reinstallCalls = inquirer.prompt.mock.calls.filter(([args]) =>
-      (Array.isArray(args) ? args : [args]).some(a => a.name === 'shouldContinue')
+      (Array.isArray(args) ? args : [args]).some((a) => a.name === 'shouldContinue')
     );
     expect(reinstallCalls).toHaveLength(0);
+  });
+});
+
+// ── Quality Tooling Scaffold ─────────────────────────────────────────────────
+
+const childProcess = require('child_process');
+
+describe('InstallCommand — promptQualityTooling / scaffoldQualityTooling', () => {
+  let tmpDir;
+  let originalCwd;
+  let InstallCommand;
+  let installer;
+  let execSyncSpy;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ck-quality-'));
+    originalCwd = process.cwd();
+    process.chdir(tmpDir);
+    jest.spyOn(console, 'log').mockImplementation();
+    execSyncSpy = jest.spyOn(childProcess, 'execSync').mockImplementation(() => {});
+
+    delete require.cache[require.resolve('../../lib/commands/install')];
+    ({ InstallCommand } = require('../../lib/commands/install'));
+    installer = new InstallCommand();
+  });
+
+  afterEach(async () => {
+    process.chdir(originalCwd);
+    await fs.remove(tmpDir);
+  });
+
+  it('26. promptQualityTooling skips when no package.json', async () => {
+    await installer.promptQualityTooling('npm', {});
+    expect(inquirer.prompt).not.toHaveBeenCalled();
+  });
+
+  it('27. promptQualityTooling skips when both scripts already exist', async () => {
+    await fs.writeJson('package.json', { scripts: { format: 'prettier .', lint: 'eslint .' } });
+    await installer.promptQualityTooling('npm', {});
+    expect(inquirer.prompt).not.toHaveBeenCalled();
+  });
+
+  it('28. promptQualityTooling skips in CI mode', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    const original = process.env.CI;
+    process.env.CI = 'true';
+    await installer.promptQualityTooling('npm', {});
+    expect(inquirer.prompt).not.toHaveBeenCalled();
+    process.env.CI = original;
+  });
+
+  it('29. promptQualityTooling shows prompt when format script is missing', async () => {
+    await fs.writeJson('package.json', { scripts: { lint: 'eslint .' } });
+    inquirer.prompt.mockResolvedValue({ scaffold: false });
+    await installer.promptQualityTooling('npm', {});
+    expect(inquirer.prompt).toHaveBeenCalled();
+  });
+
+  it('30. promptQualityTooling shows prompt when lint script is missing', async () => {
+    await fs.writeJson('package.json', { scripts: { format: 'prettier --write .' } });
+    inquirer.prompt.mockResolvedValue({ scaffold: false });
+    await installer.promptQualityTooling('npm', {});
+    expect(inquirer.prompt).toHaveBeenCalled();
+  });
+
+  it('31. promptQualityTooling calls scaffoldQualityTooling when user answers yes', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    inquirer.prompt.mockResolvedValue({ scaffold: true });
+    const scaffoldSpy = jest.spyOn(installer, 'scaffoldQualityTooling').mockResolvedValue();
+    await installer.promptQualityTooling('npm', {});
+    expect(scaffoldSpy).toHaveBeenCalled();
+  });
+
+  it('32. promptQualityTooling prints hint when user answers no', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    inquirer.prompt.mockResolvedValue({ scaffold: false });
+    await installer.promptQualityTooling('npm', {});
+    const logs = console.log.mock.calls.flat().join(' ');
+    expect(logs).toContain('format/lint scripts later');
+  });
+
+  it('33. scaffoldQualityTooling adds format and lint scripts to package.json', async () => {
+    await fs.writeJson('package.json', { name: 'test', scripts: {} });
+    await installer.scaffoldQualityTooling({ name: 'test', scripts: {} }, 'npm');
+    const pkg = await fs.readJson('package.json');
+    expect(pkg.scripts.format).toBe('prettier --write .');
+    expect(pkg.scripts.lint).toBe('eslint .');
+  });
+
+  it('34. scaffoldQualityTooling creates .prettierrc when none exists', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    expect(await fs.pathExists('.prettierrc')).toBe(true);
+    const rc = await fs.readJson('.prettierrc');
+    expect(rc.singleQuote).toBe(true);
+    expect(rc.semi).toBe(true);
+  });
+
+  it('35. scaffoldQualityTooling skips .prettierrc when one already exists', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await fs.writeFile('.prettierrc', '{"singleQuote":false}');
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    const rc = await fs.readFile('.prettierrc', 'utf-8');
+    expect(rc).toContain('"singleQuote":false'); // original unchanged
+  });
+
+  it('36. scaffoldQualityTooling creates .prettierignore when absent', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    expect(await fs.pathExists('.prettierignore')).toBe(true);
+    const content = await fs.readFile('.prettierignore', 'utf-8');
+    expect(content).toContain('node_modules/');
+  });
+
+  it('37. scaffoldQualityTooling creates eslint.config.js when none exists', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    expect(await fs.pathExists('eslint.config.js')).toBe(true);
+    const content = await fs.readFile('eslint.config.js', 'utf-8');
+    expect(content).toContain('@eslint/js');
+    expect(content).toContain('globals.node');
+    expect(content).toContain('globals.jest');
+  });
+
+  it('38. scaffoldQualityTooling skips eslint.config.js when one already exists', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await fs.writeFile('eslint.config.js', '// existing');
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    const content = await fs.readFile('eslint.config.js', 'utf-8');
+    expect(content).toBe('// existing');
+  });
+
+  it('39. scaffoldQualityTooling runs npm install with correct devDependencies', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'npm');
+    expect(execSyncSpy).toHaveBeenCalledWith(
+      expect.stringContaining('npm install --save-dev prettier eslint @eslint/js globals'),
+      expect.any(Object)
+    );
+  });
+
+  it('40. scaffoldQualityTooling uses pnpm add -D for pnpm projects', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    await installer.scaffoldQualityTooling({ scripts: {} }, 'pnpm');
+    expect(execSyncSpy).toHaveBeenCalledWith(
+      expect.stringContaining('pnpm add -D'),
+      expect.any(Object)
+    );
+  });
+
+  it('41. scaffoldQualityTooling handles npm install failure gracefully', async () => {
+    await fs.writeJson('package.json', { scripts: {} });
+    execSyncSpy.mockImplementation(() => {
+      throw new Error('network error');
+    });
+    // Should not throw — wraps in try/catch
+    await expect(installer.scaffoldQualityTooling({ scripts: {} }, 'npm')).resolves.not.toThrow();
+    const logs = console.log.mock.calls.flat().join(' ');
+    expect(logs).toContain('Could not complete quality tooling setup');
+  });
+
+  it('42. _hasExistingPrettierConfig returns true for .prettierrc', async () => {
+    await fs.writeFile('.prettierrc', '{}');
+    expect(await installer._hasExistingPrettierConfig({})).toBe(true);
+  });
+
+  it('43. _hasExistingPrettierConfig returns true for prettier key in package.json', async () => {
+    expect(await installer._hasExistingPrettierConfig({ prettier: {} })).toBe(true);
+  });
+
+  it('44. _hasExistingPrettierConfig returns false when no config', async () => {
+    expect(await installer._hasExistingPrettierConfig({})).toBe(false);
+  });
+
+  it('45. _hasExistingEslintConfig returns true for eslint.config.js', async () => {
+    await fs.writeFile('eslint.config.js', '');
+    expect(await installer._hasExistingEslintConfig({})).toBe(true);
+  });
+
+  it('46. _hasExistingEslintConfig returns true for .eslintrc.json', async () => {
+    await fs.writeFile('.eslintrc.json', '{}');
+    expect(await installer._hasExistingEslintConfig({})).toBe(true);
+  });
+
+  it('47. _hasExistingEslintConfig returns false when no config', async () => {
+    expect(await installer._hasExistingEslintConfig({})).toBe(false);
   });
 });
