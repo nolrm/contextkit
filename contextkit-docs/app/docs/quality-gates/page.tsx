@@ -13,6 +13,7 @@ export default function QualityGatesPage() {
     { id: 'commit-msg', text: 'Commit Message Hook' },
     { id: 'team-setup', text: 'Team Setup' },
     { id: 'configuration', text: 'Configuration' },
+    { id: 'troubleshooting', text: 'Troubleshooting' },
   ];
 
   useEffect(() => {
@@ -86,14 +87,11 @@ export default function QualityGatesPage() {
 
         <div className="rounded-lg border bg-muted/50 p-4 mt-2">
           <p className="text-sm font-medium mb-3">Where quality gates fit in the ContextKit workflow</p>
-          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Context (MD-first specs + standards)
-    → reduces AI hallucination upstream
-
-Squad workflow (PO → Architect → Dev → Test → Review)
-    → structures what gets built and how
-
-Quality gates (pre-push hook)
-    → enforces it mechanically at the git layer, no exceptions`}</pre>
+          <ol className="text-sm text-muted-foreground space-y-2 list-none pl-0">
+            <li><span className="font-medium text-foreground">1. Context</span> (MD-first specs + standards) — reduces AI hallucination upstream, before a line of code is written</li>
+            <li><span className="font-medium text-foreground">2. Squad workflow</span> (PO → Architect → Dev → Test → Review) — structures what gets built and how</li>
+            <li><span className="font-medium text-foreground">3. Quality gates</span> (pre-push hook) — enforces standards mechanically at the git layer, no exceptions</li>
+          </ol>
         </div>
 
         <p className="text-sm text-muted-foreground">
@@ -146,7 +144,7 @@ Quality gates (pre-push hook)
               During install
             </h3>
             <p className="text-sm text-muted-foreground ml-8">
-              <code className="rounded bg-muted px-1 font-mono text-xs">ck install</code> runs <code className="rounded bg-muted px-1 font-mono text-xs">git config core.hooksPath .contextkit/hooks</code> to tell Git where hooks live.
+              <code className="rounded bg-muted px-1 font-mono text-xs">ck install</code> copies hook scripts from the ContextKit repo into <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/hooks/</code> in your project, then runs <code className="rounded bg-muted px-1 font-mono text-xs">git config core.hooksPath .contextkit/hooks</code> to point Git at them.
             </p>
           </div>
 
@@ -181,7 +179,7 @@ Quality gates (pre-push hook)
       <div id="pre-push" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Pre-push Quality Gates</h2>
         <p className="text-muted-foreground leading-relaxed">
-          The pre-push hook auto-detects your project framework and runs the appropriate quality checks. All gates skip gracefully when tools aren't installed.
+          The pre-push hook auto-detects your project framework and runs the appropriate quality checks. All gates are skipped silently when tools aren't installed.
         </p>
 
         <div className="overflow-x-auto">
@@ -195,7 +193,7 @@ Quality gates (pre-push hook)
             <tbody className="text-muted-foreground">
               <tr className="border-b">
                 <td className="py-2 pr-4 font-medium">Node.js</td>
-                <td className="py-2">TypeScript, ESLint, Prettier, build, test (only when listed as dependencies; auto-detects npm/yarn/pnpm/bun)</td>
+                <td className="py-2">TypeScript, ESLint, Prettier, build, test, e2e tests — each check only runs when that tool or script is present in <code className="rounded bg-muted px-1 font-mono text-xs">package.json</code>; auto-detects npm/yarn/pnpm/bun</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-medium">Python</td>
@@ -221,6 +219,18 @@ Quality gates (pre-push hook)
                 <td className="py-2 pr-4 font-medium">Java</td>
                 <td className="py-2">Maven verify / Gradle check</td>
               </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-medium">Kotlin</td>
+                <td className="py-2">ktlint, Gradle test</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-medium">Swift</td>
+                <td className="py-2">SwiftLint, swift test</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-medium">.NET / C#</td>
+                <td className="py-2">dotnet build, dotnet test</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -229,12 +239,27 @@ Quality gates (pre-push hook)
           <div className="flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
             <div>
-              <p className="text-sm font-medium mb-1">Graceful skipping</p>
+              <p className="text-sm font-medium mb-1">Silent skipping</p>
               <p className="text-sm text-muted-foreground">
-                If a tool isn't installed (e.g., no ESLint in your project), that gate is skipped with a message — it won't block your push. Only installed tools are checked.
+                If a tool isn't installed (e.g., no ESLint in your project), that gate is skipped silently — it won't block your push. Only installed tools are checked.
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+          <p className="text-sm font-medium mb-2">When a gate fails</p>
+          <div className="rounded-lg border bg-muted/50 p-3 mb-2">
+            <pre className="font-mono text-xs overflow-x-auto">{`  [3] Tests
+  npm test
+  FAIL src/checkout.test.js
+  ...
+
+  ❌ Quality Gates FAILED — push blocked.`}</pre>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            The push is blocked and the failing gate is shown. Fix the issue and push again, or use <code className="rounded bg-muted px-1 font-mono text-xs">git push --no-verify</code> to bypass for emergencies.
+          </p>
         </div>
       </div>
 
@@ -251,12 +276,24 @@ Quality gates (pre-push hook)
 Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
         </div>
 
+        <div className="space-y-2 mt-1">
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground"><span className="font-medium">Auto-skipped:</span> merge commits, reverts, fixups, and squash commits are never validated.</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground"><span className="font-medium">Minimum length:</span> subject line must be at least 10 characters.</p>
+          </div>
+        </div>
+
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">Examples</h3>
           <div className="rounded-lg border bg-muted/50 p-4">
             <div className="space-y-1 font-mono text-sm">
               <code className="block rounded bg-muted px-3 py-1">feat(auth): add login page</code>
               <code className="block rounded bg-muted px-3 py-1">fix: resolve null pointer in checkout</code>
+              <code className="block rounded bg-muted px-3 py-1">improve(perf): reduce bundle size</code>
               <code className="block rounded bg-muted px-3 py-1">docs: update API reference</code>
               <code className="block rounded bg-muted px-3 py-1">test(cart): add edge case coverage</code>
             </div>
@@ -315,6 +352,53 @@ Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
             <div className="rounded-lg border bg-muted/50 p-3">
               <code className="block font-mono text-sm">git config --unset core.hooksPath</code>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Troubleshooting */}
+      <div id="troubleshooting" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Troubleshooting</h2>
+
+        <div className="space-y-3">
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="text-sm font-semibold mb-2">Hooks not running after clone (non-Node projects)</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              For non-Node projects there's no <code className="rounded bg-muted px-1 font-mono text-xs">prepare</code> script to auto-configure hooks after clone. Each developer needs to run this once:
+            </p>
+            <div className="rounded-lg border bg-muted/50 p-3">
+              <code className="block font-mono text-sm">git config core.hooksPath .contextkit/hooks</code>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Add this to your project's <code className="rounded bg-muted px-1 font-mono text-xs">Makefile</code>, <code className="rounded bg-muted px-1 font-mono text-xs">justfile</code>, or onboarding docs so new team members don't miss it.
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="text-sm font-semibold mb-2">When to use <code className="rounded bg-muted px-1 font-mono text-xs">git push --no-verify</code></h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              <code className="rounded bg-muted px-1 font-mono text-xs">--no-verify</code> bypasses all hooks for a single push. Use it sparingly — it's an escape hatch, not a workflow:
+            </p>
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+              <li>Emergency fix where a flaky test is blocking a critical deploy</li>
+              <li>Pushing a WIP branch you know isn't ready for full checks</li>
+              <li>Debugging the hook itself</li>
+            </ul>
+            <p className="text-sm text-muted-foreground mt-2">
+              Don't use it to avoid fixing a legitimate failure — that defeats the purpose of quality gates.
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="text-sm font-semibold mb-2">A tool is installed but its gate is still skipped</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Gates are skipped silently when the tool isn't found in the expected location. Common causes:
+            </p>
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+              <li><strong>Node.js gates</strong> (TypeScript, ESLint, Prettier): the hook checks <code className="rounded bg-muted px-1 font-mono text-xs">package.json</code> for the dependency — if it's installed globally but not listed in <code className="rounded bg-muted px-1 font-mono text-xs">dependencies</code> or <code className="rounded bg-muted px-1 font-mono text-xs">devDependencies</code>, the gate is skipped</li>
+              <li><strong>Build/test gates</strong>: the hook checks for a matching script key in <code className="rounded bg-muted px-1 font-mono text-xs">package.json#scripts</code> — if the script is named differently (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">unit-test</code> instead of <code className="rounded bg-muted px-1 font-mono text-xs">test</code>), the gate won't run</li>
+              <li><strong>All gates</strong>: if the tool isn't on <code className="rounded bg-muted px-1 font-mono text-xs">$PATH</code> when git runs the hook, it won't be found — check that your shell profile exports the right paths</li>
+            </ul>
           </div>
         </div>
       </div>

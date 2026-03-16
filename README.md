@@ -253,17 +253,20 @@ For **Node.js projects**, a `prepare` script is automatically added to `package.
 
 ### Framework-Aware Quality Gates
 
-The pre-push hook detects your project type and runs the right quality checks automatically. All gates skip gracefully when tools aren't installed.
+The pre-push hook detects your project type and runs the right quality checks automatically. All gates are skipped silently when tools aren't installed.
 
 | Framework | Checks |
 |-----------|--------|
-| **Node.js** | TypeScript, ESLint, Prettier, build, test (auto-detects npm/yarn/pnpm/bun) |
+| **Node.js** | TypeScript, ESLint, Prettier, build, test, e2e — each only runs when present in `package.json`; auto-detects npm/yarn/pnpm/bun |
 | **Python** | ruff/flake8, mypy, black/ruff format, pytest |
 | **Rust** | cargo check, clippy, cargo test |
 | **Go** | go vet, golangci-lint, go test |
 | **PHP** | PHPStan, PHPUnit |
 | **Ruby** | RuboCop, RSpec/rake test |
 | **Java** | Maven verify / Gradle check |
+| **Kotlin** | ktlint, Gradle test |
+| **Swift** | SwiftLint, swift test |
+| **.NET / C#** | dotnet build, dotnet test |
 
 ### Commit Message Format
 

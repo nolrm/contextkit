@@ -292,4 +292,162 @@ describe('pre-push hook', () => {
       expect(functionBody).not.toContain('│');
     });
   });
+
+  describe('AC8: Config file gate disable', () => {
+    it('21. gate_disabled function is defined in hook with config file reference', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('gate_disabled()');
+      expect(content).toContain('.contextkit/quality-gates.yml');
+    });
+
+    it('22. disabled gate is not executed when listed in quality-gates.yml', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'true' } });
+      await fs.ensureDir('.contextkit');
+      await fs.writeFile('.contextkit/quality-gates.yml', 'disable:\n  - test\n');
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      // Tests gate should not appear in output (not run, not skipped — silently omitted)
+      expect(result.output).not.toMatch(/\[\d+\] Tests/);
+    });
+
+    it('23. absent config file does not affect gate execution', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'true' } });
+      // No .contextkit/quality-gates.yml — all gates run normally
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toMatch(/\[\d+\] Tests/);
+    });
+  });
+
+  describe('AC9: Per-gate timing output', () => {
+    it('24. run_gate shows timing after gate completes', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'true' } });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      // Should contain timing output like "✓ 0s"
+      expect(result.output).toMatch(/✓ \d+s/);
+    });
+  });
+
+  describe('AC10: DRY_RUN mode', () => {
+    it('25. DRY_RUN=1 shows dry-run labels without executing gates', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'false' } });
+      try {
+        const output = execSync(path.join(hookPath, 'pre-push'), {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          encoding: 'utf8',
+          shell: '/bin/bash',
+          env: { ...process.env, DRY_RUN: '1' },
+        });
+        expect(output).toContain('dry-run');
+        expect(output).not.toContain('FAILED');
+      } catch (err) {
+        // Should not throw — DRY_RUN=1 must exit 0
+        throw new Error(`DRY_RUN=1 should exit 0 but got: ${err.stdout}${err.stderr}`);
+      }
+    });
+
+    it('26. DRY_RUN=1 exits 0 even when commands would fail', async () => {
+      // 'false' would cause the Tests gate to fail in normal mode
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'false' } });
+      expect(() => {
+        execSync(path.join(hookPath, 'pre-push'), {
+          stdio: 'pipe',
+          shell: '/bin/bash',
+          env: { ...process.env, DRY_RUN: '1' },
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe('AC11: Swift stack detection', () => {
+    it('27. Package.swift is detected as swift project type', async () => {
+      await fs.writeFile('Package.swift', '// swift-tools-version:5.0\nimport PackageDescription\nlet package = Package(name: "Test", targets: [])');
+      const result = runPrePushHook();
+      expect(result.output).toContain('Project: swift');
+    });
+
+    it('28. run_swift_gates function and stack wiring are defined in hook', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('run_swift_gates()');
+      expect(content).toContain('swift)   run_swift_gates ;;');
+      expect(content).toContain('gate_disabled "swiftlint"');
+      expect(content).toContain('gate_disabled "swift-test"');
+    });
+  });
+
+  describe('AC12: Kotlin stack detection', () => {
+    it('29. build.gradle with kotlin plugin is detected as kotlin project type', async () => {
+      await fs.writeFile('build.gradle', 'plugins { id "org.jetbrains.kotlin.jvm" version "1.9.0" }\n');
+      const result = runPrePushHook();
+      expect(result.output).toContain('Project: kotlin');
+    });
+
+    it('30. build.gradle WITHOUT kotlin plugin still routes to java stack', async () => {
+      await fs.writeFile('build.gradle', 'plugins { id "java" }\n');
+      const result = runPrePushHook();
+      expect(result.output).toContain('Project: java');
+    });
+
+    it('31. run_kotlin_gates function and stack wiring are defined in hook', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('run_kotlin_gates()');
+      expect(content).toContain('kotlin)  run_kotlin_gates ;;');
+      expect(content).toContain('gate_disabled "ktlint"');
+      expect(content).toContain('gate_disabled "kotlin-test"');
+    });
+  });
+
+  describe('AC13: .NET/C# stack detection', () => {
+    it('32. .csproj file is detected as dotnet project type', async () => {
+      await fs.writeFile('App.csproj', '<Project Sdk="Microsoft.NET.Sdk"></Project>');
+      const result = runPrePushHook();
+      expect(result.output).toContain('Project: dotnet');
+    });
+
+    it('33. run_dotnet_gates function and stack wiring are defined in hook', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('run_dotnet_gates()');
+      expect(content).toContain('dotnet)  run_dotnet_gates ;;');
+      expect(content).toContain('gate_disabled "dotnet-build"');
+      expect(content).toContain('gate_disabled "dotnet-test"');
+    });
+  });
+
+  describe('AC14: Monorepo support', () => {
+    it('34. monorepo support functions are defined in hook', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('detect_workspace_type()');
+      expect(content).toContain('get_workspace_dirs()');
+      expect(content).toContain('all_files_in_workspaces()');
+      expect(content).toContain('get_affected_workspace_dirs()');
+    });
+
+    it('35. hook runs successfully on npm workspace project (monorepo fallback)', async () => {
+      await fs.writeJSON('package.json', {
+        name: 'monorepo',
+        workspaces: ['packages/*'],
+        scripts: {},
+      });
+      await fs.ensureDir('packages/app');
+      await fs.writeJSON('packages/app/package.json', { name: 'app', scripts: {} });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      // With empty stdin (no SHA info), falls back to root-level gates
+      expect(result.output).toContain('Project: node');
+    });
+  });
+
+  describe('Skipped silently language', () => {
+    it('36. skip_gate outputs "skipped silently" text in normal mode', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('skipped silently');
+    });
+  });
 });

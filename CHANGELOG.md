@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.13.5] - 2026-03-16
+
+### Added
+- **Quality Gates: 3 new stacks** — Kotlin (ktlint + Gradle test), Swift (SwiftLint + swift test), .NET/C# (dotnet build + dotnet test)
+- **Quality Gates: config file** — `.contextkit/quality-gates.yml` with `disable:` list lets you opt out of specific gates without editing hook code (e.g. `disable: [eslint, prettier]`)
+- **Quality Gates: per-gate timing** — each gate shows elapsed time (`✓ 2s`) after completion
+- **Quality Gates: `DRY_RUN=1` mode** — set `DRY_RUN=1 git push` to preview which gates would run without executing them; exits 0
+- **Quality Gates: monorepo support** — npm/pnpm workspace projects scope gates to affected packages when all push changes are inside workspace package directories
+
+### Improved
+- **Quality Gates: docs** — failure banner callout with real output example; commit-msg section adds auto-skip note, 10-char minimum, `improve` example; Node.js table row adds e2e + package.json note; workflow block replaced with numbered list; "skipped silently" used consistently; Troubleshooting section added; hooks-copied-at-install clarified; Kotlin/Swift/.NET rows added to framework table
+
+---
+
+## [0.13.4] - 2026-03-16
+
+### Added
+- **`/doc-arch` command** — generates `docs/architecture.md` (Level 1: system boundaries, key flows, Mermaid diagrams). Stack-aware; can target current branch or a PR number.
+- **`/doc-feature` command** — generates `docs/features/<name>.md` (Level 2: feature scope, components, data flows, sequence diagrams). Accepts name, directory, or PR number.
+- **`/doc-component` command** — generates a colocated `<name>.md` next to a file (Level 3: props/API, usage example, edge cases). Accepts file path or directory.
+- **Docs: md-first page** — commands section with 3-level hierarchy table, per-command subsections, stack-awareness note, when-to-use-which table, squad integration note
+- **Docs: slash-commands page** — doc-arch, doc-feature, doc-component entries added
+
+---
+
 ## [0.13.3] - 2026-03-16
 
 ### Added

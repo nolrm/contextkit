@@ -23,21 +23,45 @@ run_gate() {
   GATE=$((GATE + 1))
   local label="$1"
   shift
+  if [ "${DRY_RUN:-0}" = "1" ]; then
+    echo "  [$GATE] (dry-run) $label"
+    return 0
+  fi
+  local _start _end _elapsed
+  _start=$(date +%s 2>/dev/null || echo "")
   echo "  [$GATE] $label"
   "$@"
   PASSED=$((PASSED + 1))
+  if [ -n "$_start" ]; then
+    _end=$(date +%s 2>/dev/null || echo "")
+    if [ -n "$_end" ]; then
+      _elapsed=$((_end - _start))
+      echo "      ✓ ${_elapsed}s"
+    fi
+  fi
 }
 
 skip_gate() {
   GATE=$((GATE + 1))
   local label="$1"
   local reason="$2"
-  echo "  [$GATE] $label — skipped ($reason)"
+  if [ "${DRY_RUN:-0}" = "1" ]; then
+    echo "  [$GATE] (dry-run) $label — would skip ($reason)"
+  else
+    echo "  [$GATE] $label — skipped silently ($reason)"
+  fi
   SKIPPED=$((SKIPPED + 1))
 }
 
 has_cmd() {
   command -v "$1" > /dev/null 2>&1
+}
+
+gate_disabled() {
+  local key="$1"
+  local config=".contextkit/quality-gates.yml"
+  [ -f "$config" ] || return 1
+  grep -qE "^\s*-\s+$key\s*$" "$config"
 }
 
 # ── Project Type Detection ──────────────────
@@ -55,16 +79,117 @@ detect_project_type() {
     echo "php"
   elif [ -f "Gemfile" ]; then
     echo "ruby"
+  elif ([ -f "build.gradle" ] || [ -f "build.gradle.kts" ]) && grep -qE "kotlin|org\.jetbrains\.kotlin" build.gradle build.gradle.kts 2>/dev/null; then
+    echo "kotlin"
+  elif [ -f "Package.swift" ] || find . -maxdepth 1 -name "*.xcodeproj" -type d 2>/dev/null | grep -q .; then
+    echo "swift"
   elif [ -f "pom.xml" ] || [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
     echo "java"
+  elif find . -maxdepth 2 \( -name "*.sln" -o -name "*.csproj" \) 2>/dev/null | grep -q .; then
+    echo "dotnet"
   else
     echo "generic"
   fi
 }
 
+# ── Monorepo Support ────────────────────────
+
+detect_workspace_type() {
+  if [ -f "pnpm-workspace.yaml" ]; then
+    echo "pnpm"
+  elif [ -f "package.json" ] && node -e "const p=require('./package.json'); process.exit(p.workspaces ? 0 : 1)" 2>/dev/null; then
+    echo "npm"
+  else
+    echo "none"
+  fi
+}
+
+get_workspace_dirs() {
+  local ws_type="$1"
+  case "$ws_type" in
+    npm)
+      node -e "
+        try {
+          const p = require('./package.json');
+          const ws = Array.isArray(p.workspaces) ? p.workspaces : (p.workspaces && p.workspaces.packages) || [];
+          ws.forEach(w => console.log(w));
+        } catch(e) {}
+      " 2>/dev/null | while IFS= read -r pattern; do
+        for dir in $pattern; do
+          [ -d "$dir" ] && echo "$dir"
+        done
+      done
+      ;;
+    pnpm)
+      grep -oE "^\s*-\s+['\"]?[^'\"#[:space:]]+" pnpm-workspace.yaml 2>/dev/null \
+        | sed "s/^\s*-\s*//" | sed "s/['\"]//g" \
+        | while IFS= read -r pattern; do
+          [ -n "$pattern" ] || continue
+          for dir in $pattern; do
+            [ -d "$dir" ] && echo "$dir"
+          done
+        done
+      ;;
+  esac
+}
+
+get_push_changed_files() {
+  local local_sha="$1"
+  local remote_sha="$2"
+  if [ -z "$local_sha" ] || [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+    echo ""
+    return
+  fi
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ] || [ -z "$remote_sha" ]; then
+    local base
+    base=$(git merge-base "$local_sha" origin/HEAD 2>/dev/null \
+      || git merge-base "$local_sha" origin/main 2>/dev/null \
+      || git merge-base "$local_sha" origin/master 2>/dev/null \
+      || git rev-list --max-parents=0 "$local_sha" 2>/dev/null | head -1)
+    if [ -n "$base" ]; then
+      git diff --name-only "$base" "$local_sha" 2>/dev/null || echo ""
+    else
+      echo ""
+    fi
+  else
+    git diff --name-only "$remote_sha" "$local_sha" 2>/dev/null || echo ""
+  fi
+}
+
+all_files_in_workspaces() {
+  local changed_files="$1"
+  local ws_dirs="$2"
+  [ -z "$changed_files" ] && return 1
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    local in_ws=false
+    for dir in $ws_dirs; do
+      case "$file" in
+        "$dir"/*) in_ws=true; break ;;
+      esac
+    done
+    if [ "$in_ws" = "false" ]; then
+      return 1
+    fi
+  done <<< "$changed_files"
+  return 0
+}
+
+get_affected_workspace_dirs() {
+  local changed_files="$1"
+  local ws_dirs="$2"
+  local affected=""
+  for dir in $ws_dirs; do
+    if echo "$changed_files" | grep -q "^$dir/"; then
+      affected="$affected $dir"
+    fi
+  done
+  echo "$affected" | tr ' ' '\n' | sort -u | grep -v "^$" | tr '\n' ' '
+}
+
 # ── Framework-Specific Gates ────────────────
 
-run_node_gates() {
+run_node_gates_core() {
   # Determine package manager
   if [ -f "pnpm-lock.yaml" ]; then
     PM="pnpm"
@@ -76,80 +201,129 @@ run_node_gates() {
     PM="npm"
   fi
 
-  # Gate: TypeScript (only if listed as dependency, not keywords)
-  if grep -qE '"typescript"[[:space:]]*:' package.json 2>/dev/null; then
-    if has_cmd npx; then
-      run_gate "TypeScript type check" npx tsc --noEmit
-    else
-      skip_gate "TypeScript type check" "npx not found"
+  # Gate: TypeScript (only if listed as dependency)
+  if ! gate_disabled "typescript"; then
+    if grep -qE '"typescript"[[:space:]]*:' package.json 2>/dev/null; then
+      if has_cmd npx; then
+        run_gate "TypeScript type check" npx tsc --noEmit
+      else
+        skip_gate "TypeScript type check" "npx not found"
+      fi
     fi
   fi
 
-  # Gate: ESLint (only if listed as dependency, not keywords)
-  if grep -qE '"eslint"[[:space:]]*:' package.json 2>/dev/null; then
-    if has_cmd npx; then
-      run_gate "ESLint" npx eslint .
-    else
-      skip_gate "ESLint" "npx not found"
+  # Gate: ESLint (only if listed as dependency)
+  if ! gate_disabled "eslint"; then
+    if grep -qE '"eslint"[[:space:]]*:' package.json 2>/dev/null; then
+      if has_cmd npx; then
+        run_gate "ESLint" npx eslint .
+      else
+        skip_gate "ESLint" "npx not found"
+      fi
     fi
   fi
 
-  # Gate: Prettier (only if listed as dependency, not keywords)
-  if grep -qE '"prettier"[[:space:]]*:' package.json 2>/dev/null; then
-    if has_cmd npx; then
-      run_gate "Prettier format check" npx prettier --check .
-    else
-      skip_gate "Prettier format check" "npx not found"
+  # Gate: Prettier (only if listed as dependency)
+  if ! gate_disabled "prettier"; then
+    if grep -qE '"prettier"[[:space:]]*:' package.json 2>/dev/null; then
+      if has_cmd npx; then
+        run_gate "Prettier format check" npx prettier --check .
+      else
+        skip_gate "Prettier format check" "npx not found"
+      fi
     fi
   fi
 
   # Gate: Build (check scripts.build)
-  if grep -q '"build"[[:space:]]*:' package.json 2>/dev/null; then
-    run_gate "Build" $PM run build
+  if ! gate_disabled "build"; then
+    if grep -q '"build"[[:space:]]*:' package.json 2>/dev/null; then
+      run_gate "Build" $PM run build
+    fi
   fi
 
   # Gate: Tests (check scripts.test)
-  if grep -q '"test"[[:space:]]*:' package.json 2>/dev/null; then
-    run_gate "Tests" $PM test
+  if ! gate_disabled "test"; then
+    if grep -q '"test"[[:space:]]*:' package.json 2>/dev/null; then
+      run_gate "Tests" $PM test
+    fi
   fi
 
   # Gate: E2E (check scripts.e2e)
-  if grep -q '"e2e"[[:space:]]*:' package.json 2>/dev/null; then
-    run_gate "E2E tests" $PM run e2e
+  if ! gate_disabled "e2e"; then
+    if grep -q '"e2e"[[:space:]]*:' package.json 2>/dev/null; then
+      run_gate "E2E tests" $PM run e2e
+    fi
   fi
+}
+
+run_node_gates() {
+  local ws_type
+  ws_type=$(detect_workspace_type)
+
+  if [ "$ws_type" != "none" ] && [ -n "$LOCAL_SHA" ]; then
+    local ws_dirs changed_files affected
+    ws_dirs=$(get_workspace_dirs "$ws_type")
+    changed_files=$(get_push_changed_files "$LOCAL_SHA" "$REMOTE_SHA")
+
+    if [ -n "$ws_dirs" ] && [ -n "$changed_files" ]; then
+      affected=$(get_affected_workspace_dirs "$changed_files" "$ws_dirs")
+
+      if [ -n "$affected" ] && all_files_in_workspaces "$changed_files" "$ws_dirs"; then
+        echo "  Monorepo: scoping gates to affected packages:$affected"
+        for pkg_dir in $affected; do
+          if [ -f "$pkg_dir/package.json" ]; then
+            echo ""
+            echo "  → Package: $pkg_dir"
+            (cd "$pkg_dir" && run_node_gates_core)
+          fi
+        done
+        return
+      fi
+    fi
+  fi
+
+  run_node_gates_core
 }
 
 run_python_gates() {
   # Gate: Linting (ruff preferred, fallback to flake8)
-  if has_cmd ruff; then
-    run_gate "Ruff lint" ruff check .
-  elif has_cmd flake8; then
-    run_gate "Flake8 lint" flake8 .
-  else
-    skip_gate "Linting" "ruff/flake8 not found"
+  if ! gate_disabled "lint"; then
+    if has_cmd ruff; then
+      run_gate "Ruff lint" ruff check .
+    elif has_cmd flake8; then
+      run_gate "Flake8 lint" flake8 .
+    else
+      skip_gate "Linting" "ruff/flake8 not found"
+    fi
   fi
 
   # Gate: Type checking
-  if has_cmd mypy; then
-    run_gate "Mypy type check" mypy .
-  else
-    skip_gate "Type check" "mypy not found"
+  if ! gate_disabled "typecheck"; then
+    if has_cmd mypy; then
+      run_gate "Mypy type check" mypy .
+    else
+      skip_gate "Type check" "mypy not found"
+    fi
   fi
 
   # Gate: Formatting
-  if has_cmd ruff; then
-    run_gate "Ruff format check" ruff format --check .
-  elif has_cmd black; then
-    run_gate "Black format check" black --check .
-  else
-    skip_gate "Format check" "ruff/black not found"
+  if ! gate_disabled "format"; then
+    if has_cmd ruff; then
+      run_gate "Ruff format check" ruff format --check .
+    elif has_cmd black; then
+      run_gate "Black format check" black --check .
+    else
+      skip_gate "Format check" "ruff/black not found"
+    fi
   fi
 
   # Gate: Tests
-  if has_cmd pytest; then
-    run_gate "Pytest" pytest
-  else
-    skip_gate "Tests" "pytest not found"
+  if ! gate_disabled "test"; then
+    if has_cmd pytest; then
+      run_gate "Pytest" pytest
+    else
+      skip_gate "Tests" "pytest not found"
+    fi
   fi
 }
 
@@ -159,13 +333,21 @@ run_rust_gates() {
     return
   fi
 
-  run_gate "Cargo check" cargo check
-  if has_cmd cargo-clippy || cargo clippy --version > /dev/null 2>&1; then
-    run_gate "Cargo clippy" cargo clippy -- -D warnings
-  else
-    skip_gate "Cargo clippy" "clippy not installed"
+  if ! gate_disabled "cargo-check"; then
+    run_gate "Cargo check" cargo check
   fi
-  run_gate "Cargo test" cargo test
+
+  if ! gate_disabled "clippy"; then
+    if has_cmd cargo-clippy || cargo clippy --version > /dev/null 2>&1; then
+      run_gate "Cargo clippy" cargo clippy -- -D warnings
+    else
+      skip_gate "Cargo clippy" "clippy not installed"
+    fi
+  fi
+
+  if ! gate_disabled "cargo-test"; then
+    run_gate "Cargo test" cargo test
+  fi
 }
 
 run_go_gates() {
@@ -181,50 +363,66 @@ run_go_gates() {
     return
   fi
 
-  run_gate "Go vet" go vet ./...
-  if has_cmd golangci-lint; then
-    run_gate "golangci-lint" golangci-lint run
-  else
-    skip_gate "golangci-lint" "not installed"
+  if ! gate_disabled "go-vet"; then
+    run_gate "Go vet" go vet ./...
   fi
-  run_gate "Go test" go test ./...
+
+  if ! gate_disabled "golangci-lint"; then
+    if has_cmd golangci-lint; then
+      run_gate "golangci-lint" golangci-lint run
+    else
+      skip_gate "golangci-lint" "not installed"
+    fi
+  fi
+
+  if ! gate_disabled "go-test"; then
+    run_gate "Go test" go test ./...
+  fi
 }
 
 run_php_gates() {
   # Gate: Static analysis
-  if has_cmd phpstan; then
-    run_gate "PHPStan" phpstan analyse
-  elif has_cmd vendor/bin/phpstan; then
-    run_gate "PHPStan" vendor/bin/phpstan analyse
-  else
-    skip_gate "Static analysis" "phpstan not found"
+  if ! gate_disabled "phpstan"; then
+    if has_cmd phpstan; then
+      run_gate "PHPStan" phpstan analyse
+    elif [ -f "vendor/bin/phpstan" ]; then
+      run_gate "PHPStan" vendor/bin/phpstan analyse
+    else
+      skip_gate "Static analysis" "phpstan not found"
+    fi
   fi
 
   # Gate: Tests
-  if has_cmd phpunit; then
-    run_gate "PHPUnit" phpunit
-  elif [ -f "vendor/bin/phpunit" ]; then
-    run_gate "PHPUnit" vendor/bin/phpunit
-  else
-    skip_gate "Tests" "phpunit not found"
+  if ! gate_disabled "phpunit"; then
+    if has_cmd phpunit; then
+      run_gate "PHPUnit" phpunit
+    elif [ -f "vendor/bin/phpunit" ]; then
+      run_gate "PHPUnit" vendor/bin/phpunit
+    else
+      skip_gate "Tests" "phpunit not found"
+    fi
   fi
 }
 
 run_ruby_gates() {
   # Gate: Linting
-  if has_cmd rubocop; then
-    run_gate "RuboCop" rubocop
-  else
-    skip_gate "Linting" "rubocop not found"
+  if ! gate_disabled "rubocop"; then
+    if has_cmd rubocop; then
+      run_gate "RuboCop" rubocop
+    else
+      skip_gate "Linting" "rubocop not found"
+    fi
   fi
 
   # Gate: Tests
-  if has_cmd rspec; then
-    run_gate "RSpec" rspec
-  elif has_cmd rake && rake -T 2>/dev/null | grep -q "test"; then
-    run_gate "Rake test" rake test
-  else
-    skip_gate "Tests" "rspec/rake not found"
+  if ! gate_disabled "rspec"; then
+    if has_cmd rspec; then
+      run_gate "RSpec" rspec
+    elif has_cmd rake && rake -T 2>/dev/null | grep -q "test"; then
+      run_gate "Rake test" rake test
+    else
+      skip_gate "Tests" "rspec/rake not found"
+    fi
   fi
 }
 
@@ -236,30 +434,97 @@ run_java_gates() {
   fi
 
   if [ -f "pom.xml" ]; then
-    if ! has_cmd mvn; then
-      skip_gate "Maven verify" "mvn not found"
-    elif [ "$has_sources" = false ]; then
-      skip_gate "Maven verify" "no source files found"
-    else
-      run_gate "Maven verify" mvn verify
+    if ! gate_disabled "maven-verify"; then
+      if ! has_cmd mvn; then
+        skip_gate "Maven verify" "mvn not found"
+      elif [ "$has_sources" = false ]; then
+        skip_gate "Maven verify" "no source files found"
+      else
+        run_gate "Maven verify" mvn verify
+      fi
     fi
   elif [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
+    if ! gate_disabled "gradle-check"; then
+      local gradle_cmd=""
+      if [ -f "gradlew" ]; then
+        gradle_cmd="./gradlew"
+      elif has_cmd gradle; then
+        gradle_cmd="gradle"
+      else
+        skip_gate "Gradle check" "gradle/gradlew not found"
+        return
+      fi
+
+      # Verify 'check' task exists (requires java/application plugin)
+      if $gradle_cmd tasks --quiet 2>/dev/null | grep -q "^check"; then
+        run_gate "Gradle check" $gradle_cmd check
+      else
+        skip_gate "Gradle check" "check task not available"
+      fi
+    fi
+  fi
+}
+
+run_swift_gates() {
+  # Gate: SwiftLint
+  if ! gate_disabled "swiftlint"; then
+    if has_cmd swiftlint; then
+      run_gate "SwiftLint" swiftlint lint
+    else
+      skip_gate "SwiftLint" "swiftlint not installed"
+    fi
+  fi
+
+  # Gate: Swift test
+  if ! gate_disabled "swift-test"; then
+    if has_cmd swift; then
+      run_gate "Swift test" swift test
+    else
+      skip_gate "Swift test" "swift not found"
+    fi
+  fi
+}
+
+run_kotlin_gates() {
+  # Gate: ktlint
+  if ! gate_disabled "ktlint"; then
+    if has_cmd ktlint; then
+      run_gate "ktlint" ktlint
+    else
+      skip_gate "ktlint" "ktlint not installed"
+    fi
+  fi
+
+  # Gate: Kotlin test
+  if ! gate_disabled "kotlin-test"; then
     local gradle_cmd=""
     if [ -f "gradlew" ]; then
       gradle_cmd="./gradlew"
     elif has_cmd gradle; then
       gradle_cmd="gradle"
-    else
-      skip_gate "Gradle check" "gradle/gradlew not found"
-      return
     fi
 
-    # Verify 'check' task exists (requires java/application plugin)
-    if $gradle_cmd tasks --quiet 2>/dev/null | grep -q "^check"; then
-      run_gate "Gradle check" $gradle_cmd check
+    if [ -n "$gradle_cmd" ]; then
+      run_gate "Kotlin test" $gradle_cmd test
     else
-      skip_gate "Gradle check" "check task not available"
+      skip_gate "Kotlin test" "gradle/gradlew not found"
     fi
+  fi
+}
+
+run_dotnet_gates() {
+  if ! has_cmd dotnet; then
+    skip_gate "dotnet build" "dotnet not found"
+    skip_gate "dotnet test" "dotnet not found"
+    return
+  fi
+
+  if ! gate_disabled "dotnet-build"; then
+    run_gate "dotnet build" dotnet build
+  fi
+
+  if ! gate_disabled "dotnet-test"; then
+    run_gate "dotnet test" dotnet test
   fi
 }
 
@@ -270,11 +535,21 @@ run_generic_gates() {
 
 # ── Main ────────────────────────────────────
 
+# Capture push ref info from stdin (format: local-ref local-sha remote-ref remote-sha)
+# Uses only bash builtins — safe with restricted PATH environments
+# Falls back to empty strings if stdin is empty (when run directly, not via git)
+LOCAL_SHA=""
+REMOTE_SHA=""
+IFS=' ' read -r _push_local_ref LOCAL_SHA _push_remote_ref REMOTE_SHA 2>/dev/null || true
+
 PROJECT_TYPE=$(detect_project_type)
 
 echo ""
 echo "┌─────────────────────────────────────────────┐"
 echo "│  Quality Gates — ContextKit Pre-Push Checks  │"
+if [ "${DRY_RUN:-0}" = "1" ]; then
+echo "│  Mode: DRY RUN (no checks will be executed)  │"
+fi
 echo "│  Project: $PROJECT_TYPE"
 echo "└─────────────────────────────────────────────┘"
 echo ""
@@ -286,7 +561,10 @@ case "$PROJECT_TYPE" in
   go)      run_go_gates ;;
   php)     run_php_gates ;;
   ruby)    run_ruby_gates ;;
+  kotlin)  run_kotlin_gates ;;
+  swift)   run_swift_gates ;;
   java)    run_java_gates ;;
+  dotnet)  run_dotnet_gates ;;
   generic) run_generic_gates ;;
 esac
 
