@@ -431,6 +431,7 @@ describe('InstallCommand — promptQualityTooling / scaffoldQualityTooling', () 
   let InstallCommand;
   let installer;
   let execSyncSpy;
+  let savedCI;
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ck-quality-'));
@@ -439,12 +440,18 @@ describe('InstallCommand — promptQualityTooling / scaffoldQualityTooling', () 
     jest.spyOn(console, 'log').mockImplementation();
     execSyncSpy = jest.spyOn(childProcess, 'execSync').mockImplementation(() => {});
 
+    // Unset CI so promptQualityTooling interactive path is reachable in CI environments
+    savedCI = process.env.CI;
+    delete process.env.CI;
+
     delete require.cache[require.resolve('../../lib/commands/install')];
     ({ InstallCommand } = require('../../lib/commands/install'));
     installer = new InstallCommand();
   });
 
   afterEach(async () => {
+    if (savedCI === undefined) delete process.env.CI;
+    else process.env.CI = savedCI;
     process.chdir(originalCwd);
     await fs.remove(tmpDir);
   });
