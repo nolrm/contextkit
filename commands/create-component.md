@@ -4,6 +4,7 @@ Scaffold a new UI component with tests, following the MD-first pattern.
 
 **MD-first rule:** A spec file must exist (or be created now) before any code is written.
 The spec lives colocated with the component:
+
 ```
 src/components/ComponentName/
   ComponentName.md    ← spec (Level 3 doc)

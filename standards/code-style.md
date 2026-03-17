@@ -62,11 +62,11 @@ const Table = () => {
 
 ```typescript
 // Good
-const API_BASE_URL = "https://api.example.com";
+const API_BASE_URL = 'https://api.example.com';
 const MAX_RETRY_ATTEMPTS = 3;
 
 // Bad
-const apiBaseUrl = "https://api.example.com";
+const apiBaseUrl = 'https://api.example.com';
 const maxRetryAttempts = 3;
 ```
 
@@ -81,10 +81,10 @@ const maxRetryAttempts = 3;
 
 ```typescript
 // Good
-import React from "react";
-import { Button } from "@mui/material";
-import { useAuth } from "../hooks/useAuth";
-import { User } from "../types/User";
+import React from 'react';
+import { Button } from '@mui/material';
+import { useAuth } from '../hooks/useAuth';
+import { User } from '../types/User';
 ```
 
 ### Export Style
@@ -118,7 +118,7 @@ interface User {
   email: string;
 }
 
-type Status = "loading" | "success" | "error";
+type Status = 'loading' | 'success' | 'error';
 
 // Bad
 const user: any = {
@@ -212,8 +212,8 @@ const fetchUser = async (id: string): Promise<User> => {
     const response = await api.get(`/users/${id}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch user:", error);
-    throw new Error("Unable to load user data");
+    console.error('Failed to fetch user:', error);
+    throw new Error('Unable to load user data');
   }
 };
 ```
@@ -249,8 +249,8 @@ const ExpensiveComponent = React.memo(({ data }: Props) => {
 
 ```typescript
 // Good
-const HeavyComponent = lazy(() => import("./HeavyComponent"));
+const HeavyComponent = lazy(() => import('./HeavyComponent'));
 
 // Bad
-import * as _ from "lodash";
+import * as _ from 'lodash';
 ```

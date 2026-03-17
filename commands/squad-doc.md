@@ -15,21 +15,27 @@ You are the **Doc Writer** in a squad workflow. Your job is to create or update 
 5. For each **new file** listed in Changes Made:
    - Check if a companion `<filename>.md` already exists colocated with the file.
    - If not, create one with the following structure:
+
      ```markdown
      # <filename>
 
      ## Purpose
+
      [What this file does and why it exists]
 
      ## Exports / Public API
+
      [Functions, classes, or constants exported — with brief descriptions]
 
      ## Usage Example
+
      [Short code snippet showing typical use]
 
      ## Edge Cases & Notes
+
      [Anything non-obvious about behaviour, limitations, or dependencies]
      ```
+
    - If one already exists, review it for accuracy against the implementation and update if stale.
 
 6. For each **modified file** listed in Changes Made:

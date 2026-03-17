@@ -21,16 +21,16 @@
 
 ```typescript
 // Good
-describe("UserCard", () => {
-  it("1. renders user information correctly", () => {
+describe('UserCard', () => {
+  it('1. renders user information correctly', () => {
     // test implementation
   });
 
-  it("2. handles edit button click", () => {
+  it('2. handles edit button click', () => {
     // test implementation
   });
 
-  it("3. displays error state when user data is invalid", () => {
+  it('3. displays error state when user data is invalid', () => {
     // test implementation
   });
 });
@@ -44,16 +44,16 @@ describe("UserCard", () => {
 
 ```typescript
 // Good
-it("1. should display user name when user data is provided", () => {
+it('1. should display user name when user data is provided', () => {
   // test implementation
 });
 
-it("2. should show loading spinner when user data is loading", () => {
+it('2. should show loading spinner when user data is loading', () => {
   // test implementation
 });
 
 // Bad
-it("works", () => {
+it('works', () => {
   // test implementation
 });
 ```
@@ -91,20 +91,20 @@ describe("UserCard", () => {
 
 ```typescript
 // Good
-import { vi } from "vitest";
+import { vi } from 'vitest';
 
 const mockApiCall = vi.fn();
-vi.mock("../api", () => ({
+vi.mock('../api', () => ({
   fetchUser: mockApiCall,
 }));
 
-describe("UserService", () => {
-  it("1. calls API with correct parameters", async () => {
-    mockApiCall.mockResolvedValue({ id: "1", name: "John" });
+describe('UserService', () => {
+  it('1. calls API with correct parameters', async () => {
+    mockApiCall.mockResolvedValue({ id: '1', name: 'John' });
 
-    await fetchUser("1");
+    await fetchUser('1');
 
-    expect(mockApiCall).toHaveBeenCalledWith("1");
+    expect(mockApiCall).toHaveBeenCalledWith('1');
   });
 });
 ```
@@ -203,21 +203,21 @@ describe("Modal", () => {
 
 ```typescript
 // Good
-describe("UserService", () => {
-  it("1. fetches user data successfully", async () => {
-    const mockUser = { id: "1", name: "John Doe" };
+describe('UserService', () => {
+  it('1. fetches user data successfully', async () => {
+    const mockUser = { id: '1', name: 'John Doe' };
     mockApiCall.mockResolvedValue(mockUser);
 
-    const result = await fetchUser("1");
+    const result = await fetchUser('1');
 
     expect(result).toEqual(mockUser);
-    expect(mockApiCall).toHaveBeenCalledWith("1");
+    expect(mockApiCall).toHaveBeenCalledWith('1');
   });
 
-  it("2. handles API errors gracefully", async () => {
-    mockApiCall.mockRejectedValue(new Error("API Error"));
+  it('2. handles API errors gracefully', async () => {
+    mockApiCall.mockRejectedValue(new Error('API Error'));
 
-    await expect(fetchUser("1")).rejects.toThrow("API Error");
+    await expect(fetchUser('1')).rejects.toThrow('API Error');
   });
 });
 ```
@@ -254,7 +254,7 @@ open coverage/index.html
 
 ```typescript
 // Good
-describe("UserService", () => {
+describe('UserService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -263,7 +263,7 @@ describe("UserService", () => {
     cleanup();
   });
 
-  it("1. should work independently", () => {
+  it('1. should work independently', () => {
     // test implementation
   });
 });

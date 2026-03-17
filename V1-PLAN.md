@@ -6,18 +6,18 @@
 
 ## Summary
 
-| Area | Status | Blocking 1.0? |
-|------|--------|---------------|
-| Core CLI (install, status, update) | ✅ Tested & stable | No |
-| Platform integrations (9 platforms) | ✅ Working | No |
-| Quality gates (7 languages) | ✅ Tested | No |
-| Squad workflow | ✅ Feature-complete, ❌ untested | Yes |
-| Command test coverage | ❌ 3/11 commands tested (27%) | Yes |
-| Analyze UX clarity | ❌ Behavior mismatch | Yes |
-| Project dogfooding | ❌ Own product files are placeholders | Yes |
-| API stability contract | ❌ Not documented | Yes |
-| Contributing guide | ❌ Missing | Yes |
-| MD-first pattern (3-level spec) | 🚧 Partial (templates + commands done) | Yes |
+| Area                                | Status                                 | Blocking 1.0? |
+| ----------------------------------- | -------------------------------------- | ------------- |
+| Core CLI (install, status, update)  | ✅ Tested & stable                     | No            |
+| Platform integrations (9 platforms) | ✅ Working                             | No            |
+| Quality gates (7 languages)         | ✅ Tested                              | No            |
+| Squad workflow                      | ✅ Feature-complete, ❌ untested       | Yes           |
+| Command test coverage               | ❌ 3/11 commands tested (27%)          | Yes           |
+| Analyze UX clarity                  | ❌ Behavior mismatch                   | Yes           |
+| Project dogfooding                  | ❌ Own product files are placeholders  | Yes           |
+| API stability contract              | ❌ Not documented                      | Yes           |
+| Contributing guide                  | ❌ Missing                             | Yes           |
+| MD-first pattern (3-level spec)     | 🚧 Partial (templates + commands done) | Yes           |
 
 ---
 
@@ -26,17 +26,20 @@
 > **Goal:** Bring critical commands to tested. Not aiming for 100% — focus on the commands users actually run.
 
 ### High Priority (user-facing commands)
+
 - [ ] `lib/commands/analyze.js` — test scope detection, monorepo detection, context loading, usage output
 - [ ] `lib/commands/pull.js` — test registry pull, version resolution, backup flag, overwrite behavior
 - [ ] `lib/commands/check.js` — test install detection, status reporting
 - [ ] `lib/commands/run.js` — test command routing and execution
 
 ### Medium Priority
+
 - [ ] `lib/commands/ai.js` — test prompt construction, tool routing (aider, claude, gemini)
 - [ ] `lib/commands/publish.js` — test package validation and registry write
 - [ ] `lib/commands/note.js` — test file append and corrections log format
 
 ### Squad Workflow (integration-level)
+
 - [ ] Test manifest creation from `squad-batch` input (fresh start)
 - [ ] Test manifest append mode (existing manifest detected, numbering continues correctly)
 - [ ] Test `squad-run` phase routing based on manifest statuses
@@ -62,6 +65,7 @@
 > **The credibility gap:** ContextKit's own `.contextkit/` is mostly placeholder. The tool that helps teams fill their context hasn't filled its own.
 
 ### Product files
+
 - [ ] Fill `.contextkit/product/mission.md` — write actual ContextKit mission, users, problem, value
 - [ ] Fill `.contextkit/product/mission-lite.md` — condensed 2-3 sentence version for AI context
 - [ ] Fill `.contextkit/product/decisions.md` — document real architectural decisions made so far:
@@ -72,6 +76,7 @@
 - [ ] Fill `.contextkit/product/roadmap.md` — use this document as the source
 
 ### Standards files (run `ck analyze` on itself)
+
 - [ ] Generate `.contextkit/standards/code-style.md` — Node.js/CommonJS, chalk, ora, inquirer patterns
 - [ ] Generate `.contextkit/standards/architecture.md` — command pattern, utils structure, integration pattern
 - [ ] Generate `.contextkit/standards/testing.md` — Jest, mock patterns, integration vs unit split
@@ -113,13 +118,14 @@
 
 ### The 3 Levels (Option A: Colocated)
 
-| Level | Scope | Location |
-|-------|-------|----------|
-| **1. Architecture** | How projects connect | `.contextkit/standards/architecture.md` |
-| **2. Project** | What this project does, structure | `.contextkit/product/mission.md` + `context.md` |
-| **3. Component** | Individual component logic & responsibilities | `<ComponentName>/<ComponentName>.md` (colocated) |
+| Level               | Scope                                         | Location                                         |
+| ------------------- | --------------------------------------------- | ------------------------------------------------ |
+| **1. Architecture** | How projects connect                          | `.contextkit/standards/architecture.md`          |
+| **2. Project**      | What this project does, structure             | `.contextkit/product/mission.md` + `context.md`  |
+| **3. Component**    | Individual component logic & responsibilities | `<ComponentName>/<ComponentName>.md` (colocated) |
 
 Level 3 example:
+
 ```
 src/components/Button/
   Button.md       ← spec (written first)
@@ -150,13 +156,13 @@ src/components/Button/
 
 ## 8. Version Milestones
 
-| Version | Focus | Done when |
-|---------|-------|-----------|
-| **0.13** | Test coverage + analyze UX | All high-priority tests written, analyze output updated |
-| **0.14** | Dogfooding + product files | All `.contextkit/product/` and standards filled |
-| **0.15** | API contract + contributing | README stability docs + CONTRIBUTING.md merged |
-| **0.16** | Polish sprint | All loose ends resolved, no known issues |
-| **1.0.0** | Release | All items above checked off |
+| Version   | Focus                       | Done when                                               |
+| --------- | --------------------------- | ------------------------------------------------------- |
+| **0.13**  | Test coverage + analyze UX  | All high-priority tests written, analyze output updated |
+| **0.14**  | Dogfooding + product files  | All `.contextkit/product/` and standards filled         |
+| **0.15**  | API contract + contributing | README stability docs + CONTRIBUTING.md merged          |
+| **0.16**  | Polish sprint               | All loose ends resolved, no known issues                |
+| **1.0.0** | Release                     | All items above checked off                             |
 
 ---
 

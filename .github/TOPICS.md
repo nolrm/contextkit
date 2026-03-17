@@ -1,6 +1,7 @@
 # ContextKit Topics
 
 ## Primary Topics
+
 - context-engineering
 - ai-context
 - ai-development-tools
@@ -8,6 +9,7 @@
 - project-standards
 
 ## Platform Support
+
 - cursor-ai
 - claude-anthropic
 - aider
@@ -16,6 +18,7 @@
 - github-copilot
 
 ## Use Cases
+
 - ai-assisted-development
 - code-context
 - structured-context
@@ -24,8 +27,8 @@
 - development-workflow
 
 ## Technology
+
 - typescript
 - nodejs
 - cli-tool
 - developer-tools
-

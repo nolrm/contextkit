@@ -212,31 +212,35 @@ run_node_gates_core() {
     fi
   fi
 
-  # Gate: ESLint (only if listed as dependency)
+  # Gate: ESLint (only if listed as dependency and no lint script — lint script takes precedence)
   if ! gate_disabled "eslint"; then
     if grep -qE '"eslint"[[:space:]]*:' package.json 2>/dev/null; then
-      if has_cmd npx; then
-        run_gate "ESLint" npx eslint .
-      else
-        skip_gate "ESLint" "npx not found"
+      if ! grep -q '"lint"[[:space:]]*:' package.json 2>/dev/null; then
+        if has_cmd npx; then
+          run_gate "ESLint" npx eslint .
+        else
+          skip_gate "ESLint" "npx not found"
+        fi
       fi
     fi
   fi
 
-  # Gate: Prettier (only if listed as dependency) — auto-fix with --write, then require commit if files changed
+  # Gate: Prettier (only if listed as dependency and no format script — format script takes precedence)
   if ! gate_disabled "prettier"; then
     if grep -qE '"prettier"[[:space:]]*:' package.json 2>/dev/null; then
-      if has_cmd npx; then
-        run_gate "Prettier format" npx prettier --write .
-        if git diff --name-only 2>/dev/null | grep -q .; then
-          echo ""
-          echo "  ⚠️  Prettier changed files — stage and commit them, then push again."
-          echo "      git add -A && git commit -m 'chore: format'"
-          echo ""
-          false
+      if ! grep -q '"format"[[:space:]]*:' package.json 2>/dev/null; then
+        if has_cmd npx; then
+          run_gate "Prettier format" npx prettier --write .
+          if git diff --name-only 2>/dev/null | grep -q .; then
+            echo ""
+            echo "  ⚠️  Prettier changed files — stage and commit them, then push again."
+            echo "      git add -A && git commit -m 'chore: format'"
+            echo ""
+            false
+          fi
+        else
+          skip_gate "Prettier format" "npx not found"
         fi
-      else
-        skip_gate "Prettier format" "npx not found"
       fi
     fi
   fi

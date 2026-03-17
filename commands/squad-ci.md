@@ -4,12 +4,12 @@ You are the **Squad CI Runner** — an automated agent executing the full squad 
 
 ## Key Differences from Interactive Squad
 
-| Interactive (`/squad-auto`) | CI mode (this command) |
-|-----------------------------|------------------------|
-| Can pause for clarification | Posts a comment instead and exits |
-| Can use sub-agents | Runs all phases inline |
-| Checkpoints configurable | Always runs full pipeline |
-| Human reviews handoff | Writes `ci-result.md` for the workflow |
+| Interactive (`/squad-auto`) | CI mode (this command)                 |
+| --------------------------- | -------------------------------------- |
+| Can pause for clarification | Posts a comment instead and exits      |
+| Can use sub-agents          | Runs all phases inline                 |
+| Checkpoints configurable    | Always runs full pipeline              |
+| Human reviews handoff       | Writes `ci-result.md` for the workflow |
 
 ---
 
@@ -29,8 +29,10 @@ The handoff arrives with `status: po` and raw issue content in the spec. Your jo
 2. **Assess clarity**: Is the issue specific enough to write testable acceptance criteria?
 
 **If too vague** (missing: what to build, success criteria, or key constraints):
+
 - Write `### Questions` listing up to 5 specific questions that would unblock the spec
 - Write `.contextkit/squad/ci-result.md`:
+
   ```
   status: clarify
 
@@ -39,10 +41,12 @@ The handoff arrives with `status: po` and raw issue content in the spec. Your jo
   1. [question]
   2. [question]
   ```
+
 - Set handoff `status: po-clarify`
 - **Stop here.** The workflow will post a GitHub comment with the questions.
 
 **If clear enough**: Write the full PO Spec:
+
 - **User Story** — As a [role], I want [feature], so that [benefit]
 - **Acceptance Criteria** — specific, testable, numbered
 - **Edge Cases** — what dev and tester should handle
@@ -55,6 +59,7 @@ Set `## 1. PO Spec` → `status: done`. Set top-level `status:` → `architect`.
 ## Step 3 — Architect Phase
 
 Read the PO Spec. Explore the codebase. Fill in `## 2. Architect Plan`:
+
 - **Approach**: High-level technical approach
 - **Files to Change**: Every file to create/modify with a summary
 - **Trade-offs**: Alternatives considered
@@ -69,6 +74,7 @@ Set `## 2. Architect Plan` → `status: done`. Set top-level `status:` → `dev`
 Read PO Spec and Architect Plan. Implement the code following the architect's steps exactly.
 
 Fill in `## 3. Dev Implementation`:
+
 - **Changes Made**: Files changed and what was done
 - **Decisions & Deviations**: Any deviations from the plan and why
 
@@ -81,6 +87,7 @@ Set `## 3. Dev Implementation` → `status: done`. Set top-level `status:` → `
 Write tests against the acceptance criteria. Run the tests.
 
 Fill in `## 4. Test Report`:
+
 - **Tests Written**: Numbered test cases (follow project testing standards)
 - **Results**: Pass/fail counts and exit code
 - **Coverage Notes**: Which acceptance criteria are covered
@@ -92,6 +99,7 @@ Set `## 4. Test Report` → `status: done`. Set top-level `status:` → `review`
 ## Step 6 — Review Phase
 
 Read the full handoff. Fill in `## 6. Review`:
+
 - **Checklist**: Verify each acceptance criterion is met
 - **Issues Found**: List any issues (or "None")
 - **Verdict**: `pass` or `needs-work`
@@ -99,6 +107,7 @@ Read the full handoff. Fill in `## 6. Review`:
 Set `## 6. Review` → `status: done`.
 
 **If verdict is `needs-work`**: Set top-level `status:` → `review`. Write `ci-result.md`:
+
 ```
 status: needs-work
 
@@ -106,6 +115,7 @@ status: needs-work
 
 [list of issues found]
 ```
+
 Then continue to write the PR body anyway (draft PR will be opened with the issues noted).
 
 **If verdict is `pass`**: Set top-level `status:` → `doc`. Continue to Doc phase.
@@ -148,6 +158,7 @@ pass
 ```
 
 If review was `needs-work`, write:
+
 ```markdown
 status: needs-work
 

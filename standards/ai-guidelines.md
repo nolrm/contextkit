@@ -101,16 +101,16 @@ export default Component;
 
 ```typescript
 // Use this pattern for tests
-describe("Component", () => {
-  it("1. renders correctly with required props", () => {
+describe('Component', () => {
+  it('1. renders correctly with required props', () => {
     // test implementation
   });
 
-  it("2. handles optional props correctly", () => {
+  it('2. handles optional props correctly', () => {
     // test implementation
   });
 
-  it("3. handles edge cases", () => {
+  it('3. handles edge cases', () => {
     // test implementation
   });
 });
@@ -124,8 +124,8 @@ try {
   const result = await apiCall();
   return result;
 } catch (error) {
-  console.error("Operation failed:", error);
-  throw new Error("User-friendly error message");
+  console.error('Operation failed:', error);
+  throw new Error('User-friendly error message');
 }
 ```
 

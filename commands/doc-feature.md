@@ -23,13 +23,13 @@ Generate or update feature-level documentation for a specific feature, route, or
 
 Inspect the project root to determine the stack profile:
 
-| Profile | Detected by |
-|---------|------------|
-| **frontend** | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency |
-| **backend-node** | `package.json` without a frontend framework |
-| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java) |
-| **scripting** | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
-| **generic** | None of the above |
+| Profile           | Detected by                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **frontend**      | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency            |
+| **backend-node**  | `package.json` without a frontend framework                                              |
+| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java)                   |
+| **scripting**     | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
+| **generic**       | None of the above                                                                        |
 
 ## Output: `docs/features/<feature-name>.md`
 
@@ -41,30 +41,38 @@ Create `docs/features/` if missing. If the file already exists, update in place 
 # Feature: <Name>
 
 ## Purpose
+
 [1–2 sentence description of what this feature does and why it exists]
 
 ## Scope
+
 [files, routes, or modules this feature covers]
 
 ## Key Components / Modules
+
 [list with one-line descriptions]
 
 ## Data & State
+
 [data models, API contracts, state management]
 
 ## User Flows
+
 [key paths through the feature — prose or Mermaid sequence]
 
 ## Dependencies
+
 [internal: other features/modules; external: APIs, services]
 
 ## Edge Cases & Gotchas
+
 [known non-obvious behaviors]
 ```
 
 ### Artifacts by stack profile:
 
 **frontend**
+
 - Route(s) this feature owns
 - Components used (with roles)
 - Hooks / context / stores
@@ -72,23 +80,27 @@ Create `docs/features/` if missing. If the file already exists, update in place 
 - Optional: layout sketch or Mermaid component tree
 
 **backend-node**
+
 - HTTP routes / controllers
 - Service methods and their responsibilities
 - Middleware applied
 - DB queries / data access layer
 
 **backend-typed** (Go / Rust / Java)
+
 - Package(s) / crate(s) / modules
 - Exported interfaces and types
 - Request/response contracts
 - Mermaid sequence diagram for the main flow
 
 **scripting** (Python / Ruby / PHP)
+
 - Module/class structure
 - Public API surface
 - External calls
 
 **generic**
+
 - File list with descriptions
 - Main flow prose
 

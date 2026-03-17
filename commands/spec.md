@@ -3,6 +3,7 @@
 Write a component spec (Level 3 of the MD-first pattern) before any code is written.
 
 The spec file lives **colocated** with the component it describes:
+
 ```
 src/components/Button/
   Button.md     ← spec (written first)

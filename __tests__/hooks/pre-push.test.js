@@ -528,5 +528,47 @@ describe('pre-push hook', () => {
       expect(result.success).toBe(true);
       expect(result.output).not.toMatch(/\[\d+\] Format/);
     });
+
+    it('44. ESLint dep gate is skipped when a lint script exists (script takes precedence)', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      // The ESLint dep gate must check for absence of lint script
+      expect(content).toMatch(/Gate: ESLint[\s\S]*?lint script takes precedence/);
+    });
+
+    it('45. Prettier dep gate is skipped when a format script exists (script takes precedence)', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      // The Prettier dep gate must check for absence of format script
+      expect(content).toMatch(/Gate: Prettier[\s\S]*?format script takes precedence/);
+    });
+
+    it('46. project with eslint dep AND lint script runs only lint script (no double-run)', async () => {
+      // Project has both eslint as dep and a lint script
+      await fs.writeJSON('package.json', {
+        name: 'test',
+        devDependencies: { eslint: '^8.0.0' },
+        scripts: { lint: 'true' },
+      });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      // Only the lint script gate should appear, not "ESLint" (the dep gate)
+      const lintMatches = (result.output.match(/\[\d+\] Lint/g) || []).length;
+      expect(lintMatches).toBe(1);
+    });
+
+    it('47. project with prettier dep AND format script runs only format script (no double-run)', async () => {
+      // Project has both prettier as dep and a format script
+      await fs.writeJSON('package.json', {
+        name: 'test',
+        devDependencies: { prettier: '^3.0.0' },
+        scripts: { format: 'true' },
+      });
+      const result = runPrePushHook();
+      expect(result.success).toBe(true);
+      // Only the format script gate should appear, not "Prettier format" (the dep gate)
+      const formatMatches = (result.output.match(/\[\d+\] Format/g) || []).length;
+      expect(formatMatches).toBe(1);
+    });
   });
 });

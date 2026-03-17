@@ -5,7 +5,6 @@ You are the **Pipeline Runner** for a squad batch workflow. Your job is to read 
 ## Instructions
 
 1. Determine the run mode:
-
    - **If `manifest.md` exists**: batch mode — read it to get the task list and their current statuses.
    - **If no `manifest.md` but `handoff.md` exists**: single-task mode — treat it as a batch of one task with the file `handoff.md`. Read the handoff's top-level `status:` field as the task status for phase detection. Skip any manifest update steps.
    - **If neither exists**: stop and tell the user: "No squad session found. Run `/squad 'your task'` to start."
@@ -71,6 +70,7 @@ For each task with status `architect` (in order), run all three steps sequential
   Do not tell the user to run any command at the end.
   After updating the handoff file, return "done" or "error: [description]".
   ```
+
   - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
   - If `"done"`: continue to Test phase.
 
@@ -92,10 +92,12 @@ For each task with status `architect` (in order), run all three steps sequential
   Do not tell the user to run any command at the end.
   After updating the handoff file, return "done" or "error: [description]".
   ```
+
   - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
   - If `"done"`: continue to Review phase.
 
 **Review:**
+
 - Read the full handoff file (spec, plan, implementation, tests)
 - Fill in **"6. Review"**:
   - **Checklist**: Verify acceptance criteria, code quality, test coverage
@@ -106,6 +108,7 @@ For each task with status `architect` (in order), run all three steps sequential
 - If verdict is `pass`: set top-level `status:` to `doc` and continue to Doc phase below.
 
 **Doc:**
+
 - Read the **Dev Implementation** (Changes Made) and **Architect Plan** (Files to Change)
 - For each **new file**: create a companion `<filename>.md` colocated with it (Purpose, Exports/Public API, Usage Example, Edge Cases & Notes) — unless one already exists and is accurate
 - For each **modified file**: update the companion `.md` if the change was significant; skip trivial changes

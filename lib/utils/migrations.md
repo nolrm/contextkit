@@ -20,12 +20,13 @@ No constructor arguments.
 
 Runs all pending migrations from `currentVersion` up to `CURRENT_FORMAT_VERSION`.
 
-| Param | Type | Description |
-|-------|------|-------------|
+| Param            | Type                          | Description                                                                                          |
+| ---------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `currentVersion` | `number \| undefined \| null` | Value of `format_version` from config.yml. `undefined`/`null` is treated as `0` (pre-1.0.0 install). |
-| `configPath` | `string` | Absolute or relative path to `.contextkit/config.yml`. |
+| `configPath`     | `string`                      | Absolute or relative path to `.contextkit/config.yml`.                                               |
 
 **Behaviour:**
+
 - If `currentVersion` is missing/null → treated as `0`, runs v0→v1
 - If `currentVersion === CURRENT_FORMAT_VERSION` → no-op
 - If `currentVersion > CURRENT_FORMAT_VERSION` → logs warning, returns without modifying config

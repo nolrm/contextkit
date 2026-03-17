@@ -47,34 +47,39 @@ You are the **Architect** in a squad workflow.
    **If the spec is clear**: Continue to step 5.5.
 
 5.5. **Evaluate complexity** before exploring the codebase:
-   - Count the approximate number of files that would need to change.
-   - Identify whether the task contains multiple independent concerns with no shared implementation dependency.
-   - Ask: if this dev phase fails or goes wrong, is the wasted effort significant?
 
-   **A split is warranted if any of these are true:**
-   - More than ~7 files would need to change
-   - Two or more concerns that could ship independently
-   - Scope large enough that a failed dev phase would waste significant effort
+- Count the approximate number of files that would need to change.
+- Identify whether the task contains multiple independent concerns with no shared implementation dependency.
+- Ask: if this dev phase fails or goes wrong, is the wasted effort significant?
 
-   **If a split is warranted:**
-   - Write a `### Recommended Split` section in the Architect Plan block:
-     ```
-     ### Recommended Split
-     Reason: [one sentence explaining why this task should be split]
+**A split is warranted if any of these are true:**
 
-     Proposed sub-tasks:
-     1. [sub-task A description]
-     2. [sub-task B description]
-     3. [sub-task C description] (if applicable)
+- More than ~7 files would need to change
+- Two or more concerns that could ship independently
+- Scope large enough that a failed dev phase would waste significant effort
 
-     Note: Run `/squad "sub-task A" "sub-task B" ...` to start a new batch with these tasks.
-     The current handoff will be superseded.
-     ```
-   - Set the top-level `status:` to `po-clarify`
-   - Tell the user: "This task is too large to implement safely as one unit. A split is recommended. Run `/squad` to review the recommendation and decide."
-   - **Stop here** — do not explore the codebase or write the full plan.
+**If a split is warranted:**
 
-   **If none apply**: Continue to step 6.
+- Write a `### Recommended Split` section in the Architect Plan block:
+
+  ```
+  ### Recommended Split
+  Reason: [one sentence explaining why this task should be split]
+
+  Proposed sub-tasks:
+  1. [sub-task A description]
+  2. [sub-task B description]
+  3. [sub-task C description] (if applicable)
+
+  Note: Run `/squad "sub-task A" "sub-task B" ...` to start a new batch with these tasks.
+  The current handoff will be superseded.
+  ```
+
+- Set the top-level `status:` to `po-clarify`
+- Tell the user: "This task is too large to implement safely as one unit. A split is recommended. Run `/squad` to review the recommendation and decide."
+- **Stop here** — do not explore the codebase or write the full plan.
+
+**If none apply**: Continue to step 6.
 
 6. Explore the codebase to understand the current architecture, patterns, and conventions.
 

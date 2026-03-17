@@ -23,13 +23,13 @@ Generate or update component-level documentation colocated with the target file 
 
 Inspect the project root to determine the stack profile:
 
-| Profile | Detected by |
-|---------|------------|
-| **frontend** | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency |
-| **backend-node** | `package.json` without a frontend framework |
-| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java) |
-| **scripting** | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
-| **generic** | None of the above |
+| Profile           | Detected by                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **frontend**      | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency            |
+| **backend-node**  | `package.json` without a frontend framework                                              |
+| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java)                   |
+| **scripting**     | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
+| **generic**       | None of the above                                                                        |
 
 ## Output: `<target-name>.md` colocated with the target
 
@@ -43,24 +43,30 @@ If the doc file already exists, update in place.
 # <ComponentName / ModuleName>
 
 ## Purpose
+
 [One sentence: what this does]
 
 ## API / Props
+
 [table or list of inputs, parameters, or exported symbols]
 
 ## Usage
+
 [code example(s)]
 
 ## Behavior & Edge Cases
+
 [non-obvious logic, error states, boundary conditions]
 
 ## Where It's Used
+
 [list of known consumers — files that import this]
 ```
 
 ### Artifacts by stack profile:
 
 **frontend** (React / Vue / Angular / Svelte)
+
 - Props table: name, type, required, default, description
 - Emits / events (Vue)
 - Slots (Vue/Svelte) or children patterns (React)
@@ -68,22 +74,26 @@ If the doc file already exists, update in place.
 - CSS/Tailwind class notes if relevant
 
 **backend-node**
+
 - Exported function signatures
 - Parameters and return values
 - Middleware signature if applicable
 - Usage example
 
 **backend-typed** (Go / Rust / Java)
+
 - Exported types, structs, interfaces, traits
 - Function/method signatures with types
 - Usage example in the target language
 
 **scripting** (Python / Ruby / PHP)
+
 - Class/function signatures
 - Parameters with types (type hints if available)
 - Usage example
 
 **generic**
+
 - Exported symbols and descriptions
 - Usage example if discernible
 

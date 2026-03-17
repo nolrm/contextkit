@@ -10,9 +10,10 @@ ContextKit is a CLI tool that provides **context-engineering** capabilities by c
 
 ## Why ContextKit?
 
-**The problem:** LLMs are great at syntax, not at *your* conventions. Generic AI output requires manual fixes for style, structure, and architecture.
+**The problem:** LLMs are great at syntax, not at _your_ conventions. Generic AI output requires manual fixes for style, structure, and architecture.
 
 **The solution:** ContextKit provides your AI with:
+
 - **Glossary** of project terminology and domain-specific terms (e.g., your entity, feature, and module names)
 - **Standards** for code style, testing patterns, and architecture
 - **Templates** with canonical component shapes
@@ -30,15 +31,18 @@ Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.m
 ## Quick Start (60s)
 
 **1. Install the CLI**
+
 ```bash
 npm i -g @nolrm/contextkit
 ```
 
 **2. Set up your project**
+
 ```bash
 cd your-project
 contextkit install
 ```
+
 Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and an attribution block in `config.yml` so any developer who encounters the folder knows what manages it.
 
 **3. Generate your standards**
@@ -77,16 +81,19 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 ## See the difference (before → after)
 
 **Prompt**
+
 ```
 "Add checkout flow for customer"
 ```
 
 **What the AI does with ContextKit**
+
 - Reads `glossary.md` → `checkout` = checkout process; `customer` = customer account
 - Applies `code-style.md` → strict TS, functional components
 - Follows `testing.md` → numbered test cases
 
 **Result (diff)**
+
 ```diff
 - const Checkout = () => <button>Buy</button>
 + export function CheckoutFlow({ customer }: { customer: string }) {
@@ -100,6 +107,7 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 ## Use it in your tool
 
 **Cursor** — rules auto-load from `.cursor/rules/`, slash commands in `.cursor/prompts/`
+
 ```
 /analyze    # scan codebase and generate standards
 /review     # code review with checklist
@@ -107,6 +115,7 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 ```
 
 **Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Slash commands in `.claude/commands/`.
+
 ```bash
 /analyze    # scan codebase and generate standards
 /review     # code review with checklist
@@ -114,16 +123,19 @@ claude "create checkout flow for customer"
 ```
 
 **GitHub Copilot** — reads `.github/copilot-instructions.md` automatically
+
 ```
 @.contextkit Create checkout flow for customer
 ```
 
 **Codex CLI** — reads `AGENTS.md` automatically
+
 ```bash
 codex "create checkout flow for customer"
 ```
 
 **OpenCode** — reads `AGENTS.md` automatically
+
 ```bash
 opencode "create checkout flow for customer"
 ```
@@ -134,27 +146,27 @@ opencode "create checkout flow for customer"
 
 ContextKit installs reusable slash commands for supported platforms:
 
-| Command | What it does |
-|---------|-------------|
-| `/analyze` | Scan codebase and generate standards content |
-| `/review` | Code review with checklist |
-| `/fix` | Diagnose and fix bugs |
-| `/refactor` | Refactor code with safety checks |
-| `/test` | Generate comprehensive tests |
-| `/doc` | Add documentation |
-| `/doc-arch` | Generate architecture docs (`docs/architecture.md`) — stack-aware (Level 1) |
-| `/doc-feature` | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2) |
-| `/doc-component` | Generate component-level docs colocated with the target file — stack-aware (Level 3) |
-| `/spec` | Write a component spec (MD-first) before any code is created |
-| `/squad` | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
-| `/squad-architect` | Design the technical plan from the PO spec |
-| `/squad-dev` | Implement code following the architect plan |
-| `/squad-test` | Write and run tests against acceptance criteria |
-| `/squad-review` | Review the full pipeline and give a verdict |
-| `/squad-doc` | Create companion `.md` files for new/modified code after review passes |
-| `/squad-auto` | Auto-run the full pipeline after kickoff (recommended, sequential) |
-| `/squad-auto-parallel` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only) |
-| `/ck` | Health check — verify setup, standards, and integrations |
+| Command                | What it does                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `/analyze`             | Scan codebase and generate standards content                                                                                    |
+| `/review`              | Code review with checklist                                                                                                      |
+| `/fix`                 | Diagnose and fix bugs                                                                                                           |
+| `/refactor`            | Refactor code with safety checks                                                                                                |
+| `/test`                | Generate comprehensive tests                                                                                                    |
+| `/doc`                 | Add documentation                                                                                                               |
+| `/doc-arch`            | Generate architecture docs (`docs/architecture.md`) — stack-aware (Level 1)                                                     |
+| `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2)                                                 |
+| `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3)                                            |
+| `/spec`                | Write a component spec (MD-first) before any code is created                                                                    |
+| `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
+| `/squad-architect`     | Design the technical plan from the PO spec                                                                                      |
+| `/squad-dev`           | Implement code following the architect plan                                                                                     |
+| `/squad-test`          | Write and run tests against acceptance criteria                                                                                 |
+| `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
+| `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
+| `/squad-auto`          | Auto-run the full pipeline after kickoff (recommended, sequential)                                                              |
+| `/squad-auto-parallel` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
+| `/ck`                  | Health check — verify setup, standards, and integrations                                                                        |
 
 **Claude Code** — available as `/analyze`, `/review`, etc. in `.claude/commands/`
 **Cursor** — available as slash commands in Chat via `.cursor/prompts/`
@@ -169,14 +181,14 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 
 ### Pipeline Roles
 
-| Step | Role | Command | What it does |
-|------|------|---------|-------------|
-| 1 | Product Owner | `/squad` | Writes a user story, acceptance criteria, edge cases, and scope. If the task is ambiguous, asks up to 5 clarifying questions before writing the spec. Optionally captures screenshots/images as visual assets. |
-| 2 | Architect | `/squad-architect` | Designs the technical approach, files to change, and implementation steps |
-| 3 | Developer | `/squad-dev` | Implements the code following the architect's plan |
-| 4 | Tester | `/squad-test` | Writes and runs tests against the PO's acceptance criteria |
-| 5 | Reviewer | `/squad-review` | Reviews everything and gives a PASS or NEEDS-WORK verdict |
-| 6 | Doc Writer | `/squad-doc` | Creates companion `.md` files for every new/modified code file |
+| Step | Role          | Command            | What it does                                                                                                                                                                                                   |
+| ---- | ------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Product Owner | `/squad`           | Writes a user story, acceptance criteria, edge cases, and scope. If the task is ambiguous, asks up to 5 clarifying questions before writing the spec. Optionally captures screenshots/images as visual assets. |
+| 2    | Architect     | `/squad-architect` | Designs the technical approach, files to change, and implementation steps                                                                                                                                      |
+| 3    | Developer     | `/squad-dev`       | Implements the code following the architect's plan                                                                                                                                                             |
+| 4    | Tester        | `/squad-test`      | Writes and runs tests against the PO's acceptance criteria                                                                                                                                                     |
+| 5    | Reviewer      | `/squad-review`    | Reviews everything and gives a PASS or NEEDS-WORK verdict                                                                                                                                                      |
+| 6    | Doc Writer    | `/squad-doc`       | Creates companion `.md` files for every new/modified code file                                                                                                                                                 |
 
 ### Single-Task Flow
 
@@ -218,8 +230,9 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 
 ```markdown
 # .contextkit/squad/config.md
+
 checkpoint: po
-model_routing: true   # dev + test → Haiku, architect + review → primary model
+model_routing: true # dev + test → Haiku, architect + review → primary model
 ```
 
 ### Feedback Loop
@@ -248,27 +261,27 @@ For **Node.js projects**, a `prepare` script is automatically added to `package.
 
 If you enable the pre-push hook on a Node.js project that has no `format` or `lint` scripts, `ck install` will offer to scaffold a minimal **prettier + eslint** setup for you (adds scripts, `.prettierrc`, `.prettierignore`, `eslint.config.js`, and installs the devDependencies). Answer No to skip and set it up manually later.
 
-| Hook | What it does |
-|------|-------------|
-| **pre-push** | **Quality Gates** — auto-detects your project framework and runs the appropriate checks |
-| **commit-msg** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) format |
+| Hook           | What it does                                                                            |
+| -------------- | --------------------------------------------------------------------------------------- |
+| **pre-push**   | **Quality Gates** — auto-detects your project framework and runs the appropriate checks |
+| **commit-msg** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) format            |
 
 ### Framework-Aware Quality Gates
 
 The pre-push hook detects your project type and runs the right quality checks automatically. All gates are skipped silently when tools aren't installed.
 
-| Framework | Checks |
-|-----------|--------|
-| **Node.js** | TypeScript, ESLint, Prettier, `format` script, `lint` script, build, test, e2e — each only runs when present in `package.json` scripts or dependencies; auto-detects npm/yarn/pnpm/bun |
-| **Python** | ruff/flake8, mypy, black/ruff format, pytest |
-| **Rust** | cargo check, clippy, cargo test |
-| **Go** | go vet, golangci-lint, go test |
-| **PHP** | PHPStan, PHPUnit |
-| **Ruby** | RuboCop, RSpec/rake test |
-| **Java** | Maven verify / Gradle check |
-| **Kotlin** | ktlint, Gradle test |
-| **Swift** | SwiftLint, swift test |
-| **.NET / C#** | dotnet build, dotnet test |
+| Framework     | Checks                                                                                                                                                                                 |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js**   | TypeScript, ESLint, Prettier, `format` script, `lint` script, build, test, e2e — each only runs when present in `package.json` scripts or dependencies; auto-detects npm/yarn/pnpm/bun |
+| **Python**    | ruff/flake8, mypy, black/ruff format, pytest                                                                                                                                           |
+| **Rust**      | cargo check, clippy, cargo test                                                                                                                                                        |
+| **Go**        | go vet, golangci-lint, go test                                                                                                                                                         |
+| **PHP**       | PHPStan, PHPUnit                                                                                                                                                                       |
+| **Ruby**      | RuboCop, RSpec/rake test                                                                                                                                                               |
+| **Java**      | Maven verify / Gradle check                                                                                                                                                            |
+| **Kotlin**    | ktlint, Gradle test                                                                                                                                                                    |
+| **Swift**     | SwiftLint, swift test                                                                                                                                                                  |
+| **.NET / C#** | dotnet build, dotnet test                                                                                                                                                              |
 
 ### Commit Message Format
 
@@ -281,6 +294,7 @@ When the `commit-msg` hook is enabled, all commits must follow this format:
 **Types:** `feat`, `fix`, `improve`, `docs`, `refactor`, `test`, `chore`
 
 **Examples:**
+
 ```bash
 git commit -m "feat(auth): add login page"
 git commit -m "fix: resolve null pointer in checkout"

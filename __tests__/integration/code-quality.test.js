@@ -43,12 +43,15 @@ describe('Code Quality Setup', () => {
     expect(rc.tabWidth).toBe(2);
   });
 
-  it('6. .prettierignore exists and excludes key directories', async () => {
+  it('6. .prettierignore exists and excludes key directories including commands/', async () => {
     const ignorePath = path.join(ROOT, '.prettierignore');
     expect(await fs.pathExists(ignorePath)).toBe(true);
     const content = await fs.readFile(ignorePath, 'utf-8');
     expect(content).toContain('node_modules/');
     expect(content).toContain('templates/');
+    // commands/ must be ignored so markdown command files don't get reformatted
+    // (would cause divergence between commands/ and .contextkit/commands/)
+    expect(content).toContain('commands/');
   });
 
   it('7. eslint.config.js exists and is valid CommonJS', async () => {
@@ -70,7 +73,24 @@ describe('Code Quality Setup', () => {
     expect(true).toBe(true);
   });
 
-  it('9. prettier produces no diff on already-formatted files', () => {
+  it('9. pre-push hook skips eslint/prettier dep gates when lint/format scripts exist', async () => {
+    // ContextKit has both eslint/prettier in devDependencies AND lint/format scripts.
+    // The hook must not double-run — dep gates must be suppressed in favour of the scripts.
+    const hookContent = await fs.readFile(path.join(ROOT, 'hooks', 'pre-push'), 'utf-8');
+    // ESLint dep gate is guarded by "no lint script"
+    expect(hookContent).toContain('lint script takes precedence');
+    // Prettier dep gate is guarded by "no format script"
+    expect(hookContent).toContain('format script takes precedence');
+
+    // Verify ContextKit's own package.json has all four (dep + script for each)
+    const pkg = await fs.readJson(path.join(ROOT, 'package.json'));
+    expect(pkg.devDependencies.eslint).toBeDefined();
+    expect(pkg.devDependencies.prettier).toBeDefined();
+    expect(pkg.scripts.lint).toBeDefined();
+    expect(pkg.scripts.format).toBeDefined();
+  });
+
+  it('10. prettier produces no diff on already-formatted files', () => {
     // Run prettier in check mode — exits non-zero if any file would change
     try {
       execSync('npx prettier --check "lib/**/*.js" "bin/**/*.js" "__tests__/**/*.js" 2>&1', {

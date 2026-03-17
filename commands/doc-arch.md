@@ -22,13 +22,13 @@ Generate or update the architecture-level documentation for this project (`docs/
 
 Inspect the project root to determine the stack profile:
 
-| Profile | Detected by |
-|---------|------------|
-| **frontend** | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency |
-| **backend-node** | `package.json` without a frontend framework |
-| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java) |
-| **scripting** | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
-| **generic** | None of the above |
+| Profile           | Detected by                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **frontend**      | `package.json` with react / vue / angular / svelte / nextjs / nuxt dependency            |
+| **backend-node**  | `package.json` without a frontend framework                                              |
+| **backend-typed** | `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml` or `build.gradle` (Java)                   |
+| **scripting**     | `requirements.txt` or `pyproject.toml` (Python), `Gemfile` (Ruby), `composer.json` (PHP) |
+| **generic**       | None of the above                                                                        |
 
 ## Output: `docs/architecture.md`
 
@@ -40,50 +40,61 @@ Create the directory if missing. If the file already exists, update in place —
 # Architecture
 
 ## Overview
+
 [1–3 sentence system description]
 
 ## Stack
+
 [detected stack and key dependencies]
 
 ## Directory Structure
+
 [annotated tree of key directories]
 
 ## Key Flows
+
 [prose + Mermaid diagrams]
 
 ## Architecture Decisions
+
 [notable decisions with rationale]
 
 ## External Dependencies
+
 [third-party services, APIs, databases]
 ```
 
 ### Artifacts by stack profile:
 
 **frontend**
+
 - Routes/pages overview (Next.js: `app/` or `pages/`; Vue/Nuxt: `pages/` or `router/`)
 - Component hierarchy diagram (Mermaid)
 - State management approach
 - API integration pattern
 
 **backend-node**
+
 - Middleware chain diagram (Mermaid sequence)
 - API endpoint surface (routes, controllers)
 - Service/module boundaries
 - Data layer (DB, ORM, caching)
 
 **backend-typed** (Go / Rust / Java)
+
 - Package/crate/module structure
 - Interface and struct boundaries
 - Service-to-service flows (gRPC, REST, message queues) — Mermaid sequence diagram
 - Concurrency model (if relevant)
 
 **scripting** (Python / Ruby / PHP)
+
 - Module/package structure
 - Class and function surface
 - External integrations
 
 **generic**
+
 - Directory structure only
 - High-level flow prose
 

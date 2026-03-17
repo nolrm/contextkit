@@ -37,6 +37,7 @@ You are the **Reviewer** in a squad workflow.
    - **Stop here**.
 
    Format questions as:
+
    ```
    ### Questions for [Role]
    - Q1: [Your question]

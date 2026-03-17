@@ -18,12 +18,12 @@ Count the task descriptions the user provided. Tasks may be quoted strings, a nu
 
 Check what files exist in `.contextkit/squad/`:
 
-| State | Meaning |
-|---|---|
-| Neither `handoff.md` nor `manifest.md` exist | Fresh start — continue to Step 3 |
-| `handoff.md` exists, no `manifest.md` | Was single-task mode — continue to Step 3 |
-| `manifest.md` exists, no `handoff.md` | Was batch mode — continue to Step 3 |
-| **Both** `handoff.md` **and** `manifest.md` exist | Mixed state — offer to reset |
+| State                                             | Meaning                                   |
+| ------------------------------------------------- | ----------------------------------------- |
+| Neither `handoff.md` nor `manifest.md` exist      | Fresh start — continue to Step 3          |
+| `handoff.md` exists, no `manifest.md`             | Was single-task mode — continue to Step 3 |
+| `manifest.md` exists, no `handoff.md`             | Was batch mode — continue to Step 3       |
+| **Both** `handoff.md` **and** `manifest.md` exist | Mixed state — offer to reset              |
 
 **If both files exist:** Tell the user their `.contextkit/squad/` folder is in a mixed state. If the user provided a task in this same message, offer to reset and continue:
 
@@ -41,7 +41,7 @@ Read the top-level `status:` field:
 
 - **`po-clarify`** → Jump to [Clarification Mode](#clarification-mode).
 - **`done`** → Archive: rename `handoff.md` to `handoff-done-[TIMESTAMP].md`. Tell the user: "Previous handoff archived as `handoff-done-[TIMESTAMP].md`." Continue to Step 4.
-- **`po`** → Warn the user: "A PO spec is already in progress for: *[task field from handoff]*. Starting a new task will replace it. Confirm?" If confirmed, continue. If not, stop.
+- **`po`** → Warn the user: "A PO spec is already in progress for: _[task field from handoff]_. Starting a new task will replace it. Confirm?" If confirmed, continue. If not, stop.
 - **Any other status** (`architect`, `dev`, `test`, `review`, etc.) → Stop. Tell the user the current status and which command to run next. **Do not overwrite.**
 
 ### If `manifest.md` exists (previous batch run)
@@ -61,7 +61,7 @@ Create `.contextkit/squad/` if it doesn't exist.
 
 ## Single-Task Mode
 
-*Triggered when: 1 task provided and no blocking state.*
+_Triggered when: 1 task provided and no blocking state._
 
 1. Create `.contextkit/squad/handoff.md` using the [Handoff Template](#handoff-template).
 
@@ -115,7 +115,7 @@ model_routing: false
 
 ## Batch Mode
 
-*Triggered when: 2+ tasks provided and no blocking state.*
+_Triggered when: 2+ tasks provided and no blocking state._
 
 ### Fresh Batch
 
@@ -162,7 +162,7 @@ created: [TIMESTAMP]
 
 ### Append Mode
 
-*Triggered when: batch in progress and user provides new tasks.*
+_Triggered when: batch in progress and user provides new tasks._
 
 1. Read `manifest.md`. Note the current `total:` — call it `EXISTING_TOTAL`.
 2. Number new tasks starting from `EXISTING_TOTAL + 1`.
@@ -176,7 +176,7 @@ created: [TIMESTAMP]
 
 ## Clarification Mode
 
-*Triggered when: no tasks provided and an in-progress handoff has `status: po-clarify`.*
+_Triggered when: no tasks provided and an in-progress handoff has `status: po-clarify`._
 
 ### Single-task clarification (`handoff.md`)
 
@@ -186,39 +186,41 @@ created: [TIMESTAMP]
    - **In `## 2. Architect Plan` or `## 6. Review`** → downstream clarification (Architect or Reviewer raised questions). Skip to step 3b.
 
 3a. **Kickoff clarification path** (questions in PO Spec block):
-   - Read the questions from `### Questions for PO` and the user's answers (from their message or from `### User Clarifications`).
-   - Write the full PO Spec using the answers: User Story, Acceptance Criteria, Edge Cases, Out of Scope.
-   - Capture Q&A under `### User Clarifications`:
-     ```
-     - Q: "[question]" → A: "[answer]"
-     ```
-   - Set `## 1. PO Spec` → `status: done`
-   - Set top-level `status:` → `architect`
-   - Tell the user: "Spec written. Run `/squad-auto` to continue the pipeline."
-   - **Stop here.**
+
+- Read the questions from `### Questions for PO` and the user's answers (from their message or from `### User Clarifications`).
+- Write the full PO Spec using the answers: User Story, Acceptance Criteria, Edge Cases, Out of Scope.
+- Capture Q&A under `### User Clarifications`:
+  ```
+  - Q: "[question]" → A: "[answer]"
+  ```
+- Set `## 1. PO Spec` → `status: done`
+- Set top-level `status:` → `architect`
+- Tell the user: "Spec written. Run `/squad-auto` to continue the pipeline."
+- **Stop here.**
 
 3b. **Downstream clarification path** (questions in Architect Plan or Review block):
-   - **Check for a split recommendation**: Look for `### Recommended Split` in the Architect Plan block.
 
-     **If `### Recommended Split` exists** (Architect flagged task as too complex):
-     - Read the recommended sub-tasks and reason.
-     - Present the two options to the user:
-       - **Option A — Approve split**: Run `/squad "sub-task A" "sub-task B" ...` with the proposed sub-tasks. The current handoff will be superseded by the new batch.
-       - **Option B — Proceed as-is**: Add a note in the PO Spec `### Answers` block: `- Split recommendation from Architect → "Proceed as one task"`. Set the top-level `status:` back to `architect`. Tell the user: "Noted. Run `/squad-architect` to continue — the Architect will write the full plan."
-     - **Stop here** — do not run the Q&A answer flow below.
+- **Check for a split recommendation**: Look for `### Recommended Split` in the Architect Plan block.
 
-     **If no `### Recommended Split`**: Continue.
+  **If `### Recommended Split` exists** (Architect flagged task as too complex):
+  - Read the recommended sub-tasks and reason.
+  - Present the two options to the user:
+    - **Option A — Approve split**: Run `/squad "sub-task A" "sub-task B" ...` with the proposed sub-tasks. The current handoff will be superseded by the new batch.
+    - **Option B — Proceed as-is**: Add a note in the PO Spec `### Answers` block: `- Split recommendation from Architect → "Proceed as one task"`. Set the top-level `status:` back to `architect`. Tell the user: "Noted. Run `/squad-architect` to continue — the Architect will write the full plan."
+  - **Stop here** — do not run the Q&A answer flow below.
 
-   - Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
-   - Add answers under `### Answers` in the PO Spec block:
-     ```
-     - Q1 from [Role]: "[question]" → "[answer]"
-     - Q2 from [Role]: "[question]" → "[answer]"
-     ```
-   - Set top-level `status:` back to the asking role:
-     - Questions from Architect → `architect`
-     - Questions from Reviewer → `review`
-   - Tell the user which command to run next.
+  **If no `### Recommended Split`**: Continue.
+
+- Update the PO Spec to address the questions (update User Story, Acceptance Criteria, Edge Cases, Out of Scope as needed).
+- Add answers under `### Answers` in the PO Spec block:
+  ```
+  - Q1 from [Role]: "[question]" → "[answer]"
+  - Q2 from [Role]: "[question]" → "[answer]"
+  ```
+- Set top-level `status:` back to the asking role:
+  - Questions from Architect → `architect`
+  - Questions from Reviewer → `review`
+- Tell the user which command to run next.
 
 ### Batch clarification (`handoff-[N].md`)
 
@@ -238,6 +240,7 @@ created: [TIMESTAMP]
 ---
 
 ## 1. PO Spec
+
 status: pending
 
 ### User Story
@@ -259,6 +262,7 @@ status: pending
 ---
 
 ## 2. Architect Plan
+
 status: pending
 
 ### Approach
@@ -272,6 +276,7 @@ status: pending
 ---
 
 ## 3. Dev Implementation
+
 status: pending
 
 ### Changes Made
@@ -281,6 +286,7 @@ status: pending
 ---
 
 ## 4. Test Report
+
 status: pending
 
 ### Tests Written
@@ -292,6 +298,7 @@ status: pending
 ---
 
 ## 5. Peer Review (Optional)
+
 status: pending
 
 ### Valid Findings
@@ -303,6 +310,7 @@ status: pending
 ---
 
 ## 6. Review
+
 status: pending
 
 ### Checklist
@@ -314,6 +322,7 @@ status: pending
 ---
 
 ## 7. Doc
+
 status: pending
 
 ### Files Documented

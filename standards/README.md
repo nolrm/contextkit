@@ -4,12 +4,12 @@
 
 ## ⚠️ These Are Living Documents
 
-**This is not set-and-forget!** 
+**This is not set-and-forget!**
 
 After running `/analyze`, **manually review and edit** these files to match YOUR project:
 
 - **Fine-tune** the AI-generated content to your actual needs
-- **Remove** what doesn't apply to your project  
+- **Remove** what doesn't apply to your project
 - **Add** project-specific patterns and conventions
 - **Update** as your project evolves and patterns change
 

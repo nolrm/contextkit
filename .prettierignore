@@ -3,3 +3,4 @@ coverage/
 templates/
 .contextkit/
 contextkit-docs/
+commands/

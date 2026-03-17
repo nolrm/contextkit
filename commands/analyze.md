@@ -7,6 +7,7 @@ I'll analyze your project and customize the ContextKit standards to match your s
 ## What I'll Do:
 
 ### 🔍 **Project Analysis**
+
 - **Scan project structure** and identify framework/technology stack
 - **Analyze package.json** dependencies and scripts
 - **Detect existing configurations** (ESLint, Prettier, TypeScript, etc.)
@@ -16,6 +17,7 @@ I'll analyze your project and customize the ContextKit standards to match your s
 - **Analyze documentation patterns** and existing standards
 
 ### 🎯 **Customization Areas**
+
 - **Code Style Guidelines** - Tailored to your framework and tools
 - **Testing Patterns** - Based on your testing setup
 - **Architecture Standards** - Specific to your project type
@@ -28,6 +30,7 @@ I'll analyze your project and customize the ContextKit standards to match your s
 ### 📝 **Files I'll Update**
 
 **For single-package projects:**
+
 - `.contextkit/standards/code-style.md` - Customized coding standards
 - `.contextkit/standards/testing.md` - Project-specific testing guidelines
 - `.contextkit/standards/architecture.md` - Framework-specific architecture patterns
@@ -37,6 +40,7 @@ I'll analyze your project and customize the ContextKit standards to match your s
 - `.contextkit/standards/README.md` - Updated overview with your project details
 
 **For monorepos (when analyzing both frontend + backend):**
+
 - `.contextkit/standards/frontend/code-style.md` - Frontend coding standards
 - `.contextkit/standards/frontend/testing.md` - Frontend testing guidelines
 - `.contextkit/standards/backend/code-style.md` - Backend coding standards
@@ -132,31 +136,39 @@ I'll analyze your project and provide customized recommendations. The analysis w
 After generating content for your skeleton files, **YOU MUST:**
 
 ### 🔍 Step 1: Review Generated Content
+
 Review each generated file in `.contextkit/standards/`:
+
 - ✅ Check that content matches your project
 - ✅ Verify frameworks and tools are correct
 - ✅ Ensure patterns align with your codebase
-- ⚠️  AI-generated content is a starting point, NOT final
+- ⚠️ AI-generated content is a starting point, NOT final
 
 ### ✏️ Step 2: Edit & Customize
+
 - **Add missing details** specific to your project
 - **Remove irrelevant content** that doesn't apply
 - **Adjust formatting** to match your preferences
 - **Add project-specific rules** not captured by AI
 
 ### 🎯 Step 3: Fine-tune to Perfection
+
 The AI provides a foundation, but:
+
 - YOU know your project's nuances best
 - YOU understand your team's conventions
 - YOU are the expert on what fits
 
 ### 📝 Step 4: Commit to Your Repo
+
 Once reviewed and customized:
+
 - ✅ Commit these files to your repository
 - ✅ They're now PART OF YOUR PROJECT
 - ✅ Keep them updated as you grow
 
 ### 📋 Files to Review:
+
 - `code-style.md` - Verify coding conventions
 - `testing.md` - Check test patterns match your approach
 - `architecture.md` - Ensure structure matches reality
@@ -164,7 +176,9 @@ Once reviewed and customized:
 - `workflows.md` - Adjust to your team processes
 
 ### 🌱 Living Documentation
+
 These standards should evolve with your project:
+
 - Update when patterns change
 - Modify when adopting new tools
 - Refine based on team decisions

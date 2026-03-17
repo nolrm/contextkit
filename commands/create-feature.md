@@ -4,6 +4,7 @@ Scaffold a new feature (Page / Feature Level — Level 2 of the documentation hi
 
 **Spec-first rule:** A feature spec must exist before any code is written.
 The spec lives colocated with the feature:
+
 ```
 src/features/FeatureName/
   FeatureName.md    ← spec (Level 2 doc, written first)

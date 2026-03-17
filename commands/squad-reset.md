@@ -5,7 +5,6 @@ Delete the current squad state so you can start fresh.
 ## Instructions
 
 1. Check if `.contextkit/squad/` exists.
-
    - **If it does not exist:** Tell the user: "Nothing to reset — no squad state found." Stop here.
 
 2. Read what's inside before deleting:

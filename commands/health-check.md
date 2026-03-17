@@ -41,13 +41,13 @@ Check this project's ContextKit setup and report status.
 
 ## Output Format
 
-| Area | Status | Action |
-|------|--------|--------|
-| Installation | OK/Missing | `ck install` |
-| Standards | Populated/Skeleton | `/analyze` or `/analyze` |
-| Product context | Populated/Placeholder | Edit `.contextkit/product/` files |
-| Integrations | List active | `ck <platform>` to add more |
-| ContextKit | Up to date / Update available | `ck update` |
+| Area            | Status                        | Action                            |
+| --------------- | ----------------------------- | --------------------------------- |
+| Installation    | OK/Missing                    | `ck install`                      |
+| Standards       | Populated/Skeleton            | `/analyze` or `/analyze`          |
+| Product context | Populated/Placeholder         | Edit `.contextkit/product/` files |
+| Integrations    | List active                   | `ck <platform>` to add more       |
+| ContextKit      | Up to date / Update available | `ck update`                       |
 
 ## Token Note
 
