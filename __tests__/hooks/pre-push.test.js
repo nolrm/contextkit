@@ -455,10 +455,10 @@ describe('pre-push hook', () => {
   });
 
   describe('Skipped silently language', () => {
-    it('36. skip_gate outputs "skipped silently" text in normal mode', () => {
+    it('36. skip_gate outputs "skipped" text in normal mode', () => {
       const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
       const content = fs.readFileSync(hooksFile, 'utf8');
-      expect(content).toContain('skipped silently');
+      expect(content).toContain('skipped (');
     });
   });
 
@@ -569,6 +569,59 @@ describe('pre-push hook', () => {
       // Only the format script gate should appear, not "Prettier format" (the dep gate)
       const formatMatches = (result.output.match(/\[\d+\] Format/g) || []).length;
       expect(formatMatches).toBe(1);
+    });
+  });
+
+  describe('CK_AGENT_MODE=1', () => {
+    function runPrePushHookAgentMode(env = {}) {
+      try {
+        const output = execSync(path.join(hookPath, 'pre-push'), {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          encoding: 'utf8',
+          shell: '/bin/bash',
+          env: { ...process.env, CK_AGENT_MODE: '1', ...env },
+        });
+        return { success: true, output };
+      } catch (error) {
+        const allOutput = (error.stdout || '') + (error.stderr || '') + (error.message || '');
+        return { success: false, output: allOutput };
+      }
+    }
+
+    it('48. agent mode header shows "Agent Push — Quality Gate Review"', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: {} });
+      const result = runPrePushHookAgentMode();
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('Agent Push — Quality Gate Review');
+    });
+
+    it('49. agent mode success summary shows "Agent Push Review Complete" and "Result: PASSED"', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: {} });
+      const result = runPrePushHookAgentMode();
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('Agent Push Review Complete');
+      expect(result.output).toContain('Result: PASSED');
+    });
+
+    it('50. agent mode passed gates show "PASS [N]" format', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'true' } });
+      const result = runPrePushHookAgentMode();
+      expect(result.success).toBe(true);
+      expect(result.output).toMatch(/PASS \[\d+\]/);
+    });
+
+    it('51. agent mode failure exits non-zero and does not show success summary', async () => {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'false' } });
+      const result = runPrePushHookAgentMode();
+      expect(result.success).toBe(false);
+      expect(result.output).not.toContain('Result: PASSED');
+    });
+
+    it('52. agent mode on_gate_failure function outputs FAIL message (static check)', () => {
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      expect(content).toContain('FAIL — gate failed');
+      expect(content).toContain('Agent push blocked');
     });
   });
 });

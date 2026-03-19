@@ -21,15 +21,25 @@ function extractDownloadPaths(sourceFile) {
 }
 
 /**
- * List all files in a repo directory (non-recursive, files only).
+ * List all files in a repo directory (recursive, files only).
  */
 function listRepoFiles(dir) {
   const fullDir = path.join(ROOT, dir);
   if (!fs.existsSync(fullDir)) return [];
-  return fs
-    .readdirSync(fullDir, { withFileTypes: true })
-    .filter((d) => d.isFile())
-    .map((d) => `${dir}/${d.name}`);
+  const results = [];
+  function walk(currentDir, relBase) {
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    for (const entry of entries) {
+      const relPath = `${relBase}/${entry.name}`;
+      if (entry.isDirectory()) {
+        walk(path.join(currentDir, entry.name), relPath);
+      } else {
+        results.push(relPath);
+      }
+    }
+  }
+  walk(fullDir, dir);
+  return results;
 }
 
 const installSource = path.join(ROOT, 'lib/commands/install.js');
@@ -71,39 +81,65 @@ describe('Download manifest validation', () => {
     expect(unreferenced).toEqual([]);
   });
 
-  it('5. commands/health-check.md contains the update check step', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/health-check.md'), 'utf8');
+  it('5. commands/dev/health-check.md contains the update check step', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/health-check.md'), 'utf8');
     expect(content).toContain('npm view @nolrm/contextkit version');
     expect(content).toContain('status.json');
     expect(content).toContain('ck update');
   });
 
-  it('6. commands/squad-doc.md is in both install and update manifests and contains doc instructions', () => {
-    expect(installPaths).toContain('commands/squad-doc.md');
-    expect(updatePaths).toContain('commands/squad-doc.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-doc.md'), 'utf8');
+  it('6. commands/squad/squad-doc.md is in both install and update manifests and contains doc instructions', () => {
+    expect(installPaths).toContain('commands/squad/squad-doc.md');
+    expect(updatePaths).toContain('commands/squad/squad-doc.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-doc.md'), 'utf8');
     expect(content).toContain('companion');
     expect(content).toContain('`doc`');
     expect(content).toContain('## 7. Doc');
   });
 
-  it('7. commands/squad-architect.md contains the complexity check step and split signal', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-architect.md'), 'utf8');
+  it('7. commands/squad/squad-architect.md contains the complexity check step and split signal', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-architect.md'), 'utf8');
     expect(content).toContain('Evaluate complexity');
     expect(content).toContain('### Recommended Split');
     expect(content).toContain('po-clarify');
     expect(content).toContain('7 files');
   });
 
-  it('8. commands/squad.md Clarification Mode handles split recommendation', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad.md'), 'utf8');
+  it('8. commands/squad/squad.md Clarification Mode handles split recommendation', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad.md'), 'utf8');
     expect(content).toContain('### Recommended Split');
     expect(content).toContain('Approve split');
     expect(content).toContain('Proceed as-is');
   });
 
-  it('9. commands/squad-auto.md po-clarify message covers split scenario', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad-auto.md'), 'utf8');
+  it('9. commands/squad/squad-auto.md po-clarify message covers split scenario', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-auto.md'), 'utf8');
     expect(content).toContain('split recommendation');
+  });
+
+  it('10. commands/agents/context-budget.md is in both manifests and contains priority/budget guidance', () => {
+    expect(installPaths).toContain('commands/agents/context-budget.md');
+    expect(updatePaths).toContain('commands/agents/context-budget.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/context-budget.md'), 'utf8');
+    expect(content).toContain('Context Budget');
+    expect(content).toContain('standards');
+  });
+
+  it('11. commands/agents/agent-push-checklist.md is in both manifests and contains checklist content', () => {
+    expect(installPaths).toContain('commands/agents/agent-push-checklist.md');
+    expect(updatePaths).toContain('commands/agents/agent-push-checklist.md');
+    const content = fs.readFileSync(
+      path.join(ROOT, 'commands/agents/agent-push-checklist.md'),
+      'utf8'
+    );
+    expect(content).toContain('checklist');
+    expect(content).toContain('commit');
+  });
+
+  it('12. commands/agents/standards-aware.md is in both manifests and contains standards loop content', () => {
+    expect(installPaths).toContain('commands/agents/standards-aware.md');
+    expect(updatePaths).toContain('commands/agents/standards-aware.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
+    expect(content).toContain('standards');
   });
 });

@@ -13,16 +13,19 @@ const hasInstalledCommands = fs.pathExistsSync(INSTALLED_DIR);
 const itInstalled = hasInstalledCommands ? it : it.skip;
 
 describe('squad command source/installed sync', () => {
-  itInstalled('1. commands/squad.md and .contextkit/commands/squad.md are identical', async () => {
-    const source = await fs.readFile(path.join(SOURCE_DIR, 'squad.md'), 'utf8');
-    const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad.md'), 'utf8');
-    expect(source).toBe(installed);
-  });
+  itInstalled(
+    '1. commands/squad/squad.md and .contextkit/commands/squad.md are identical',
+    async () => {
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad/squad.md'), 'utf8');
+      const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad.md'), 'utf8');
+      expect(source).toBe(installed);
+    }
+  );
 
   itInstalled(
-    '2. commands/squad-auto.md and .contextkit/commands/squad-auto.md are identical',
+    '2. commands/squad/squad-auto.md and .contextkit/commands/squad-auto.md are identical',
     async () => {
-      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
       const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-auto.md'), 'utf8');
       expect(source).toBe(installed);
     }
@@ -32,7 +35,7 @@ describe('squad command source/installed sync', () => {
 describe('squad config.md — content validation', () => {
   it('3. squad.md single-task section produces valid config.md with required fields', () => {
     // Parse the config block from squad.md single-task section and validate fields
-    const squadContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad.md'), 'utf8');
+    const squadContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad.md'), 'utf8');
     const singleTaskSection = squadContent.slice(
       squadContent.indexOf('## Single-Task Mode'),
       squadContent.indexOf('## Batch Mode')
@@ -46,7 +49,7 @@ describe('squad config.md — content validation', () => {
   });
 
   it('4. squad.md batch section config template has both checkpoint and model_routing', () => {
-    const squadContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad.md'), 'utf8');
+    const squadContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad.md'), 'utf8');
     const batchSection = squadContent.slice(squadContent.indexOf('## Batch Mode'));
     const configBlockMatch = batchSection.match(/```markdown\n# Squad Config\n\n([\s\S]*?)```/);
     expect(configBlockMatch).not.toBeNull();
@@ -56,7 +59,7 @@ describe('squad config.md — content validation', () => {
   });
 
   it('5. squad-auto.md model_routing default is false (not true)', () => {
-    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
+    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
     // The default should be false
     expect(autoContent).toContain('default `model_routing` to `false`');
     // The inline branch label should say false
@@ -64,7 +67,7 @@ describe('squad config.md — content validation', () => {
   });
 
   it('6. squad-auto.md uses correct haiku model ID in both dev and test sub-agent prompts', () => {
-    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
+    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
     const haiku = 'claude-haiku-4-5-20251001';
     // Should appear twice — once for dev, once for test
     const occurrences = (autoContent.match(new RegExp(haiku, 'g')) || []).length;
@@ -72,7 +75,7 @@ describe('squad config.md — content validation', () => {
   });
 
   it('7. squad-auto.md sub-agent prompts reference correct command files', () => {
-    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad-auto.md'), 'utf8');
+    const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
     expect(autoContent).toContain('squad-dev.md` steps 3–9');
     expect(autoContent).toContain('squad-test.md` steps 3–9');
   });
@@ -80,27 +83,27 @@ describe('squad config.md — content validation', () => {
 
 describe('squad command source/installed sync — dev and test', () => {
   itInstalled(
-    '8. commands/squad-dev.md and .contextkit/commands/squad-dev.md are identical',
+    '8. commands/squad/squad-dev.md and .contextkit/commands/squad-dev.md are identical',
     async () => {
-      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-dev.md'), 'utf8');
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad/squad-dev.md'), 'utf8');
       const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-dev.md'), 'utf8');
       expect(source).toBe(installed);
     }
   );
 
   itInstalled(
-    '9. commands/squad-test.md and .contextkit/commands/squad-test.md are identical',
+    '9. commands/squad/squad-test.md and .contextkit/commands/squad-test.md are identical',
     async () => {
-      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-test.md'), 'utf8');
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad/squad-test.md'), 'utf8');
       const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-test.md'), 'utf8');
       expect(source).toBe(installed);
     }
   );
 
   itInstalled(
-    '10. commands/squad-architect.md and .contextkit/commands/squad-architect.md are identical',
+    '10. commands/squad/squad-architect.md and .contextkit/commands/squad-architect.md are identical',
     async () => {
-      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad-architect.md'), 'utf8');
+      const source = await fs.readFile(path.join(SOURCE_DIR, 'squad/squad-architect.md'), 'utf8');
       const installed = await fs.readFile(path.join(INSTALLED_DIR, 'squad-architect.md'), 'utf8');
       expect(source).toBe(installed);
     }

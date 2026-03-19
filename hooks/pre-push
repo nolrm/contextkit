@@ -11,10 +11,21 @@ set -e
 GATE=0
 PASSED=0
 SKIPPED=0
+_PIPELINE_START=$(date +%s 2>/dev/null || echo "")
+AGENT_MODE="${CK_AGENT_MODE:-0}"
+# Set CK_AGENT_MODE=1 when pushing from an AI agent for review-framed output
 
 on_gate_failure() {
   echo ""
-  echo "  ❌ Quality Gates FAILED — push blocked."
+  if [ "$AGENT_MODE" = "1" ]; then
+    echo "  FAIL — gate failed (see output above)"
+    echo ""
+    echo "  ❌ Agent push blocked — quality gates failed. Fix the issues above before pushing."
+  else
+    echo "  ✗ Gate failed (see output above)"
+    echo ""
+    echo "  ❌ Quality Gates FAILED — push blocked."
+  fi
   echo ""
 }
 trap on_gate_failure ERR
@@ -24,10 +35,14 @@ run_gate() {
   local label="$1"
   shift
   if [ "${DRY_RUN:-0}" = "1" ]; then
-    echo "  [$GATE] (dry-run) $label"
+    if [ "$AGENT_MODE" = "1" ]; then
+      echo "  SKIP [$GATE] $label (dry-run)"
+    else
+      echo "  [$GATE] (dry-run) $label"
+    fi
     return 0
   fi
-  local _start _end _elapsed
+  local _start _end _elapsed _elapsed_fmt
   _start=$(date +%s 2>/dev/null || echo "")
   echo "  [$GATE] $label"
   "$@"
@@ -36,7 +51,28 @@ run_gate() {
     _end=$(date +%s 2>/dev/null || echo "")
     if [ -n "$_end" ]; then
       _elapsed=$((_end - _start))
-      echo "      ✓ ${_elapsed}s"
+      if [ "$_elapsed" -ge 60 ] 2>/dev/null; then
+        _elapsed_fmt="$((_elapsed / 60))m $((_elapsed % 60))s"
+      else
+        _elapsed_fmt="${_elapsed}s"
+      fi
+      if [ "$AGENT_MODE" = "1" ]; then
+        echo "  PASS [$GATE] $label (${_elapsed_fmt})"
+      else
+        echo "      ✓ ${_elapsed_fmt}"
+      fi
+    else
+      if [ "$AGENT_MODE" = "1" ]; then
+        echo "  PASS [$GATE] $label"
+      else
+        echo "      ✓"
+      fi
+    fi
+  else
+    if [ "$AGENT_MODE" = "1" ]; then
+      echo "  PASS [$GATE] $label"
+    else
+      echo "      ✓"
     fi
   fi
 }
@@ -45,10 +81,12 @@ skip_gate() {
   GATE=$((GATE + 1))
   local label="$1"
   local reason="$2"
-  if [ "${DRY_RUN:-0}" = "1" ]; then
+  if [ "$AGENT_MODE" = "1" ]; then
+    echo "  SKIP [$GATE] $label ($reason)"
+  elif [ "${DRY_RUN:-0}" = "1" ]; then
     echo "  [$GATE] (dry-run) $label — would skip ($reason)"
   else
-    echo "  [$GATE] $label — skipped silently ($reason)"
+    echo "  [$GATE] $label — skipped ($reason)"
   fi
   SKIPPED=$((SKIPPED + 1))
 }
@@ -578,7 +616,11 @@ PROJECT_TYPE=$(detect_project_type)
 
 echo ""
 echo "┌─────────────────────────────────────────────┐"
+if [ "$AGENT_MODE" = "1" ]; then
+echo "│  Agent Push — Quality Gate Review            │"
+else
 echo "│  Quality Gates — ContextKit Pre-Push Checks  │"
+fi
 if [ "${DRY_RUN:-0}" = "1" ]; then
 echo "│  Mode: DRY RUN (no checks will be executed)  │"
 fi
@@ -600,8 +642,28 @@ case "$PROJECT_TYPE" in
   generic) run_generic_gates ;;
 esac
 
+_PIPELINE_END=$(date +%s 2>/dev/null || echo "")
+_TOTAL_ELAPSED=""
+if [ -n "$_PIPELINE_START" ] && [ -n "$_PIPELINE_END" ]; then
+  _TOTAL_SECS=$((_PIPELINE_END - _PIPELINE_START))
+  if [ "$_TOTAL_SECS" -ge 60 ] 2>/dev/null; then
+    _TOTAL_ELAPSED="$((_TOTAL_SECS / 60))m $((_TOTAL_SECS % 60))s"
+  else
+    _TOTAL_ELAPSED="${_TOTAL_SECS}s"
+  fi
+fi
 echo ""
 echo "┌─────────────────────────────────────────────┐"
-echo "│  ✅ Quality Gates passed ($PASSED passed, $SKIPPED skipped)"
+if [ "$AGENT_MODE" = "1" ]; then
+echo "│  Agent Push Review Complete                  │"
+echo "│  Result: PASSED                              │"
+echo "│  Gates: $PASSED passed, $SKIPPED skipped     │"
+else
+echo "│  ✅ Quality Gates passed                     │"
+echo "│  Gates: $PASSED passed, $SKIPPED skipped     │"
+fi
+if [ -n "$_TOTAL_ELAPSED" ]; then
+echo "│  Total: $_TOTAL_ELAPSED"
+fi
 echo "└─────────────────────────────────────────────┘"
 echo ""

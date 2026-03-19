@@ -613,3 +613,58 @@ describe('InstallCommand — promptQualityTooling / scaffoldQualityTooling', () 
     expect(await installer._hasExistingEslintConfig({})).toBe(false);
   });
 });
+
+// ── Quality Gates Config ──────────────────────────────────────────────────────
+
+describe('InstallCommand — createQualityGatesConfig', () => {
+  let tmpDir;
+  let originalCwd;
+  let InstallCommand;
+  let installer;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ck-gates-'));
+    originalCwd = process.cwd();
+    process.chdir(tmpDir);
+
+    delete require.cache[require.resolve('../../lib/commands/install')];
+    ({ InstallCommand } = require('../../lib/commands/install'));
+    installer = new InstallCommand();
+  });
+
+  afterEach(async () => {
+    process.chdir(originalCwd);
+    await fs.remove(tmpDir);
+  });
+
+  it('48. createQualityGatesConfig creates quality-gates.yml with all gate key comments', async () => {
+    await fs.ensureDir('.contextkit');
+    await installer.createQualityGatesConfig();
+
+    expect(await fs.pathExists('.contextkit/quality-gates.yml')).toBe(true);
+    const content = await fs.readFile('.contextkit/quality-gates.yml', 'utf8');
+    expect(content).toContain('disabled:');
+    expect(content).toContain('- test');
+    expect(content).toContain('- pytest');
+    expect(content).toContain('- cargo-test');
+  });
+
+  it('49. createQualityGatesConfig skips creation when quality-gates.yml already exists', async () => {
+    await fs.ensureDir('.contextkit');
+    const existing = 'disabled:\n  - test\n';
+    await fs.writeFile('.contextkit/quality-gates.yml', existing);
+
+    await installer.createQualityGatesConfig();
+
+    const content = await fs.readFile('.contextkit/quality-gates.yml', 'utf8');
+    expect(content).toBe(existing); // unchanged
+  });
+
+  it('50. install creates quality-gates.yml alongside config.yml', async () => {
+    delete require.cache[require.resolve('../../lib/commands/install')];
+    const installFn = require('../../lib/commands/install');
+    await installFn({ nonInteractive: true, noHooks: true });
+
+    expect(await fs.pathExists('.contextkit/quality-gates.yml')).toBe(true);
+  });
+});

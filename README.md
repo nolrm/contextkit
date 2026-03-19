@@ -165,8 +165,11 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
 | `/squad-auto`          | Auto-run the full pipeline after kickoff (recommended, sequential)                                                              |
-| `/squad-auto-parallel` | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
-| `/ck`                  | Health check — verify setup, standards, and integrations                                                                        |
+| `/squad-auto-parallel`    | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
+| `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
+| `/agent-push-checklist`   | Pre-push quality checklist for agents to self-check before `git push`                                                           |
+| `/context-budget`         | Prioritized guide for which standards files to load for a given task                                                            |
+| `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files                                       |
 
 **Claude Code** — available as `/analyze`, `/review`, etc. in `.claude/commands/`
 **Cursor** — available as slash commands in Chat via `.cursor/prompts/`
@@ -282,6 +285,18 @@ The pre-push hook detects your project type and runs the right quality checks au
 | **Kotlin**    | ktlint, Gradle test                                                                                                                                                                    |
 | **Swift**     | SwiftLint, swift test                                                                                                                                                                  |
 | **.NET / C#** | dotnet build, dotnet test                                                                                                                                                              |
+
+### Managing Gates
+
+Use `ck gates` to inspect or toggle individual checks without editing config files manually:
+
+```bash
+ck gates                        # list all gates and their status
+ck gates --disable prettier     # disable a specific gate
+ck gates --enable prettier      # re-enable it
+```
+
+Gate state is saved to `.contextkit/quality-gates.yml`. Commit this file to share gate preferences with your team.
 
 ### Commit Message Format
 

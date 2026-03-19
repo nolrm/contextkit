@@ -27,11 +27,11 @@ The following standards are auto-loaded into context via @imports:
 
 ## Commands
 
-- `.contextkit/commands/analyze.md` — Analyze and customize standards
-- `.contextkit/commands/create-component.md` — Create components
-- `.contextkit/commands/create-feature.md` — Create features
-- `.contextkit/commands/run-tests.md` — Run tests
-- `.contextkit/commands/quality-check.md` — Quality checks
+- `.contextkit/commands/dev/analyze.md` — Analyze and customize standards
+- `.contextkit/commands/dev/create-component.md` — Create components
+- `.contextkit/commands/dev/create-feature.md` — Create features
+- `.contextkit/commands/dev/run-tests.md` — Run tests
+- `.contextkit/commands/dev/quality-check.md` — Quality checks
 
 ## Corrections Log
 

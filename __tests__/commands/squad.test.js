@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-const SQUAD_MD = path.resolve(__dirname, '../../commands/squad.md');
-const SQUAD_AUTO_MD = path.resolve(__dirname, '../../commands/squad-auto.md');
+const SQUAD_MD = path.resolve(__dirname, '../../commands/squad/squad.md');
+const SQUAD_AUTO_MD = path.resolve(__dirname, '../../commands/squad/squad-auto.md');
 
 describe('squad.md — source command file', () => {
   let content;
