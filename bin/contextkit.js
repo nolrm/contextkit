@@ -7,7 +7,6 @@ const analyze = require('../lib/commands/analyze');
 const check = require('../lib/commands/check');
 const note = require('../lib/commands/note');
 const run = require('../lib/commands/run');
-const GatesCommand = require('../lib/commands/gates');
 
 const packageJson = require('../package.json');
 const { checkForUpdates } = require('../lib/utils/notifier');
@@ -109,23 +108,6 @@ program
       await note(message, options);
     } catch (error) {
       console.error(chalk.red('Note failed:'), error.message);
-      process.exit(1);
-    }
-  });
-
-// Gates command
-program
-  .command('gates')
-  .description('Inspect and manage quality gate configuration')
-  .option('--disable <key>', 'Disable a specific gate by key')
-  .option('--enable <key>', 'Enable a specific gate by key')
-  .option('--list', 'List all gates and their status (default)')
-  .action(async (options) => {
-    try {
-      const cmd = new GatesCommand();
-      await cmd.run(options);
-    } catch (error) {
-      console.error(chalk.red('Gates command failed:'), error.message);
       process.exit(1);
     }
   });

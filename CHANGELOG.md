@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.14.0] - 2026-03-23
+
+### Removed
+- **`ck gates` command** — gate configuration is managed directly via `.contextkit/quality-gates.yml`; editing the file is simpler and more transparent than a CLI wrapper
+
 ## [0.13.6] - 2026-03-17
 
 ### Added
