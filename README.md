@@ -114,7 +114,7 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 /fix        # diagnose and fix bugs
 ```
 
-**Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Slash commands in `.claude/commands/`.
+**Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Skills in `.claude/skills/`.
 
 ```bash
 /analyze    # scan codebase and generate standards
@@ -171,7 +171,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/context-budget`         | Prioritized guide for which standards files to load for a given task                                                            |
 | `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files                                       |
 
-**Claude Code** — available as `/analyze`, `/review`, etc. in `.claude/commands/`
+**Claude Code** — available as `/analyze`, `/review`, etc. via `.claude/skills/`
 **Cursor** — available as slash commands in Chat via `.cursor/prompts/`
 
 Both platforms delegate to the universal command files in `.contextkit/commands/`, so you maintain one set of workflows.

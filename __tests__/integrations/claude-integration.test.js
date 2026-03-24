@@ -67,28 +67,19 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('lib/**');
   });
 
-  test('5. creates all slash command files with correct subdir paths', async () => {
+  test('5. creates all skills as .claude/skills/<name>/SKILL.md with frontmatter', async () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    const devCommands = ['analyze', 'review', 'fix', 'refactor', 'spec'];
-    for (const cmd of devCommands) {
-      const filePath = `.claude/commands/${cmd}.md`;
-      expect(await fs.pathExists(filePath)).toBe(true);
-      const content = await fs.readFile(filePath, 'utf-8');
-      expect(content).toContain('.contextkit/commands/dev/');
-    }
-
-    const testCmd = await fs.readFile('.claude/commands/test.md', 'utf-8');
-    expect(testCmd).toContain('.contextkit/commands/dev/run-tests.md');
-
-    const docCmd = await fs.readFile('.claude/commands/doc.md', 'utf-8');
-    expect(docCmd).toContain('.contextkit/commands/docs/add-documentation.md');
-
-    const ckCmd = await fs.readFile('.claude/commands/ck.md', 'utf-8');
-    expect(ckCmd).toContain('.contextkit/commands/dev/health-check.md');
-
-    const squadCommands = [
+    const allSkills = [
+      'analyze',
+      'review',
+      'fix',
+      'refactor',
+      'test',
+      'doc',
+      'spec',
+      'ck',
       'squad',
       'squad-architect',
       'squad-dev',
@@ -98,34 +89,57 @@ describe('ClaudeIntegration', () => {
       'squad-auto-parallel',
       'squad-reset',
       'squad-doc',
+      'doc-arch',
+      'doc-feature',
+      'doc-component',
+      'agent-push-checklist',
+      'context-budget',
+      'standards-aware',
     ];
-    for (const cmd of squadCommands) {
-      const filePath = `.claude/commands/${cmd}.md`;
+    for (const skill of allSkills) {
+      const filePath = `.claude/skills/${skill}/SKILL.md`;
       expect(await fs.pathExists(filePath)).toBe(true);
       const content = await fs.readFile(filePath, 'utf-8');
-      expect(content).toContain('.contextkit/commands/squad/');
-    }
-
-    const docFamilyCommands = ['doc-arch', 'doc-feature', 'doc-component'];
-    for (const cmd of docFamilyCommands) {
-      const filePath = `.claude/commands/${cmd}.md`;
-      expect(await fs.pathExists(filePath)).toBe(true);
-      const content = await fs.readFile(filePath, 'utf-8');
-      expect(content).toContain('.contextkit/commands/docs/');
+      expect(content).toContain('description:');
+      expect(content).toContain('allowed-tools:');
+      expect(content).toContain('.contextkit/commands/');
     }
   });
 
-  test('10. creates agent command wrappers referencing agents/ subdir', async () => {
+  test('10. creates agent skills referencing agents/ subdir', async () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    const agentCommands = ['agent-push-checklist', 'context-budget', 'standards-aware'];
-    for (const cmd of agentCommands) {
-      const filePath = `.claude/commands/${cmd}.md`;
+    const agentSkills = ['agent-push-checklist', 'context-budget', 'standards-aware'];
+    for (const skill of agentSkills) {
+      const filePath = `.claude/skills/${skill}/SKILL.md`;
       expect(await fs.pathExists(filePath)).toBe(true);
       const content = await fs.readFile(filePath, 'utf-8');
       expect(content).toContain('.contextkit/commands/agents/');
     }
+  });
+
+  test('11. squad-auto and squad-auto-parallel skills have context: fork', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    for (const skill of ['squad-auto', 'squad-auto-parallel']) {
+      const content = await fs.readFile(`.claude/skills/${skill}/SKILL.md`, 'utf-8');
+      expect(content).toContain('context: fork');
+    }
+  });
+
+  test('12. removes legacy .claude/commands/ files on install', async () => {
+    // Pre-create legacy command files to simulate an existing user's setup
+    await fs.ensureDir('.claude/commands');
+    await fs.writeFile('.claude/commands/analyze.md', 'legacy content');
+    await fs.writeFile('.claude/commands/squad-auto.md', 'legacy content');
+
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    expect(await fs.pathExists('.claude/commands/analyze.md')).toBe(false);
+    expect(await fs.pathExists('.claude/commands/squad-auto.md')).toBe(false);
   });
 
   test('6. appends to existing CLAUDE.md without overwriting', async () => {
