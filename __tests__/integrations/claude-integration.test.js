@@ -67,18 +67,28 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('lib/**');
   });
 
-  test('5. creates all slash command files', async () => {
+  test('5. creates all slash command files with correct subdir paths', async () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    const commands = [
-      'analyze',
-      'review',
-      'fix',
-      'refactor',
-      'test',
-      'doc',
-      'spec',
+    const devCommands = ['analyze', 'review', 'fix', 'refactor', 'spec'];
+    for (const cmd of devCommands) {
+      const filePath = `.claude/commands/${cmd}.md`;
+      expect(await fs.pathExists(filePath)).toBe(true);
+      const content = await fs.readFile(filePath, 'utf-8');
+      expect(content).toContain('.contextkit/commands/dev/');
+    }
+
+    const testCmd = await fs.readFile('.claude/commands/test.md', 'utf-8');
+    expect(testCmd).toContain('.contextkit/commands/dev/run-tests.md');
+
+    const docCmd = await fs.readFile('.claude/commands/doc.md', 'utf-8');
+    expect(docCmd).toContain('.contextkit/commands/docs/add-documentation.md');
+
+    const ckCmd = await fs.readFile('.claude/commands/ck.md', 'utf-8');
+    expect(ckCmd).toContain('.contextkit/commands/dev/health-check.md');
+
+    const squadCommands = [
       'squad',
       'squad-architect',
       'squad-dev',
@@ -88,16 +98,33 @@ describe('ClaudeIntegration', () => {
       'squad-auto-parallel',
       'squad-reset',
       'squad-doc',
-      'ck',
-      'doc-arch',
-      'doc-feature',
-      'doc-component',
     ];
-    for (const cmd of commands) {
+    for (const cmd of squadCommands) {
       const filePath = `.claude/commands/${cmd}.md`;
       expect(await fs.pathExists(filePath)).toBe(true);
       const content = await fs.readFile(filePath, 'utf-8');
-      expect(content).toContain('.contextkit/commands/');
+      expect(content).toContain('.contextkit/commands/squad/');
+    }
+
+    const docFamilyCommands = ['doc-arch', 'doc-feature', 'doc-component'];
+    for (const cmd of docFamilyCommands) {
+      const filePath = `.claude/commands/${cmd}.md`;
+      expect(await fs.pathExists(filePath)).toBe(true);
+      const content = await fs.readFile(filePath, 'utf-8');
+      expect(content).toContain('.contextkit/commands/docs/');
+    }
+  });
+
+  test('10. creates agent command wrappers referencing agents/ subdir', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const agentCommands = ['agent-push-checklist', 'context-budget', 'standards-aware'];
+    for (const cmd of agentCommands) {
+      const filePath = `.claude/commands/${cmd}.md`;
+      expect(await fs.pathExists(filePath)).toBe(true);
+      const content = await fs.readFile(filePath, 'utf-8');
+      expect(content).toContain('.contextkit/commands/agents/');
     }
   });
 

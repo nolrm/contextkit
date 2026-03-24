@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.14.1] - 2026-03-24
+
+### Fixed
+- **`.claude/commands/` path bug** — all generated slash command wrappers now reference correct `.contextkit/commands/` subdir paths (`dev/`, `squad/`, `docs/`, `agents/`)
+
+### Added
+- New slash command wrappers: `/agent-push-checklist`, `/context-budget`, `/standards-aware`
+- `ck install` now appends `.claude/settings.local.json` to `.gitignore` automatically (no-op if file absent or entry already present)
+
 ## [0.14.0] - 2026-03-23
 
 ### Removed
