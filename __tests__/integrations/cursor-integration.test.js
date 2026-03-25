@@ -95,7 +95,42 @@ describe('CursorIntegration', () => {
     }
   });
 
-  test('7. validate returns valid after install', async () => {
+  test('7. prompt files reference correct subdirectory command paths', async () => {
+    const integration = new CursorIntegration();
+    await integration.install();
+
+    const checks = [
+      ['.cursor/prompts/analyze.md', '.contextkit/commands/dev/analyze.md'],
+      ['.cursor/prompts/fix.md', '.contextkit/commands/dev/fix.md'],
+      ['.cursor/prompts/refactor.md', '.contextkit/commands/dev/refactor.md'],
+      ['.cursor/prompts/test.md', '.contextkit/commands/dev/run-tests.md'],
+      ['.cursor/prompts/doc.md', '.contextkit/commands/docs/add-documentation.md'],
+      ['.cursor/prompts/squad.md', '.contextkit/commands/squad/squad.md'],
+      ['.cursor/prompts/squad-architect.md', '.contextkit/commands/squad/squad-architect.md'],
+      ['.cursor/prompts/squad-auto.md', '.contextkit/commands/squad/squad-auto.md'],
+      ['.cursor/prompts/spec.md', '.contextkit/commands/dev/spec.md'],
+      ['.cursor/prompts/ck.md', '.contextkit/commands/dev/health-check.md'],
+    ];
+
+    for (const [file, expectedPath] of checks) {
+      const content = await fs.readFile(file, 'utf-8');
+      expect(content).toContain(expectedPath);
+    }
+  });
+
+  test('8. rule files reference correct subdirectory command paths', async () => {
+    const integration = new CursorIntegration();
+    await integration.install();
+
+    const components = await fs.readFile('.cursor/rules/contextkit-components.mdc', 'utf-8');
+    expect(components).toContain('.contextkit/commands/dev/create-component.md');
+    expect(components).toContain('.contextkit/commands/dev/spec.md');
+
+    const api = await fs.readFile('.cursor/rules/contextkit-api.mdc', 'utf-8');
+    expect(api).toContain('.contextkit/commands/dev/create-feature.md');
+  });
+
+  test('9. validate returns valid after install', async () => {
     const integration = new CursorIntegration();
     await integration.install();
 

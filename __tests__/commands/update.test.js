@@ -27,7 +27,7 @@ jest.mock('ora', () => {
 // Mock axios
 jest.mock('axios', () => ({
   get: jest.fn().mockResolvedValue({
-    data: { tag_name: 'v1.1.0' },
+    data: { version: '1.1.0' },
   }),
 }));
 
@@ -153,7 +153,7 @@ describe('UpdateCommand', () => {
 
   it('6. skips update when already up to date', async () => {
     const axios = require('axios');
-    axios.get.mockResolvedValueOnce({ data: { tag_name: 'v1.0.0' } });
+    axios.get.mockResolvedValueOnce({ data: { version: '1.0.0' } });
 
     await fs.ensureDir('.contextkit');
     await fs.writeFile('.contextkit/config.yml', baseConfig);
@@ -263,6 +263,20 @@ describe('UpdateCommand', () => {
     expect(downloadedDests.some((d) => d.includes('squad-issue.yml'))).toBe(false);
   });
 
+  it('15. skips update silently when npm registry is unreachable', async () => {
+    const axios = require('axios');
+    axios.get.mockRejectedValueOnce(new Error('network error'));
+
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({});
+
+    const calls = console.log.mock.calls.flat().join(' ');
+    expect(calls).toContain('already up to date');
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];
@@ -275,7 +289,7 @@ describe('UpdateCommand', () => {
 
     const axios = require('axios');
     // Same version — no update
-    axios.get.mockResolvedValueOnce({ data: { tag_name: 'v1.0.0' } });
+    axios.get.mockResolvedValueOnce({ data: { version: '1.0.0' } });
     await updateModule({});
 
     const calls = console.log.mock.calls.flat().join(' ');

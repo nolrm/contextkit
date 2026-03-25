@@ -614,6 +614,91 @@ describe('InstallCommand — promptQualityTooling / scaffoldQualityTooling', () 
   });
 });
 
+// ── addContextKitGitignoreEntries ─────────────────────────────────────────────
+
+describe('InstallCommand — addContextKitGitignoreEntries', () => {
+  let tmpDir;
+  let originalCwd;
+  let InstallCommand;
+  let installer;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ck-gitignore-'));
+    originalCwd = process.cwd();
+    process.chdir(tmpDir);
+    jest.spyOn(console, 'log').mockImplementation();
+
+    delete require.cache[require.resolve('../../lib/commands/install')];
+    ({ InstallCommand } = require('../../lib/commands/install'));
+    installer = new InstallCommand();
+  });
+
+  afterEach(async () => {
+    process.chdir(originalCwd);
+    await fs.remove(tmpDir);
+  });
+
+  it('51. skips silently when .gitignore does not exist', async () => {
+    await expect(installer.addContextKitGitignoreEntries()).resolves.not.toThrow();
+    expect(await fs.pathExists('.gitignore')).toBe(false);
+  });
+
+  it('52. appends all 5 entries and a # ContextKit header to an empty .gitignore', async () => {
+    await fs.writeFile('.gitignore', '');
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    expect(content).toContain('# ContextKit');
+    expect(content).toContain('.contextkit/status.json');
+    expect(content).toContain('.contextkit/status.yml');
+    expect(content).toContain('.contextkit/context.md');
+    expect(content).toContain('.contextkit/squad/');
+    expect(content).toContain('.contextkit/squad-done-*/');
+  });
+
+  it('53. is idempotent — does not duplicate entries when run twice', async () => {
+    await fs.writeFile('.gitignore', '');
+    await installer.addContextKitGitignoreEntries();
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    const count = (content.match(/\.contextkit\/status\.json/g) || []).length;
+    expect(count).toBe(1);
+  });
+
+  it('54. appends only missing entries when some already present', async () => {
+    await fs.writeFile('.gitignore', '.contextkit/status.json\n.contextkit/status.yml\n');
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    expect(content).toContain('.contextkit/context.md');
+    expect(content).toContain('.contextkit/squad/');
+    expect(content).toContain('.contextkit/squad-done-*/');
+    // Already-present entries should appear only once
+    const count = (content.match(/\.contextkit\/status\.json/g) || []).length;
+    expect(count).toBe(1);
+  });
+
+  it('55. does not add # ContextKit header when it already exists', async () => {
+    await fs.writeFile('.gitignore', '# ContextKit\n.contextkit/status.json\n');
+    // Add a fresh entry by temporarily removing one to force an append
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    const headerCount = (content.match(/# ContextKit/g) || []).length;
+    expect(headerCount).toBe(1);
+  });
+
+  it('56. handles file write error gracefully with a warning', async () => {
+    await fs.writeFile('.gitignore', '');
+    jest.spyOn(fs, 'appendFile').mockRejectedValue(new Error('permission denied'));
+
+    await expect(installer.addContextKitGitignoreEntries()).resolves.not.toThrow();
+    const logs = console.log.mock.calls.flat().join(' ');
+    expect(logs).toContain('Could not update .gitignore');
+  });
+});
+
 // ── Quality Gates Config ──────────────────────────────────────────────────────
 
 describe('InstallCommand — createQualityGatesConfig', () => {
