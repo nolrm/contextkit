@@ -90,7 +90,7 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 
 - Reads `glossary.md` → `checkout` = checkout process; `customer` = customer account
 - Applies `code-style.md` → strict TS, functional components
-- Follows `testing.md` → numbered test cases
+- Follows `testing.md` → testing levels, change-driven test selection, numbered test cases
 
 **Result (diff)**
 
@@ -161,7 +161,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
 | `/squad-architect`     | Design the technical plan from the PO spec                                                                                      |
 | `/squad-dev`           | Implement code following the architect plan                                                                                     |
-| `/squad-test`          | Write and run tests against acceptance criteria                                                                                 |
+| `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
 | `/squad-auto`          | Auto-run the full pipeline after kickoff (recommended, sequential)                                                              |

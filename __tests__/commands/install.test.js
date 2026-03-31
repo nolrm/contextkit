@@ -112,6 +112,10 @@ describe('InstallCommand', () => {
 
     const testing = await fs.readFile('.contextkit/standards/testing.md', 'utf8');
     expect(testing).toContain('/analyze');
+    expect(testing).toContain('Testing Levels');
+    expect(testing).toContain('Testing Trophy');
+    expect(testing).toContain('Change-Driven Decision Table');
+    expect(testing).toContain('Context Coverage Rule');
   });
 
   it('4. creates skeleton template files', async () => {

@@ -150,11 +150,15 @@ created: [TIMESTAMP]
 
 3. Create each `.contextkit/squad/handoff-[N].md` using the [Handoff Template](#handoff-template).
 
-4. Write PO specs for all tasks sequentially (read codebase once, apply to all):
-   - Fill in **"1. PO Spec"** for each handoff (User Story, Acceptance Criteria, Edge Cases, Out of Scope, Visual Assets)
-   - Set each `## 1. PO Spec` → `status: done`
-   - Set each top-level `status:` → `architect`
-   - Update each task in the manifest from `status: pending` → `status: po`
+4. Write PO specs one task at a time. Read the codebase once, then process each handoff sequentially — **write to disk after each before moving to the next**:
+   - Take the first task with `status: pending`
+   - Fill in **"1. PO Spec"** (User Story, Acceptance Criteria, Edge Cases, Out of Scope, Visual Assets)
+   - Set `## 1. PO Spec` → `status: done`
+   - Set top-level `status:` → `architect`
+   - **Write the handoff file to disk now.**
+   - Update this task in the manifest from `status: pending` → `status: po`
+   - Announce: `✓ Task #N spec ready.`
+   - Repeat for the next pending task. Do not start task #2 until task #1's handoff file is saved.
 
 5. Tell the user: "All [N] PO specs ready. Run `/squad-auto` to continue the pipeline." List each handoff file and task description.
 
@@ -169,7 +173,7 @@ _Triggered when: batch in progress and user provides new tasks._
 3. Update `total:` to `EXISTING_TOTAL + NEW_COUNT`.
 4. Append new task lines to `## Tasks`.
 5. Create new `handoff-[N].md` files using the [Handoff Template](#handoff-template).
-6. Write PO specs for new tasks only — do not touch existing handoff files.
+6. Write PO specs for new tasks only — one at a time. Write each handoff file to disk and update the manifest before moving to the next. Do not touch existing handoff files.
 7. Tell the user: "Added [N] new task(s) to the batch (now [NEW_TOTAL] total). Run `/squad-auto` to continue."
 
 ---

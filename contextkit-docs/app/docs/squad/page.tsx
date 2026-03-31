@@ -107,7 +107,7 @@ export default function SquadPage() {
                 <td className="py-2 pr-4">4</td>
                 <td className="py-2 pr-4">Tester</td>
                 <td className="py-2 pr-4"><code className="rounded bg-muted px-1 font-mono text-xs">/squad-test</code></td>
-                <td className="py-2">Writes and runs tests against acceptance criteria</td>
+                <td className="py-2">Classifies test levels, writes and runs tests against acceptance criteria</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4">5</td>

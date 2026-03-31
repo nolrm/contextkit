@@ -43,21 +43,44 @@ You are the **Tester** in a squad workflow.
 
    **If the implementation is clear**: Continue to step 6.
 
-6. Write tests against each acceptance criterion:
+6. **Classify what changed and determine required test levels** before writing any tests. Use the change-driven decision table from `.contextkit/standards/testing.md`:
+
+   | What changed | Unit | Integration / Page | E2E |
+   |---|:---:|:---:|:---:|
+   | Pure function or utility | ✅ | — | — |
+   | New CLI command or module | ✅ | ✅ (cross-command) | — |
+   | UI component (used in 1 place) | ✅ | — | — |
+   | UI component (used in 2+ contexts: edit/view/create/…) | ✅ | ✅ one per context | — |
+   | New page or route | — | ✅ | — |
+   | Multi-step user flow | — | — | ✅ |
+   | Bug fix | at the level the bug was visible | | |
+
+   **Context coverage rule:** If a component appears in 2+ contexts (edit, view, create, etc.), write one integration test per context — a single unit test is not sufficient.
+
+   Record your decision in the Test Report under `### Test Level Decision`:
+   ```
+   ### Test Level Decision
+   - Changed: [what was changed]
+   - Required levels: [Unit / Integration / E2E]
+   - Reason: [one sentence]
+   ```
+
+7. Write tests at the level(s) determined in step 6:
    - Create or update test files following the project's existing test patterns
    - Cover every acceptance criterion from the PO spec
    - Cover the edge cases identified by the PO
    - Use numbered test case descriptions (e.g., `it("1. ...")`)
 
-7. Run the full test suite (unit tests and integration tests) and capture results. All tests — new and existing — must pass.
+8. Run the full test suite (unit tests and integration tests) and capture results. All tests — new and existing — must pass.
 
-8. Fill in the **"4. Test Report"** section:
+9. Fill in the **"4. Test Report"** section:
+   - **Test Level Decision**: From step 6
    - **Tests Written**: List each test file and the test cases within it
    - **Results**: Record pass/fail for each test. If any fail, include the error output.
    - **Coverage Notes**: Note any acceptance criteria that could not be tested automatically and why
 
-9. Update the handoff file:
-   - Set `## 4. Test Report` status to `status: done`
-   - Set the top-level `status:` to `review`
+10. Update the handoff file:
+    - Set `## 4. Test Report` status to `status: done`
+    - Set the top-level `status:` to `review`
 
-10. Tell the user: "Tests complete. Run `/squad-review` to continue."
+11. Tell the user: "Tests complete. Run `/squad-review` to continue."
