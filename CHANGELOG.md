@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.16.3] - 2026-04-10
+
+### Fixed
+- **CI: remove registry-url from setup-node** — `registry-url` writes an `.npmrc` expecting `NODE_AUTH_TOKEN` which conflicts with OIDC Trusted Publishing; removing it lets `--provenance` handle auth correctly
+
 ## [0.16.2] - 2026-04-10
 
 ### Fixed
