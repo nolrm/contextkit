@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.16.1] - 2026-04-09
+
+### Fixed
+- **CI: npm self-update removed** — `npm install -g npm@latest` was corrupting the npm installation in the GitHub Actions hostedtoolcache; Node 22 ships with npm 10+ which already supports `--provenance`
+
 ## [0.16.0] - 2026-04-09
 
 ### Added
