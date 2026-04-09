@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.16.4] - 2026-04-10
+
+### Fixed
+- **CI: npm auth** — restore `registry-url` and `NODE_AUTH_TOKEN` via `NPM_TOKEN` secret; `--provenance` handles attestation only, not authentication
+
 ## [0.16.3] - 2026-04-10
 
 ### Fixed
