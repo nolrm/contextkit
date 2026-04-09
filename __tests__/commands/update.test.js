@@ -277,6 +277,55 @@ describe('UpdateCommand', () => {
     expect(calls).toContain('already up to date');
   });
 
+  it('16. update preserves existing user-owned glossary.md', async () => {
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('.contextkit/standards/glossary.md', '# My custom glossary\nterm: my domain term\n');
+
+    const update = getUpdateModule();
+    await update({ force: false });
+
+    const content = await fs.readFile('.contextkit/standards/glossary.md', 'utf8');
+    expect(content).toBe('# My custom glossary\nterm: my domain term\n');
+  });
+
+  it('17. update writes glossary.md when it does not exist (restore)', async () => {
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    // No glossary.md present
+
+    const update = getUpdateModule();
+    await update({ force: false });
+
+    expect(await fs.pathExists('.contextkit/standards/glossary.md')).toBe(true);
+  });
+
+  it('18. update with --force regenerates user-owned glossary.md', async () => {
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('.contextkit/standards/glossary.md', '# My custom glossary\n');
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    // Mock downloads write '# mocked download\n' — should replace custom content
+    const content = await fs.readFile('.contextkit/standards/glossary.md', 'utf8');
+    expect(content).toBe('# mocked download\n');
+  });
+
+  it('19. update logs preserved message when glossary.md skipped', async () => {
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('.contextkit/standards/glossary.md', '# custom\n');
+
+    const update = getUpdateModule();
+    await update({ force: false });
+
+    const logged = console.log.mock.calls.flat().join(' ');
+    expect(logged).toContain('glossary.md');
+    expect(logged).toContain('preserved');
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];

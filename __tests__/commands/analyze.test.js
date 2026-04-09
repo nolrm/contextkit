@@ -111,4 +111,79 @@ describe('AnalyzeCommand', () => {
     await fs.writeFile(path.join(tmpDir, 'turbo.json'), '{}');
     await expect(analyze({ scope: 'current', nonInteractive: true })).resolves.not.toThrow();
   });
+
+  it('8. Go project returns no JS frameworks even when src/components dir exists', async () => {
+    await setupInstalled();
+    // go.mod present = detected as 'go'; src/components should NOT trigger React
+    await fs.writeFile(path.join(tmpDir, 'go.mod'), 'module github.com/example/myapp\n\ngo 1.21\n');
+    await fs.ensureDir(path.join(tmpDir, 'src', 'components'));
+
+    await analyze({ nonInteractive: true });
+
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(logged).not.toMatch(/\bReact\b/);
+    expect(logged).not.toMatch(/\bVue\b/);
+    expect(logged).not.toMatch(/\bAngular\b/);
+    expect(logged).not.toMatch(/Next\.js/);
+  });
+
+  it('9. Python project returns Python framework, not JS frameworks', async () => {
+    await setupInstalled();
+    await fs.writeFile(path.join(tmpDir, 'requirements.txt'), 'django==4.2\npsycopg2-binary\n');
+    // Also create src/pages to confirm it does NOT trigger Next.js
+    await fs.ensureDir(path.join(tmpDir, 'src', 'pages'));
+
+    await analyze({ nonInteractive: true });
+
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(logged).not.toMatch(/\bReact\b/);
+    expect(logged).not.toMatch(/Next\.js/);
+    // Python/Django should appear
+    expect(logged).toMatch(/Python|Django/);
+  });
+
+  it('10. Node project with React dependency still detects React framework', async () => {
+    await setupInstalled();
+    await fs.writeJson(path.join(tmpDir, 'package.json'), {
+      name: 'my-app',
+      dependencies: { react: '^18.0.0', 'react-dom': '^18.0.0' },
+    });
+    await fs.ensureDir(path.join(tmpDir, 'src', 'components'));
+
+    await analyze({ nonInteractive: true });
+
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(logged).toMatch(/React/);
+  });
+
+  it('11. detectFrameworks returns Go and module name for go.mod project', async () => {
+    const AnalyzeCommand = require('../../lib/commands/analyze');
+    // Access the class via the module if exported, otherwise test via behavior
+    await setupInstalled();
+    await fs.writeFile(
+      path.join(tmpDir, 'go.mod'),
+      'module github.com/example/myservice\n\ngo 1.21\n'
+    );
+
+    await analyze({ nonInteractive: true });
+
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(logged).toMatch(/go/i);
+    expect(logged).not.toMatch(/\bReact\b/);
+  });
+
+  it('12. detectFrameworks returns empty JS frameworks when React dep missing but src/components exists', async () => {
+    await setupInstalled();
+    // No react dep, but has src/components — should NOT produce React
+    await fs.writeJson(path.join(tmpDir, 'package.json'), {
+      name: 'my-app',
+      dependencies: { lodash: '^4.0.0' },
+    });
+    await fs.ensureDir(path.join(tmpDir, 'src', 'components'));
+
+    await analyze({ nonInteractive: true });
+
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(logged).not.toMatch(/\bReact\b/);
+  });
 });

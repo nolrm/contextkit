@@ -130,13 +130,15 @@ describe('GitHooksManager - core.hooksPath', () => {
     expect(getHooksPath()).toBe('.contextkit/hooks');
   });
 
-  it('11. does not remove .husky/ if it has no ContextKit markers', async () => {
+  it('11. does not remove .husky/ if it has no ContextKit markers, and skips hooks setup', async () => {
     await fs.ensureDir('.husky');
     await fs.writeFile('.husky/pre-push', '#!/bin/sh\necho "user hook"');
 
     await manager.installHooks('npm', { prePush: true, commitMsg: true });
 
     expect(fs.existsSync('.husky')).toBe(true);
+    // Must NOT override core.hooksPath — user's Husky setup must remain intact
+    expect(getHooksPath()).toBeNull();
   });
 
   it('12. cleans up legacy .git/hooks/ ContextKit wrapper files', async () => {
@@ -161,5 +163,97 @@ describe('GitHooksManager - core.hooksPath', () => {
     expect(getHooksPath()).toBeNull();
     const pkg = await fs.readJson('package.json');
     expect(pkg.scripts.prepare).toBeUndefined();
+  });
+});
+
+describe('GitHooksManager - detectExistingHooksManager', () => {
+  it('14. returns not detected when no conflicts exist', async () => {
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(false);
+    expect(result.type).toBeNull();
+  });
+
+  it('15. detects core.hooksPath pointing to a different directory', async () => {
+    execSync('git config core.hooksPath .husky', { stdio: 'pipe' });
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(true);
+    expect(result.type).toBe('core.hooksPath');
+    expect(result.details).toContain('.husky');
+  });
+
+  it('16. does not flag core.hooksPath when already set to .contextkit/hooks', async () => {
+    execSync('git config core.hooksPath .contextkit/hooks', { stdio: 'pipe' });
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(false);
+  });
+
+  it('17. detects .husky/ directory with non-CK hooks', async () => {
+    await fs.ensureDir('.husky');
+    await fs.writeFile('.husky/pre-push', '#!/bin/sh\nnpm test');
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(true);
+    expect(result.type).toBe('husky');
+    expect(result.suggestion).toContain('.contextkit/hooks/pre-push');
+  });
+
+  it('18. detects lefthook.yml', async () => {
+    await fs.writeFile('lefthook.yml', 'pre-push:\n  commands:\n    test:\n      run: npm test\n');
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(true);
+    expect(result.type).toBe('lefthook');
+    expect(result.suggestion).toContain('lefthook.yml');
+  });
+
+  it('19. detects simple-git-hooks configuration in package.json', async () => {
+    await fs.writeJson('package.json', {
+      name: 'test',
+      'simple-git-hooks': { 'pre-push': 'npm test' },
+    });
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(true);
+    expect(result.type).toBe('simple-git-hooks');
+  });
+
+  it('20. detects non-CK hook file in .git/hooks/', async () => {
+    await fs.writeFile('.git/hooks/pre-push', '#!/bin/sh\necho "custom hook"\nexit 0');
+    await fs.chmod('.git/hooks/pre-push', '755');
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(true);
+    expect(result.type).toBe('git-hooks');
+    expect(result.suggestion).toContain('pre-push');
+  });
+
+  it('21. does not flag CK-managed .git/hooks/ files as conflicts', async () => {
+    await fs.writeFile(
+      '.git/hooks/pre-push',
+      '#!/usr/bin/env sh\n# ContextKit managed hook\nsh .contextkit/hooks/pre-push\n'
+    );
+
+    const result = await manager.detectExistingHooksManager();
+
+    expect(result.detected).toBe(false);
+  });
+
+  it('22. installHooks skips setup and prints suggestion when conflict detected', async () => {
+    await fs.ensureDir('.husky');
+    await fs.writeFile('.husky/pre-push', '#!/bin/sh\nnpm test');
+
+    await manager.installHooks('npm', { prePush: true, commitMsg: true });
+
+    // core.hooksPath must NOT be set — conflict detected, skipped
+    expect(getHooksPath()).toBeNull();
   });
 });

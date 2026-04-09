@@ -62,8 +62,8 @@ Perfect for teams where members use different AI tools:
 contextkit install claude   # or: contextkit install (interactive picker)
 
 # Each additional team member adds their platform
-ck claude      # creates CLAUDE.md + .claude/rules/
-ck cursor      # creates .cursor/rules/ (scoped .mdc files)
+ck claude      # creates CLAUDE.md + .claude/rules/ — skips if already up to date
+ck cursor      # creates .cursor/rules/ (scoped .mdc files) — skips if already up to date
 ck copilot     # creates .github/copilot-instructions.md
 ck codex       # creates AGENTS.md
 ck opencode    # creates AGENTS.md
@@ -154,7 +154,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/refactor`            | Refactor code with safety checks                                                                                                |
 | `/test`                | Generate comprehensive tests                                                                                                    |
 | `/doc`                 | Add documentation                                                                                                               |
-| `/doc-arch`            | Generate architecture docs (`docs/architecture.md`) — stack-aware (Level 1)                                                     |
+| `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. |
 | `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2)                                                 |
 | `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3)                                            |
 | `/spec`                | Write a component spec (MD-first) before any code is created                                                                    |
@@ -181,6 +181,8 @@ Both platforms delegate to the universal command files in `.contextkit/commands/
 ## Squad Workflow
 
 The squad workflow turns a single AI session into a structured multi-role pipeline. Each role has its own slash command that reads and writes to a shared handoff file (`.contextkit/squad/handoff.md`), simulating a team of specialists.
+
+> **Squad works standalone.** If `.contextkit/` isn't set up, `/squad` will offer to create just `.contextkit/squad/` so you can use the pipeline without a full `ck install`.
 
 ### Pipeline Roles
 
@@ -259,6 +261,8 @@ If you have a screenshot, mockup, or design image relevant to the task, paste or
 ## Git Hooks & Quality Gates
 
 ContextKit can optionally install Git hooks during `ck install`. Uses `git config core.hooksPath` to point Git at `.contextkit/hooks/` — no external dependencies like Husky required. Works in any git repo, not just Node.js projects.
+
+If an existing hooks manager is detected (Husky, Lefthook, simple-git-hooks, an existing `core.hooksPath`, or scripts in `.git/hooks/`), `ck install` will suggest how to integrate rather than overriding your setup.
 
 For **Node.js projects**, a `prepare` script is automatically added to `package.json` so hooks activate for all developers after `npm install` — no need for everyone to run `ck install`.
 
@@ -368,8 +372,9 @@ Then add your Anthropic API key as a repository secret:
 # Installation & Setup
 ck install            # set up .contextkit + pick AI tool interactively
 ck install claude     # set up .contextkit + Claude, or add Claude to an existing install
-ck claude      # add Claude Code integration (CLAUDE.md + rules)
-ck cursor      # add Cursor integration (scoped .mdc rules)
+ck install --force    # regenerate all files, including user-customized standards
+ck claude      # add or refresh Claude integration — skips if already up to date
+ck cursor      # add or refresh Cursor integration — skips if already up to date
 ck copilot     # add GitHub Copilot integration
 ck codex       # add Codex CLI integration (AGENTS.md)
 ck opencode    # add OpenCode integration (AGENTS.md)
@@ -381,8 +386,9 @@ ck vscode      # alias for copilot
 
 # Analysis & Updates
 /analyze       # customize standards to your project (slash command in your AI tool)
-ck update      # pull latest commands/hooks — preserves your analyzed standards
-               # updates are also flagged automatically after each ck command (24h cache)
+ck update             # pull latest commands/hooks — never overwrites your standards or glossary
+ck update --force     # also regenerate user-owned files (standards, glossary)
+                      # updates are also flagged automatically after each ck command (24h cache)
 ck status      # check install & integrations
 
 # Validation & Compliance

@@ -27,6 +27,7 @@ program
   )
   .option('--no-hooks', 'Skip Git hooks installation')
   .option('--non-interactive', 'Skip interactive prompts')
+  .option('--force', 'Regenerate user-owned standards files even if they already exist')
   .action(async (platform, options) => {
     try {
       await install({ ...options, ...(platform ? { platform } : { fullInstall: true }) });
@@ -53,7 +54,7 @@ program
 program
   .command('update')
   .description('Update to latest version')
-  .option('--force', 'Force update even if no changes')
+  .option('--force', 'Force update even if no changes; also regenerates user-owned standards files')
   .action(async (options) => {
     try {
       await update(options);

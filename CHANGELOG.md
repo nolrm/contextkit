@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.16.0] - 2026-04-09
+
+### Added
+- **Smart git hooks detection** — `ck install` detects existing hooks managers (Husky, Lefthook, simple-git-hooks, existing `core.hooksPath`, scripts in `.git/hooks/`) and suggests integration instead of overriding
+- **`ck install --force`** — regenerate all files including user-customized standards
+- **`ck update --force`** — also regenerate user-owned files (standards, glossary)
+- **`/squad` standalone mode** — if `.contextkit/` isn't set up, `/squad` offers to create just `.contextkit/squad/` so the pipeline works without a full `ck install`; never creates `.squad/` in the project root
+
+### Improved
+- **`ck install` smart reinstall** — skips user-owned standards files on reinstall; prints skip message with `--force` hint
+- **`ck update` non-destructive** — never overwrites user-owned files (`glossary.md`, standards); preserved files logged clearly
+- **`ck claude` / `ck cursor` version-aware** — skip regeneration when integration is already up to date; regenerate when version mismatches or files are missing
+- **`ck analyze` tech stack fix** — no longer generates JS/TS standards for Go, Python, Rust, Java, and other non-JS projects
+- **Gitignore taxonomy** — `addContextKitGitignoreEntries` writes 6 targeted runtime-state entries under a descriptive header; detects and handles existing ignore-all `.contextkit/*` pattern gracefully; upgrades legacy `# ContextKit` header
+- **`/doc-arch` dynamic output** — output filename derived from topic argument, PR title, or branch name (`docs/<topic>.md`); confirms filename when inferred, falls back to `docs/architecture.md`
+
+## [0.15.1] - 2026-04-07
+
+### Improved
+- **Squad pipeline: sequential task execution enforced** — `/squad-auto` writes each file to disk before moving to the next task
+- **Testing standards: Testing Trophy levels** — `testing.md` updated with unit/integration/e2e decision table and change-driven test selection rules
+
+## [0.15.0] - 2026-04-07
+
+### Added
+- **Skills format** — Claude commands migrated to skills format with rich frontmatter; Cursor rules updated to match
+- **`ck install` gitignore entries** — adds `.contextkit/squad/` and `.contextkit/squad-done-*/` to `.gitignore` on install
+
+### Fixed
+- **`ck update` cursor paths** — corrected path resolution for Cursor rules on update
+
 ## [0.14.1] - 2026-03-24
 
 ### Fixed

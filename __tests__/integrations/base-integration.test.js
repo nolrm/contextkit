@@ -117,7 +117,74 @@ describe('BaseIntegration', () => {
     );
   });
 
-  test('8. getStandardsBlock returns standards reference markdown', () => {
+  test('8. isUpToDate returns false when generated files are missing', async () => {
+    const integration = new TestIntegration();
+    // No files written yet
+    const result = await integration.isUpToDate();
+    expect(result).toBe(false);
+  });
+
+  test('9. isUpToDate returns false when bridge file version does not match package', async () => {
+    const integration = new TestIntegration();
+    await integration.install(true); // force full generation
+
+    // Tamper with the version in the bridge file
+    const content = await fs.readFile('TEST_BRIDGE.md', 'utf-8');
+    await fs.writeFile('TEST_BRIDGE.md', content.replace(/Version: [0-9.]+/, 'Version: 0.0.1'));
+
+    const result = await integration.isUpToDate();
+    expect(result).toBe(false);
+  });
+
+  test('10. isUpToDate returns false when bridge file has no Version: tag', async () => {
+    const integration = new TestIntegration();
+    await integration.install(true); // writes bridge file without Version: tag
+
+    // TestIntegration bridge content is '# Bridge Content' — no Version: tag
+    // version regex match is null → returns false
+    const result = await integration.isUpToDate();
+    expect(result).toBe(false);
+  });
+
+  test('11. install skips generateFiles when already up to date', async () => {
+    class NoVersionBridgeIntegration extends BaseIntegration {
+      constructor() {
+        super();
+        this.name = 'no-version';
+        this.displayName = 'No Version';
+        this.generatedFiles = ['nv-generated.md'];
+        this.bridgeFiles = [];
+        this.platformDir = null;
+      }
+      async generateFiles() {
+        await this.writeGeneratedFile('nv-generated.md', '# Generated');
+      }
+    }
+
+    const integration = new NoVersionBridgeIntegration();
+    // First install
+    await integration.install(true);
+
+    // Spy on generateFiles
+    const spy = jest.spyOn(integration, 'generateFiles');
+    // Second install without force — should be up to date (no bridge file to check version)
+    await integration.install(false);
+
+    // No bridge file = version check skipped, all files present = up to date
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  test('12. install with force=true always calls generateFiles', async () => {
+    const integration = new TestIntegration();
+    await integration.install(true); // first install
+
+    const spy = jest.spyOn(integration, 'generateFiles');
+    await integration.install(true); // force re-run
+
+    expect(spy).toHaveBeenCalled();
+  });
+
+  test('13. getStandardsBlock returns standards reference markdown', () => {
     const integration = new TestIntegration();
     const block = integration.getStandardsBlock();
 
@@ -126,5 +193,30 @@ describe('BaseIntegration', () => {
     expect(block).toContain('.contextkit/standards/architecture.md');
     expect(block).toContain('.contextkit/commands/analyze.md');
     expect(block).toContain('.contextkit/product/mission-lite.md');
+  });
+
+  test('14. ClaudeIntegration isUpToDate returns false when CLAUDE.md has old version', async () => {
+    const ClaudeIntegration = require('../../lib/integrations/claude-integration');
+    const integration = new ClaudeIntegration();
+    await integration.install(true);
+
+    // Tamper with version in CLAUDE.md
+    const content = await fs.readFile('CLAUDE.md', 'utf-8');
+    const tampered = content.replace(/Version: [0-9.]+/, 'Version: 0.0.1');
+    await fs.writeFile('CLAUDE.md', tampered);
+
+    const result = await integration.isUpToDate();
+    expect(result).toBe(false);
+  });
+
+  test('15. ClaudeIntegration install skips when version matches and all files present', async () => {
+    const ClaudeIntegration = require('../../lib/integrations/claude-integration');
+    const integration = new ClaudeIntegration();
+    await integration.install(true); // first install with correct version
+
+    const spy = jest.spyOn(integration, 'generateFiles');
+    await integration.install(false); // second call — up to date
+
+    expect(spy).not.toHaveBeenCalled();
   });
 });

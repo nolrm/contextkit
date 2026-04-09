@@ -647,17 +647,18 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(await fs.pathExists('.gitignore')).toBe(false);
   });
 
-  it('52. appends all 5 entries and a # ContextKit header to an empty .gitignore', async () => {
+  it('52. appends all 6 entries and descriptive header to an empty .gitignore', async () => {
     await fs.writeFile('.gitignore', '');
     await installer.addContextKitGitignoreEntries();
 
     const content = await fs.readFile('.gitignore', 'utf-8');
-    expect(content).toContain('# ContextKit');
+    expect(content).toContain('# ContextKit — runtime state (do not commit)');
     expect(content).toContain('.contextkit/status.json');
     expect(content).toContain('.contextkit/status.yml');
     expect(content).toContain('.contextkit/context.md');
     expect(content).toContain('.contextkit/squad/');
     expect(content).toContain('.contextkit/squad-done-*/');
+    expect(content).toContain('.contextkit/backup-*/');
   });
 
   it('53. is idempotent — does not duplicate entries when run twice', async () => {
@@ -678,19 +679,55 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(content).toContain('.contextkit/context.md');
     expect(content).toContain('.contextkit/squad/');
     expect(content).toContain('.contextkit/squad-done-*/');
+    expect(content).toContain('.contextkit/backup-*/');
     // Already-present entries should appear only once
     const count = (content.match(/\.contextkit\/status\.json/g) || []).length;
     expect(count).toBe(1);
   });
 
-  it('55. does not add # ContextKit header when it already exists', async () => {
-    await fs.writeFile('.gitignore', '# ContextKit\n.contextkit/status.json\n');
-    // Add a fresh entry by temporarily removing one to force an append
+  it('55. does not add header when it already exists (both legacy and new header)', async () => {
+    await fs.writeFile(
+      '.gitignore',
+      '# ContextKit — runtime state (do not commit)\n.contextkit/status.json\n'
+    );
     await installer.addContextKitGitignoreEntries();
 
     const content = await fs.readFile('.gitignore', 'utf-8');
     const headerCount = (content.match(/# ContextKit/g) || []).length;
     expect(headerCount).toBe(1);
+  });
+
+  it('61. upgrades legacy # ContextKit header to descriptive version', async () => {
+    await fs.writeFile('.gitignore', '# ContextKit\n.contextkit/status.json\n');
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    expect(content).toContain('# ContextKit — runtime state (do not commit)');
+    // Old header should be replaced
+    expect(content).not.toContain('# ContextKit\n');
+  });
+
+  it('62. handles existing ignore-all .contextkit/* pattern gracefully', async () => {
+    await fs.writeFile('.gitignore', '# My project\n.contextkit/*\n');
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    // Should NOT add individual entries as standalone lines — only a guidance comment
+    const standaloneLines = content.split('\n').filter((l) => !l.startsWith('#'));
+    expect(standaloneLines).not.toContain('.contextkit/status.json');
+    expect(content).toContain('# Note: the above ignores all of .contextkit/');
+  });
+
+  it('63. does not add guidance comment twice on ignore-all pattern', async () => {
+    await fs.writeFile(
+      '.gitignore',
+      '.contextkit/*\n# Note: the above ignores all of .contextkit/\n'
+    );
+    await installer.addContextKitGitignoreEntries();
+
+    const content = await fs.readFile('.gitignore', 'utf-8');
+    const commentCount = (content.match(/# Note: the above ignores all of/g) || []).length;
+    expect(commentCount).toBe(1);
   });
 
   it('56. handles file write error gracefully with a warning', async () => {
@@ -755,5 +792,71 @@ describe('InstallCommand — createQualityGatesConfig', () => {
     await installFn({ nonInteractive: true, noHooks: true });
 
     expect(await fs.pathExists('.contextkit/quality-gates.yml')).toBe(true);
+  });
+});
+
+describe('InstallCommand — _writeUserOwnedFile (skip on reinstall)', () => {
+  let installer;
+
+  beforeEach(async () => {
+    await fs.ensureDir('.contextkit/standards');
+    const { InstallCommand } = require('../../lib/commands/install');
+    installer = InstallCommand ? new InstallCommand() : null;
+  });
+
+  function getInstaller() {
+    delete require.cache[require.resolve('../../lib/commands/install')];
+    const mod = require('../../lib/commands/install');
+    // Support both export styles: class or function
+    if (mod.InstallCommand) return new mod.InstallCommand();
+    return null;
+  }
+
+  it('57. _writeUserOwnedFile creates file when it does not exist', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    expect(await fs.pathExists('.contextkit/standards/code-style.md')).toBe(true);
+  });
+
+  it('58. _writeUserOwnedFile skips file when it already exists (no force)', async () => {
+    // Pre-create a customized standard
+    await fs.writeFile('.contextkit/standards/code-style.md', '# My custom style\n');
+
+    const install = getInstallModule();
+    // Reinstall without force — mock reinstall confirm + platform choice
+    inquirer.prompt.mockResolvedValueOnce({ shouldContinue: true });
+    inquirer.prompt.mockResolvedValueOnce({ platform: null });
+    await install({ nonInteractive: false, noHooks: true });
+
+    // Custom content must be preserved
+    const content = await fs.readFile('.contextkit/standards/code-style.md', 'utf8');
+    expect(content).toBe('# My custom style\n');
+  });
+
+  it('59. _writeUserOwnedFile overwrites file when force=true', async () => {
+    await fs.writeFile('.contextkit/standards/code-style.md', '# My custom style\n');
+
+    const install = getInstallModule();
+    inquirer.prompt.mockResolvedValueOnce({ shouldContinue: true });
+    await install({ nonInteractive: true, noHooks: true, force: true });
+
+    const content = await fs.readFile('.contextkit/standards/code-style.md', 'utf8');
+    // Should have been regenerated (skeleton content, not custom)
+    expect(content).not.toBe('# My custom style\n');
+    expect(content).toContain('/analyze');
+  });
+
+  it('60. skip message logged when user-owned file preserved', async () => {
+    await fs.writeFile('.contextkit/standards/testing.md', '# My custom testing\n');
+    const consoleSpy = jest.spyOn(console, 'log');
+
+    const install = getInstallModule();
+    inquirer.prompt.mockResolvedValueOnce({ shouldContinue: true });
+    await install({ nonInteractive: false, noHooks: true });
+
+    const logged = consoleSpy.mock.calls.flat().join(' ');
+    expect(logged).toContain('standards/testing.md already exists');
+    expect(logged).toContain('--force');
   });
 });

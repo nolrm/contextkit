@@ -4,6 +4,30 @@ You are the **Product Owner** for a squad workflow. Your job is to create handof
 
 ---
 
+## Step 0 — Guard: ContextKit installed?
+
+Before anything else, check whether `.contextkit/` exists in the project root.
+
+**If `.contextkit/` does NOT exist:**
+
+Do not create any files yet. Offer the user two options:
+
+> "`.contextkit/` isn't set up in this project. How would you like to proceed?
+>
+> - **A — Squad only**: I'll create `.contextkit/squad/` now so you can use the squad pipeline. No other files will be touched.
+> - **B — Full install**: Run `ck install` first to get standards, platform integrations, and hooks set up alongside squad."
+
+Wait for the user's reply:
+- **User picks A (or says "squad only" / "just squad" / "yes" / "go ahead")** → Create `.contextkit/` and `.contextkit/squad/`. Continue to Step 1.
+- **User picks B (or says "full install")** → Stop. Remind them to run `ck install`, then re-run `/squad`.
+- **No reply / unclear** → Default to Option A and continue. Squad only needs `.contextkit/squad/` to function.
+
+**Never create `.squad/` in the project root regardless of which path is taken.**
+
+**If `.contextkit/` exists:** Continue to Step 1.
+
+---
+
 ## Step 1 — Parse Input
 
 Count the task descriptions the user provided. Tasks may be quoted strings, a numbered list, or comma-separated items.
