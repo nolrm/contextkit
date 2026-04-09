@@ -39,6 +39,8 @@ jobs:
           npm whoami 2>&1 || echo "Not logged in (expected for OIDC)"
 
       - name: Check version and publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "🔍 Checking version: $CURRENT_VERSION"

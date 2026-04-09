@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.16.2] - 2026-04-10
+
+### Fixed
+- **CI: npm auth** — add `NODE_AUTH_TOKEN` to publish step so the registry accepts the `NPM_TOKEN` secret
+
 ## [0.16.1] - 2026-04-09
 
 ### Fixed
