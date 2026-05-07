@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
-    // eslint-disable-next-line test-a11y-js/form-label
+    // eslint-disable-next-line a11y/form-label
     <input
       type={type}
       data-slot="input"

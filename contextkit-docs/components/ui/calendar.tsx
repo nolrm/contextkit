@@ -186,7 +186,7 @@ function CalendarDayButton({
   }, [modifiers.focused])
 
   return (
-    // eslint-disable-next-line test-a11y-js/button-label
+    // eslint-disable-next-line a11y/button-label
     <Button
       ref={ref}
       variant="ghost"

@@ -177,9 +177,9 @@ importers:
       eslint:
         specifier: ^10.0.1
         version: 10.0.1(jiti@2.6.1)
-      eslint-plugin-test-a11y-js:
-        specifier: ^0.14.0
-        version: 0.14.0(eslint@10.0.1(jiti@2.6.1))
+      eslint-plugin-a11y:
+        specifier: ^1.0.1
+        version: 1.0.1(eslint@10.0.1(jiti@2.6.1))
       postcss:
         specifier: ^8.5
         version: 8.5.6
@@ -1590,8 +1590,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-plugin-test-a11y-js@0.14.0:
-    resolution: {integrity: sha512-V1+rmuZpdi3w1Azb1E5QpsYCxKM/weLsYeZwpk1O0toc87xvP4Y01v51WZsENhzOCLeHSi4c+0edVyuHvCysIQ==}
+  eslint-plugin-a11y@1.0.1:
+    resolution: {integrity: sha512-4ID8LRqNTzisPM1fyeX+sdsdIX3iH63e1dYFL++Alvx40pIV1f5zS3IfZh7otLDrDmmYEWiKWW5z4FnU+ILzTw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
@@ -3685,7 +3685,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-plugin-test-a11y-js@0.14.0(eslint@10.0.1(jiti@2.6.1)):
+  eslint-plugin-a11y@1.0.1(eslint@10.0.1(jiti@2.6.1)):
     dependencies:
       eslint: 10.0.1(jiti@2.6.1)
     optionalDependencies:

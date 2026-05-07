@@ -1,5 +1,5 @@
 import tsParser from '@typescript-eslint/parser'
-import testA11y from 'eslint-plugin-test-a11y-js'
+import a11y from 'eslint-plugin-a11y'
 
 export default [
   {
@@ -8,7 +8,7 @@ export default [
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
-      'test-a11y-js': testA11y,
+      a11y,
     },
     languageOptions: {
       parser: tsParser,
@@ -16,6 +16,6 @@ export default [
         ecmaFeatures: { jsx: true },
       },
     },
-    rules: testA11y.configs['flat/react'].rules,
+    rules: a11y.configs['flat/react'].rules,
   },
 ]

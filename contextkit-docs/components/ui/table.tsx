@@ -10,7 +10,7 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
     >
-      {/* eslint-disable-next-line test-a11y-js/table-structure */}
+      {/* eslint-disable-next-line a11y/table-structure */}
       <table
         data-slot="table"
         className={cn('w-full caption-bottom text-sm', className)}

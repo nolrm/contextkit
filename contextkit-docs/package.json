@@ -67,7 +67,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/parser": "^8.56.0",
     "eslint": "^10.0.1",
-    "eslint-plugin-test-a11y-js": "^0.14.0",
+    "eslint-plugin-a11y": "^1.0.1",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",

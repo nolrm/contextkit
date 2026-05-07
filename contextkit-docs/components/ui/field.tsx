@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator'
 
 function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
-    // eslint-disable-next-line test-a11y-js/fieldset-legend
+    // eslint-disable-next-line a11y/fieldset-legend
     <fieldset
       data-slot="field-set"
       className={cn(

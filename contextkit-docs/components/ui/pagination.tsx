@@ -11,7 +11,6 @@ import { Button, buttonVariants } from '@/components/ui/button'
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
     <nav
-      role="navigation"
       aria-label="pagination"
       data-slot="pagination"
       className={cn('mx-auto flex w-full justify-center', className)}
@@ -49,7 +48,7 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   return (
-    // eslint-disable-next-line test-a11y-js/link-text
+    // eslint-disable-next-line a11y/link-text, a11y/anchor-is-valid
     <a
       aria-current={isActive ? 'page' : undefined}
       data-slot="pagination-link"

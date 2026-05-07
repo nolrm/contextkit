@@ -53,7 +53,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">On this page</p>
       <div className="grid grid-flow-row auto-rows-max text-sm">
         {headings.map((heading) => (
-          // eslint-disable-next-line test-a11y-js/link-text
+          // eslint-disable-next-line a11y/link-text
           <a
             key={heading.id}
             href={`#${heading.id}`}

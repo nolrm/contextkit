@@ -110,7 +110,7 @@ function InputGroupButton({
 }: Omit<React.ComponentProps<typeof Button>, 'size'> &
   VariantProps<typeof inputGroupButtonVariants>) {
   return (
-    // eslint-disable-next-line test-a11y-js/button-label
+    // eslint-disable-next-line a11y/button-label
     <Button
       type={type}
       data-size={size}
@@ -138,7 +138,7 @@ function InputGroupInput({
   ...props
 }: React.ComponentProps<'input'>) {
   return (
-    // eslint-disable-next-line test-a11y-js/form-label
+    // eslint-disable-next-line a11y/form-label
     <Input
       data-slot="input-group-control"
       className={cn(
@@ -155,7 +155,7 @@ function InputGroupTextarea({
   ...props
 }: React.ComponentProps<'textarea'>) {
   return (
-    // eslint-disable-next-line test-a11y-js/form-label
+    // eslint-disable-next-line a11y/form-label
     <Textarea
       data-slot="input-group-control"
       className={cn(

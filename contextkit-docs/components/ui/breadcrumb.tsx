@@ -51,6 +51,7 @@ function BreadcrumbLink({
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
   return (
+    // eslint-disable-next-line a11y/control-has-associated-label
     <span
       data-slot="breadcrumb-page"
       role="link"
