@@ -1,10 +1,14 @@
 # Changelog
 
+## [0.18.0] - 2026-05-17
+
+### Added
+- **`/squad-go` express command** — single-invocation alternative to `/squad` + `/squad-auto`. Reads tasks from the current conversation, presents a confirmation list, writes PO specs, and immediately runs the full pipeline with no checkpoint pause.
+
 ## [0.17.0] - 2026-05-17
 
 ### Added
 - **PostToolUse hook** — `ck install claude` now writes a PostToolUse hook to `.claude/settings.json` that runs format+lint after every file edit in a Claude Code session. Auto-detected for Node.js (npm/pnpm/yarn/bun), Go, and Python. Gracefully skipped when no tooling is found.
-- **`/squad-go` express command** — single-invocation alternative to `/squad` + `/squad-auto`. Reads tasks from the current conversation, presents a confirmation list, writes PO specs, and immediately runs the full pipeline with no checkpoint pause.
 
 ## [0.16.4] - 2026-04-10
 
