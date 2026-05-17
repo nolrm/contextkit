@@ -114,7 +114,7 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 /fix        # diagnose and fix bugs
 ```
 
-**Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Skills in `.claude/skills/`.
+**Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Skills in `.claude/skills/`. Also writes a PostToolUse hook to `.claude/settings.json` that runs format+lint after every file edit — auto-detected for Node.js (npm/pnpm/yarn/bun), Go, and Python.
 
 ```bash
 /analyze    # scan codebase and generate standards
@@ -258,7 +258,9 @@ If you have a screenshot, mockup, or design image relevant to the task, paste or
 
 ---
 
-## Git Hooks & Quality Gates
+## Hooks & Quality Gates
+
+ContextKit installs two kinds of hooks. **Git hooks** (pre-push, commit-msg) enforce quality at push time for the whole team. For **Claude Code** installs, a **PostToolUse hook** is also written to `.claude/settings.json` — it runs format+lint after every file edit in a Claude Code session, catching failures immediately rather than at push time.
 
 ContextKit can optionally install Git hooks during `ck install`. Uses `git config core.hooksPath` to point Git at `.contextkit/hooks/` — no external dependencies like Husky required. Works in any git repo, not just Node.js projects.
 

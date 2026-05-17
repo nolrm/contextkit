@@ -11,6 +11,7 @@ export default function QualityGatesPage() {
     { id: 'how-it-works', text: 'How It Works' },
     { id: 'pre-push', text: 'Pre-push Quality Gates' },
     { id: 'commit-msg', text: 'Commit Message Hook' },
+    { id: 'live-hook', text: 'Claude Code Live Hook' },
     { id: 'team-setup', text: 'Team Setup' },
     { id: 'configuration', text: 'Configuration' },
     { id: 'troubleshooting', text: 'Troubleshooting' },
@@ -298,6 +299,58 @@ Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
               <code className="block rounded bg-muted px-3 py-1">test(cart): add edge case coverage</code>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Claude Code Live Hook */}
+      <div id="live-hook" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Claude Code Live Hook</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          In addition to git hooks, ContextKit writes a <strong>PostToolUse hook</strong> to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/settings.json</code> when you install the Claude Code integration. This is not a git hook — it runs inside Claude Code after every Edit or Write tool call.
+        </p>
+
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium mb-2">Two layers of quality enforcement</p>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            <li><strong>Git pre-push hook</strong> — enforces at push time, team-wide, blocks the push if checks fail</li>
+            <li><strong>PostToolUse hook</strong> — enforces at edit time, local to Claude Code sessions, catches failures immediately so they never reach pre-push</li>
+          </ul>
+        </div>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold">How it works</h3>
+          <p className="text-sm text-muted-foreground">
+            During <code className="rounded bg-muted px-1 font-mono text-xs">ck install</code>, ContextKit detects your project's tooling and writes the appropriate command to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/settings.json</code>. The command is re-detected and updated whenever you run <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code>.
+          </p>
+
+          <div className="overflow-x-auto">
+            <table aria-label="PostToolUse hook detection by stack" className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Stack</th>
+                  <th scope="col" className="text-left py-2 font-semibold">Command run after each edit</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                <tr className="border-b">
+                  <td className="py-2 pr-4 font-medium">Node.js</td>
+                  <td className="py-2">Detected <code className="rounded bg-muted px-1 font-mono text-xs">format</code> and <code className="rounded bg-muted px-1 font-mono text-xs">lint</code> scripts via <code className="rounded bg-muted px-1 font-mono text-xs">package.json</code>; uses npm/pnpm/yarn/bun based on lockfile</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-2 pr-4 font-medium">Go</td>
+                  <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">gofmt</code> and/or <code className="rounded bg-muted px-1 font-mono text-xs">golangci-lint</code> — whichever is on PATH</td>
+                </tr>
+                <tr>
+                  <td className="py-2 pr-4 font-medium">Python</td>
+                  <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">black</code> and/or <code className="rounded bg-muted px-1 font-mono text-xs">ruff</code> — whichever is on PATH</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            If no tooling is detected, the hook is skipped and a notice is shown during install. The hook only applies to Claude Code — other platforms (Cursor, Copilot, etc.) are not affected.
+          </p>
         </div>
       </div>
 

@@ -244,6 +244,31 @@ export default function PlatformExamplesPage() {
             </div>
 
             <div>
+              <h3 className="text-sm font-semibold mb-2">Live quality hook</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                ContextKit also writes a PostToolUse hook to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/settings.json</code> that runs format+lint after every file edit in a Claude Code session — catching failures before they reach pre-push.
+              </p>
+              <div className="rounded-lg border border-border bg-muted/50 p-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Terminal className="h-4 w-4" />
+                  <span className="font-mono">.claude/settings.json (example — Node.js pnpm project)</span>
+                </div>
+                <pre className="rounded bg-muted px-4 py-3 font-mono text-xs overflow-x-auto">{`{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "pnpm run format && pnpm run lint --fix 2>&1 | tail -20" }],
+      "_contextkit": true
+    }]
+  }
+}`}</pre>
+                <p className="text-xs text-muted-foreground mt-2 italic">
+                  The command is auto-detected from your project (npm/pnpm/yarn/bun for Node.js; gofmt/golangci-lint for Go; black/ruff for Python). The <code className="rounded bg-muted px-1 font-mono text-xs">_contextkit: true</code> marker means the entry is replaced — not duplicated — on <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code>. You can edit the command manually; ContextKit will only touch its own entry.
+                </p>
+              </div>
+            </div>
+
+            <div>
               <h3 className="text-sm font-semibold mb-2">Usage</h3>
               <div className="rounded-lg border border-border bg-muted/50 p-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">

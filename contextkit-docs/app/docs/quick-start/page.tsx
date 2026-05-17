@@ -211,7 +211,7 @@ export default function QuickStartPage() {
       <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 mt-6">
         <p className="text-sm font-medium mb-2">What Gets Created?</p>
         <p className="text-sm text-muted-foreground">
-          ContextKit creates a <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with standards, templates, and commands. Choose your AI tool during install or specify it directly with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck install claude</code>.
+          ContextKit creates a <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with standards, templates, and commands. Choose your AI tool during install or specify it directly with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck install claude</code>. For Claude Code installs, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.claude/settings.json</code> is also created with a PostToolUse hook that runs format+lint after every file edit.
         </p>
       </div>
 
