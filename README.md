@@ -164,7 +164,8 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
-| `/squad-auto`          | Auto-run the full pipeline after kickoff (recommended, sequential)                                                              |
+| `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
+| `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
 | `/squad-auto-parallel`    | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
 | `/agent-push-checklist`   | Pre-push quality checklist for agents to self-check before `git push`                                                           |
@@ -195,12 +196,22 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 | 5    | Reviewer      | `/squad-review`    | Reviews everything and gives a PASS or NEEDS-WORK verdict                                                                                                                                                      |
 | 6    | Doc Writer    | `/squad-doc`       | Creates companion `.md` files for every new/modified code file                                                                                                                                                 |
 
+### Express Flow (conversation-first)
+
+After discussing a feature or fix with your AI tool, run a single command to go hands-free:
+
+```bash
+/squad-go
+# Reads tasks from the current conversation, confirms the list, writes specs,
+# and immediately runs architect → dev → test → review → doc — no second command needed
+```
+
 ### Single-Task Flow
 
 ```bash
 /squad "add dark mode support"   # PO writes the spec
 
-/squad-auto                      # Auto-runs architect → dev → test → review → doc (recommended)
+/squad-auto                      # Auto-runs architect → dev → test → review → doc
 # — or step through manually —
 /squad-architect                 # Architect designs the plan
 /squad-dev                       # Dev implements the code
