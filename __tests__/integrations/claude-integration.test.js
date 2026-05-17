@@ -89,6 +89,7 @@ describe('ClaudeIntegration', () => {
       'squad-auto-parallel',
       'squad-reset',
       'squad-doc',
+      'squad-go',
       'doc-arch',
       'doc-feature',
       'doc-component',
