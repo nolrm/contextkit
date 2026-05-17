@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.19.0] - 2026-05-17
+
+### Added
+- **`/spec` project specification pipeline** — multi-round, multi-persona pipeline that turns a product overview into an implementation-ready spec before any code is written. Runs CTO Scoper → CTO Brief → parallel domain experts (UX, Data, Systems, Planner) → CTO Challenger → parallel revisions → CTO Author with final `SPEC.md` synthesis. Scope-by-scope with `spec/PROGRESS.md` checklist.
+- **9 new spec sub-commands** — `spec-init`, `spec-brief`, `spec-ux`, `spec-data`, `spec-systems`, `spec-planner`, `spec-challenge`, `spec-author` orchestrated by the main `spec` command.
+- **`/spec-component`** — renamed from the previous `/spec` command; writes a component-level MD-first spec colocated with source.
+
+### Changed
+- **`/spec` skill** — now points to the new project spec pipeline (`spec/spec.md`); component spec moved to `/spec-component`.
+
 ## [0.18.0] - 2026-05-17
 
 ### Added

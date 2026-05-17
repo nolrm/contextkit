@@ -157,7 +157,8 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. |
 | `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2)                                                 |
 | `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3)                                            |
-| `/spec`                | Write a component spec (MD-first) before any code is created                                                                    |
+| `/spec`                | Turn a product overview into an implementation-ready spec — UX flows, DB schema, API contracts, and phased build plan           |
+| `/spec-component`      | Write a component spec (MD-first) before any code is created                                                                    |
 | `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
 | `/squad-architect`     | Design the technical plan from the PO spec                                                                                      |
 | `/squad-dev`           | Implement code following the architect plan                                                                                     |
@@ -266,6 +267,57 @@ After clarifications are added, re-run the asking role's command to continue. Th
 ### Visual Assets (Optional)
 
 If you have a screenshot, mockup, or design image relevant to the task, paste or attach it when running `/squad`. The PO agent will save it to `.contextkit/squad/assets/` and reference the path in the handoff. Architect and Dev agents automatically read any listed assets when they pick up the handoff.
+
+---
+
+## Spec Pipeline
+
+The spec pipeline turns a high-level product overview into an implementation-ready spec. It runs before the squad — producing the UX flows, DB schema, API contracts, and phased build plan that make stories possible.
+
+```bash
+/spec          # Start or continue — picks up the next unchecked scope automatically
+/spec 02-jobs  # Run a specific scope by name
+/spec --redo 01-identity-auth  # Re-run a completed scope from scratch
+```
+
+### How It Works
+
+`/spec` reads a product overview file (`PROJECT_OVERVIEW.md`, `OVERVIEW.md`, `BRIEF.md`, or any `.md` file you point it to) and runs a multi-round pipeline for each scope:
+
+| Round | Who runs | What happens |
+|-------|----------|-------------|
+| 0 — Brief | CTO | Reads the overview, defines scope boundaries, writes a brief all agents share |
+| 1 — Domain experts | UX, Data, Systems, Planner (parallel) | Each produces their section independently from the brief |
+| 2 — Challenges | CTO | Reads all four sections, writes challenges — gaps, contradictions, missing decisions |
+| 3 — Revisions | UX, Data, Systems, Planner (parallel) | Each addresses the CTO's challenges, flags unresolvable items as OPEN DECISIONs |
+| Final — Author | CTO | Resolves open decisions, writes the unified `SPEC.md` |
+
+### Output Structure
+
+Each scope produces a folder with all working artifacts and a final `SPEC.md`:
+
+```
+spec/
+  PROGRESS.md              ← scope checklist, updated after each run
+  INDEX.md                 ← master TOC linking all SPEC.md files
+
+  01-identity-auth/
+    00-brief.md            ← CTO's scoping brief
+    01-ux.md               ← UX flows and screens
+    02-data.md             ← DB schema and relationships
+    03-systems.md          ← API contracts and services
+    04-plan.md             ← build phases and stories
+    05-challenges.md       ← CTO's Round 2 challenges
+    SPEC.md                ← final unified spec for this scope
+```
+
+Run `/spec` once per scope. Each run appends to `spec/INDEX.md`. When all scopes are done, feed individual `SPEC.md` files into `/squad` as implementation tasks.
+
+### First Run
+
+On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
+
+If no standard overview file is found, `/spec` lists all `.md` files in the directory and asks you to pick.
 
 ---
 

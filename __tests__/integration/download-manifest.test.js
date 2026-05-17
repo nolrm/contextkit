@@ -142,4 +142,63 @@ describe('Download manifest validation', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
     expect(content).toContain('standards');
   });
+
+  it('13. all spec pipeline commands are in both install and update manifests', () => {
+    const specFiles = [
+      'commands/spec/spec.md',
+      'commands/spec/spec-init.md',
+      'commands/spec/spec-brief.md',
+      'commands/spec/spec-ux.md',
+      'commands/spec/spec-data.md',
+      'commands/spec/spec-systems.md',
+      'commands/spec/spec-planner.md',
+      'commands/spec/spec-challenge.md',
+      'commands/spec/spec-author.md',
+    ];
+    for (const f of specFiles) {
+      expect(installPaths).toContain(f);
+      expect(updatePaths).toContain(f);
+    }
+  });
+
+  it('14. commands/dev/spec-component.md is in both manifests and commands/dev/spec.md is not', () => {
+    expect(installPaths).toContain('commands/dev/spec-component.md');
+    expect(updatePaths).toContain('commands/dev/spec-component.md');
+    expect(installPaths).not.toContain('commands/dev/spec.md');
+    expect(updatePaths).not.toContain('commands/dev/spec.md');
+  });
+
+  it('15. commands/spec/spec.md orchestrator detects multiple overview file names', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
+    expect(content).toContain('PROJECT_OVERVIEW.md');
+    expect(content).toContain('OVERVIEW.md');
+    expect(content).toContain('BRIEF.md');
+    expect(content).toContain('spec/PROGRESS.md');
+    expect(content).toContain('spec/INDEX.md');
+  });
+
+  it('16. commands/spec/spec-challenge.md has all four domain challenge sections', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec-challenge.md'), 'utf8');
+    expect(content).toContain('## UX Challenges');
+    expect(content).toContain('## Data Challenges');
+    expect(content).toContain('## Systems Challenges');
+    expect(content).toContain('## Planner Challenges');
+    expect(content).toContain('## Cross-cutting Conflicts');
+  });
+
+  it('17. commands/spec/spec.md spawns four domain agents in parallel for Round 1 and Round 3', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
+    expect(content).toContain('spec-ux.md');
+    expect(content).toContain('spec-data.md');
+    expect(content).toContain('spec-systems.md');
+    expect(content).toContain('spec-planner.md');
+    expect(content).toContain('Launch all four at once');
+  });
+
+  it('18. commands/spec/spec-author.md updates both PROGRESS.md and INDEX.md', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec-author.md'), 'utf8');
+    expect(content).toContain('PROGRESS.md');
+    expect(content).toContain('INDEX.md');
+    expect(content).toContain('OPEN DECISION');
+  });
 });

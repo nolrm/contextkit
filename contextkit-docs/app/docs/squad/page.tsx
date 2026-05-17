@@ -287,10 +287,10 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
           CI Squad lets you label any issue <code className="rounded bg-muted px-1 font-mono text-xs">squad-ready</code> and have the full pipeline run in GitHub Actions — no local setup required. A draft PR is opened when it&apos;s done.
         </p>
         <Link
-          href="/docs/ci-squad"
+          href="/docs/spec"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
-          Learn about CI Squad <ArrowRight className="h-3.5 w-3.5" />
+          Learn about Spec Pipeline <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
@@ -310,12 +310,12 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
         </Link>
 
         <Link
-          href="/docs/ci-squad"
+          href="/docs/spec"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="text-right">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
-            <div className="text-sm font-medium">CI Squad</div>
+            <div className="text-sm font-medium">Spec Pipeline</div>
           </div>
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
             <ArrowRight className="h-3.5 w-3.5" />

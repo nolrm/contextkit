@@ -79,6 +79,7 @@ describe('ClaudeIntegration', () => {
       'test',
       'doc',
       'spec',
+      'spec-component',
       'ck',
       'squad',
       'squad-architect',
@@ -215,6 +216,25 @@ describe('ClaudeIntegration', () => {
     } else {
       expect(true).toBe(true); // file absent is fine
     }
+  });
+
+  test('16. spec skill references spec/spec.md and has context: fork', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const content = await fs.readFile('.claude/skills/spec/SKILL.md', 'utf-8');
+    expect(content).toContain('.contextkit/commands/spec/spec.md');
+    expect(content).toContain('context: fork');
+    expect(content).toContain('Task');
+  });
+
+  test('17. spec-component skill references dev/spec-component.md', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const content = await fs.readFile('.claude/skills/spec-component/SKILL.md', 'utf-8');
+    expect(content).toContain('.contextkit/commands/dev/spec-component.md');
+    expect(content).not.toContain('spec/spec.md');
   });
 
   test('15. install completes without error even if hook installation throws', async () => {
