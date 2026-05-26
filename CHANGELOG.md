@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.20.0] - 2026-05-26
+
+### Removed
+- **`/fix` command** — removed across all platforms (Claude Code, Cursor). Use `/squad` for bug fix workflows instead.
+
+### Changed
+- **Tagline** updated to "Context Engineering + Agentic AI Pipelines" — README hero, website (hero, SEO metadata, footer, docs intro), and `package.json` now reflect both pillars equally.
+- **`package.json` keywords** — added `agentic-pipeline`, `agentic-ai`, `squad-workflow`, `ai-agents`, `autonomous-agents`, `multi-agent`, `claude-code`.
+
 ## [0.19.0] - 2026-05-17
 
 ### Added

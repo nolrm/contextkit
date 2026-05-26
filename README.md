@@ -1,24 +1,31 @@
 # ContextKit
 
-> Context Engineering for AI Development
+> Context Engineering + Agentic AI Pipelines
 
-Give your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf) structured context through markdown files. ContextKit creates a knowledge base that ensures AI generates code matching your exact patterns, style, and architecture—no more hallucinated code or mismatched conventions.
+ContextKit gives your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf) structured context through markdown files—and gives you a multi-role autonomous pipeline (PO → Architect → Dev → Test → Review → Doc) to execute work with those same agents. The context layer is what keeps the pipeline grounded: agents read your standards, so they never hallucinate your conventions.
 
-ContextKit is a CLI tool that provides **context-engineering** capabilities by creating `.contextkit/` directories with project standards, guidelines, and patterns that AI assistants read automatically.
+ContextKit is a CLI tool with two capabilities: **context engineering** (`.contextkit/standards/` + platform bridge files so every AI tool reads your project conventions automatically) and **squad pipelines** (a six-role agentic workflow grounded by those same standards).
 
 **[Read the full documentation](https://contextkit-docs.vercel.app/)** · **[How context works](https://contextkit-docs.vercel.app/docs/how-context-works)**
 
 ## Why ContextKit?
 
-**The problem:** LLMs are great at syntax, not at _your_ conventions. Generic AI output requires manual fixes for style, structure, and architecture.
+**The problem:** LLMs are good at syntax, not at _your_ conventions — and multi-agent pipelines amplify that. An autonomous dev agent that doesn't know your architecture, naming, or testing patterns will produce code you have to fully rewrite.
 
-**The solution:** ContextKit provides your AI with:
+**The solution — two pillars that reinforce each other:**
 
-- **Glossary** of project terminology and domain-specific terms (e.g., your entity, feature, and module names)
-- **Standards** for code style, testing patterns, and architecture
-- **Templates** with canonical component shapes
+**Pillar 1: Context engineering**
+- **Glossary** — project terminology and domain-specific entity names
+- **Standards** — code style, testing patterns, architecture rules
+- **Templates** — canonical component shapes
+- **Platform bridges** — auto-generated `CLAUDE.md`, `AGENTS.md`, `.windsurfrules`, etc. so every AI tool reads the same context without manual setup
 
-Update `.md` files as your project evolves; the AI follows.
+**Pillar 2: Agentic squad pipeline**
+- A six-role pipeline (PO → Architect → Dev → Tester → Reviewer → Doc Writer) runs in a single AI session
+- Each role reads the context layer before acting — no hallucinated conventions
+- Run `/squad "add dark mode"` then `/squad-auto` and walk away
+
+Update your `.md` standards as your project evolves; every agent that runs after picks up the change automatically.
 
 ## Multi-Platform Support
 
@@ -111,7 +118,6 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 ```
 /analyze    # scan codebase and generate standards
 /review     # code review with checklist
-/fix        # diagnose and fix bugs
 ```
 
 **Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Skills in `.claude/skills/`. Also writes a PostToolUse hook to `.claude/settings.json` that runs format+lint after every file edit — auto-detected for Node.js (npm/pnpm/yarn/bun), Go, and Python.
@@ -150,7 +156,6 @@ ContextKit installs reusable slash commands for supported platforms:
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `/analyze`             | Scan codebase and generate standards content                                                                                    |
 | `/review`              | Code review with checklist                                                                                                      |
-| `/fix`                 | Diagnose and fix bugs                                                                                                           |
 | `/refactor`            | Refactor code with safety checks                                                                                                |
 | `/test`                | Generate comprehensive tests                                                                                                    |
 | `/doc`                 | Add documentation                                                                                                               |

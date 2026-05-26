@@ -74,7 +74,6 @@ describe('ClaudeIntegration', () => {
     const allSkills = [
       'analyze',
       'review',
-      'fix',
       'refactor',
       'test',
       'doc',

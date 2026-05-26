@@ -10,8 +10,7 @@ export default function DocsPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Welcome to ContextKit</h1>
         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-          ContextKit gives your AI assistants structured context through markdown files — so generated code matches
-          your exact patterns, style, and architecture.
+          ContextKit has two capabilities that reinforce each other: context engineering (structured <code>.md</code> standards that every AI tool reads automatically) and agentic squad pipelines (a six-role autonomous workflow grounded by those same standards). Together they prevent agents from hallucinating your conventions.
         </p>
       </div>
 

@@ -9,9 +9,9 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://contextkit-docs.vercel.app'),
-  title: "ContextKit - Context Engineering for AI Development",
+  title: "ContextKit - Context Engineering + Agentic AI Pipelines",
   description:
-    "A comprehensive development toolkit that provides AI guidance, type safety, quality checks, and automated workflows for modern development teams.",
+    "Scaffold structured context for your AI tools and run autonomous multi-role pipelines grounded by that context. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
   generator: "next.js",
   keywords: ["AI development", "context engineering", "developer tools", "TypeScript", "code quality", "Cursor", "Claude", "Aider"],
   authors: [{ name: "Marlon Maniti", url: "https://github.com/nolrm" }],
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://github.com/nolrm/contextkit/tree/main/contextkit-docs",
     siteName: "ContextKit",
-    title: "ContextKit - Context Engineering for AI Development",
-    description: "Give your AI assistants structured context through markdown files. ContextKit creates a knowledge base that ensures AI generates code matching your exact patterns, style, and architecture.",
+    title: "ContextKit - Context Engineering + Agentic AI Pipelines",
+    description: "Scaffold structured standards for your AI tools and run a grounded multi-role agentic pipeline — PO to Architect to Dev to Tester to Reviewer — without agents hallucinating your conventions.",
     images: [
       {
         url: "/contextkit-logo.svg",
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ContextKit - Context Engineering for AI Development",
-    description: "Give your AI assistants structured context through markdown files.",
+    title: "ContextKit - Context Engineering + Agentic AI Pipelines",
+    description: "Structured context for your AI tools + an autonomous multi-role pipeline grounded by that context. No hallucinated conventions.",
     creator: "@nolrm",
     images: ["/contextkit-logo.svg"],
   },
@@ -73,7 +73,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "ContextKit",
-              "description": "Context Engineering for AI Development - Give your AI assistants structured context through markdown files",
+              "description": "Context Engineering + Agentic AI Pipelines — scaffold project standards for AI assistants and run grounded autonomous pipelines that never hallucinate your conventions",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Any",
               "offers": {

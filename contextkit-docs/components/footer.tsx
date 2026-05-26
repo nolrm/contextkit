@@ -27,8 +27,7 @@ export function Footer() {
               <span className="font-bold">ContextKit</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Context engineering for AI development. Give your AI assistants structured context that ensures
-              generated code matches your exact patterns and architecture.
+              Context engineering + agentic pipelines for AI development. Scaffold standards your AI tools read automatically, then run a grounded multi-role pipeline that respects your exact conventions.
             </p>
           </div>
 

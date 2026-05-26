@@ -11,20 +11,19 @@ export function Hero() {
           {/* Pill badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
             <Sparkles className="h-3 w-3" />
-            Context Engineering for AI Development
+            Context Engineering + Agentic AI Pipelines
           </div>
 
           {/* Headline */}
           <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-            Give your AI assistants
+            Ground your AI agents
             <br />
-            <span className="text-primary">structured context</span>
+            <span className="text-primary">in your conventions</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-balance text-base text-muted-foreground max-w-xl leading-relaxed mt-2">
-            Create a knowledge base that ensures AI generates code matching your exact patterns, style, and architecture.
-            Works with Cursor, VS Code, UX Pilot CLI, and more.
+            Scaffold structured standards so every AI tool reads your project conventions automatically. Then run a grounded multi-role pipeline — PO to Architect to Dev to Tester to Reviewer — without agents hallucinating your patterns.
           </p>
         </div>
 
