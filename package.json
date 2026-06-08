@@ -1,13 +1,11 @@
 {
   "name": "@nolrm/contextkit",
-  "version": "0.21.0",
+  "version": "1.0.0",
   "description": "ContextKit - Context Engineering + Agentic AI Pipelines. Scaffold structured standards for AI assistants and run autonomous multi-role pipelines (PO → Architect → Dev → Test → Review → Doc) grounded by that same context layer. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
   "main": "lib/index.js",
   "bin": {
     "contextkit": "bin/contextkit.js",
-    "ck": "bin/contextkit.js",
-    "vibe-kit": "bin/vibe-kit.js",
-    "vk": "bin/vibe-kit.js"
+    "ck": "bin/contextkit.js"
   },
   "scripts": {
     "format": "prettier --write \"lib/**/*.js\" \"bin/**/*.js\" \"__tests__/**/*.js\"",
@@ -19,7 +17,6 @@
   },
   "keywords": [
     "contextkit",
-    "vibe-kit",
     "context-engineering",
     "ai-context",
     "ai-development",
