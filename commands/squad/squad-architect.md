@@ -79,7 +79,16 @@ You are the **Architect** in a squad workflow.
 - Tell the user: "This task is too large to implement safely as one unit. A split is recommended. Run `/squad` to review the recommendation and decide."
 - **Stop here** — do not explore the codebase or write the full plan.
 
-**If none apply**: Continue to step 6.
+**If none apply**: Continue to step 5.7.
+
+5.7. **Discover context files** before exploring the codebase:
+
+Check for documentation at each of these levels relevant to the task:
+- **Architecture level**: named `.md` files in the project root or `docs/` folder (e.g. `docs/architecture.md`, `docs/auth.md`, `docs/data-model.md`)
+- **Feature/page level**: `README.md` in the directory of the feature, route, or page mentioned in the spec
+- **Component level**: `README.md` in the directory of any specific components mentioned in the spec
+
+If any files exist at these levels, read them now — they capture decisions, conventions, and context that should inform your plan. If none exist, continue to step 6.
 
 6. Explore the codebase to understand the current architecture, patterns, and conventions.
 

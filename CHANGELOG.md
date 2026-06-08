@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1] - 2026-06-08
+
+### Added
+- **README.md context discovery rule** — `standards/ai-guidelines.md` template now includes a `## README.md Context Discovery` section instructing AI agents to check for `README.md` at the feature/page and component levels before starting work.
+- **Squad Architect step 5.7** — `/squad-architect` now discovers and reads context files at all relevant documentation levels before exploring the codebase, so plans are informed by existing docs.
+- **Standard filename guidance** — `standards/architecture.md` template now documents `README.md` as the standard filename for feature/page and component levels, and named files (e.g. `docs/architecture.md`) for the architecture level.
+
 ## [1.0.0] - 2026-06-08
 
 ### Removed
