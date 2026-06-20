@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2026-06-20
+
+### Changed
+- **Cursor `/spec` command** — now points to the project-level spec pipeline (`commands/spec/spec.md`) with a description of the full multi-scope pipeline. Previously pointed to `commands/dev/spec.md` (the component spec).
+- **Cursor `/spec-component` command** — new generated prompt for the component-level MD-first spec workflow (split from the old `/spec`). Added to `generatedFiles`, `contextkit-components.mdc` rule, and `showUsage()` output.
+
 ## [1.0.1] - 2026-06-08
 
 ### Added

@@ -78,6 +78,8 @@ describe('CursorIntegration', () => {
       'refactor',
       'test',
       'doc',
+      'spec',
+      'spec-component',
       'squad',
       'squad-architect',
       'squad-dev',
@@ -103,10 +105,11 @@ describe('CursorIntegration', () => {
       ['.cursor/prompts/refactor.md', '.contextkit/commands/dev/refactor.md'],
       ['.cursor/prompts/test.md', '.contextkit/commands/dev/run-tests.md'],
       ['.cursor/prompts/doc.md', '.contextkit/commands/docs/add-documentation.md'],
+      ['.cursor/prompts/spec.md', '.contextkit/commands/spec/spec.md'],
+      ['.cursor/prompts/spec-component.md', '.contextkit/commands/dev/spec-component.md'],
       ['.cursor/prompts/squad.md', '.contextkit/commands/squad/squad.md'],
       ['.cursor/prompts/squad-architect.md', '.contextkit/commands/squad/squad-architect.md'],
       ['.cursor/prompts/squad-auto.md', '.contextkit/commands/squad/squad-auto.md'],
-      ['.cursor/prompts/spec.md', '.contextkit/commands/dev/spec.md'],
       ['.cursor/prompts/ck.md', '.contextkit/commands/dev/health-check.md'],
     ];
 
@@ -122,13 +125,39 @@ describe('CursorIntegration', () => {
 
     const components = await fs.readFile('.cursor/rules/contextkit-components.mdc', 'utf-8');
     expect(components).toContain('.contextkit/commands/dev/create-component.md');
-    expect(components).toContain('.contextkit/commands/dev/spec.md');
+    expect(components).toContain('.contextkit/commands/dev/spec-component.md');
 
     const api = await fs.readFile('.cursor/rules/contextkit-api.mdc', 'utf-8');
     expect(api).toContain('.contextkit/commands/dev/create-feature.md');
   });
 
-  test('9. validate returns valid after install', async () => {
+  test('9. generated Cursor spec content has no stale dev/spec.md references', async () => {
+    const integration = new CursorIntegration();
+    await integration.install();
+
+    const specPrompt = await fs.readFile('.cursor/prompts/spec.md', 'utf-8');
+    const specComponentPrompt = await fs.readFile('.cursor/prompts/spec-component.md', 'utf-8');
+    const componentsRule = await fs.readFile('.cursor/rules/contextkit-components.mdc', 'utf-8');
+
+    expect(specPrompt).not.toContain('.contextkit/commands/dev/spec.md');
+    expect(specComponentPrompt).not.toContain('.contextkit/commands/dev/spec.md');
+    expect(componentsRule).not.toContain('.contextkit/commands/dev/spec.md');
+  });
+
+  test('10. showUsage reflects the spec command split', async () => {
+    const integration = new CursorIntegration();
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    integration.showUsage();
+
+    const output = consoleSpy.mock.calls.map((call) => call.join(' ')).join('\n');
+    expect(output).toContain('/spec     — Turn a product overview into a project spec');
+    expect(output).toContain('/spec-component — Write a component spec before coding');
+
+    consoleSpy.mockRestore();
+  });
+
+  test('11. validate returns valid after install', async () => {
     const integration = new CursorIntegration();
     await integration.install();
 
