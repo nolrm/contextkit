@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.3] - 2026-06-24
+
+### Changed
+- **`/spec` pipeline — collapse sequential agents into orchestrator** — the four single-sequential CTO agents (Scoper, Briefer, Challenger, Author) are now inline steps run by the orchestrator directly. Only the two parallel domain expert rounds (Round 1 initial, Round 3 revision) still spawn sub-agents. Agent count per scope reduced from 11–12 to 8. The `spec-init.md`, `spec-brief.md`, `spec-challenge.md`, and `spec-author.md` files are removed — their logic lives in `spec.md`.
+
 ## [1.0.2] - 2026-06-20
 
 ### Changed

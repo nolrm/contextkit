@@ -146,18 +146,25 @@ describe('Download manifest validation', () => {
   it('13. all spec pipeline commands are in both install and update manifests', () => {
     const specFiles = [
       'commands/spec/spec.md',
-      'commands/spec/spec-init.md',
-      'commands/spec/spec-brief.md',
       'commands/spec/spec-ux.md',
       'commands/spec/spec-data.md',
       'commands/spec/spec-systems.md',
       'commands/spec/spec-planner.md',
-      'commands/spec/spec-challenge.md',
-      'commands/spec/spec-author.md',
     ];
     for (const f of specFiles) {
       expect(installPaths).toContain(f);
       expect(updatePaths).toContain(f);
+    }
+    // sequential CTO agent files removed — logic is inlined in spec.md
+    const removedFiles = [
+      'commands/spec/spec-init.md',
+      'commands/spec/spec-brief.md',
+      'commands/spec/spec-challenge.md',
+      'commands/spec/spec-author.md',
+    ];
+    for (const f of removedFiles) {
+      expect(installPaths).not.toContain(f);
+      expect(updatePaths).not.toContain(f);
     }
   });
 
@@ -177,8 +184,8 @@ describe('Download manifest validation', () => {
     expect(content).toContain('spec/INDEX.md');
   });
 
-  it('16. commands/spec/spec-challenge.md has all four domain challenge sections', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec-challenge.md'), 'utf8');
+  it('16. commands/spec/spec.md orchestrator contains all four domain challenge sections inline', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
     expect(content).toContain('## UX Challenges');
     expect(content).toContain('## Data Challenges');
     expect(content).toContain('## Systems Challenges');
@@ -195,8 +202,8 @@ describe('Download manifest validation', () => {
     expect(content).toContain('Launch all four at once');
   });
 
-  it('18. commands/spec/spec-author.md updates both PROGRESS.md and INDEX.md', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec-author.md'), 'utf8');
+  it('18. commands/spec/spec.md orchestrator updates PROGRESS.md and INDEX.md and resolves open decisions', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
     expect(content).toContain('PROGRESS.md');
     expect(content).toContain('INDEX.md');
     expect(content).toContain('OPEN DECISION');
