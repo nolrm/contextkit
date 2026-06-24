@@ -86,7 +86,6 @@ describe('ClaudeIntegration', () => {
       'squad-test',
       'squad-review',
       'squad-auto',
-      'squad-auto-parallel',
       'squad-reset',
       'squad-doc',
       'squad-go',
@@ -120,14 +119,12 @@ describe('ClaudeIntegration', () => {
     }
   });
 
-  test('11. squad-auto and squad-auto-parallel skills have context: fork', async () => {
+  test('11. squad-auto skill has context: fork', async () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    for (const skill of ['squad-auto', 'squad-auto-parallel']) {
-      const content = await fs.readFile(`.claude/skills/${skill}/SKILL.md`, 'utf-8');
-      expect(content).toContain('context: fork');
-    }
+    const content = await fs.readFile('.claude/skills/squad-auto/SKILL.md', 'utf-8');
+    expect(content).toContain('context: fork');
   });
 
   test('12. removes legacy .claude/commands/ files on install', async () => {

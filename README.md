@@ -174,7 +174,6 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-spec [scope]`  | Load a spec scope and run the full pipeline for every story. Use with `/loop /clear /squad-spec [scope]` for context-safe continuous execution. |
 | `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
 | `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
-| `/squad-auto-parallel`    | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
 | `/agent-push-checklist`   | Pre-push quality checklist for agents to self-check before `git push`                                                           |
 | `/context-budget`         | Prioritized guide for which standards files to load for a given task                                                            |
@@ -238,16 +237,6 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 
 /squad-auto
 # Runs Architect → Dev → Test → Review → Doc for each task sequentially
-```
-
-**Parallel mode (Claude Code only):** Use `/squad-auto-parallel` instead of `/squad-auto` to spawn parallel subagents — one per task per phase — so all tasks progress simultaneously rather than one at a time.
-
-```bash
-/squad "add dark mode" "fix login bug" "refactor checkout"
-
-/squad-auto-parallel
-# Phase 1: architect agents for all 3 tasks run in parallel
-# Phase 2: dev→test→review pipeline runs in parallel per task; Phase 3: doc runs sequentially
 ```
 
 **Model routing (Claude Code only):** Set `model_routing: true` in `.contextkit/squad/config.md` to have `/squad-auto` automatically use Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens with no quality loss — the standards files and Review gate maintain quality.
