@@ -162,7 +162,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. |
 | `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2)                                                 |
 | `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3)                                            |
-| `/spec`                | Turn a product overview into an implementation-ready spec — UX flows, DB schema, API contracts, and phased build plan           |
+| `/spec`                | Turn a product overview into a reference spec — data model, API contracts, UX flows, and squad-ready stories. Single CTO pass per scope. |
 | `/spec-component`      | Write a component spec (MD-first) before any code is created                                                                    |
 | `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
 | `/squad-architect`     | Design the technical plan from the PO spec                                                                                      |
@@ -170,6 +170,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
+| `/squad-spec [scope]`  | Load a spec scope and run the full pipeline for every story. Use with `/loop /clear /squad-spec [scope]` for context-safe continuous execution. |
 | `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
 | `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
 | `/squad-auto-parallel`    | Auto-run the pipeline in parallel using Claude Code agents (Claude Code only)                                                   |
@@ -277,52 +278,55 @@ If you have a screenshot, mockup, or design image relevant to the task, paste or
 
 ## Spec Pipeline
 
-The spec pipeline turns a high-level product overview into an implementation-ready spec. It runs before the squad — producing the UX flows, DB schema, API contracts, and phased build plan that make stories possible.
+The spec pipeline turns a high-level product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories. It runs before the squad, one scope at a time.
 
 ```bash
 /spec          # Start or continue — picks up the next unchecked scope automatically
 /spec 02-jobs  # Run a specific scope by name
 /spec --redo 01-identity-auth  # Re-run a completed scope from scratch
+/spec --reset  # Delete the entire spec/ folder and start over
 ```
 
 ### How It Works
 
-`/spec` reads a product overview file (`PROJECT_OVERVIEW.md`, `OVERVIEW.md`, `BRIEF.md`, or any `.md` file you point it to) and runs a multi-round pipeline for each scope:
+Each `/spec` run is a single inline CTO pass — no sub-agents, no revision rounds. The CTO reads the overview and any prior scope specs (for consistency), then writes the full `SPEC.md` for that scope.
 
-| Round | Who runs | What happens |
-|-------|----------|-------------|
-| 0 — Brief | CTO | Reads the overview, defines scope boundaries, writes a brief all agents share |
-| 1 — Domain experts | UX, Data, Systems, Planner (parallel) | Each produces their section independently from the brief |
-| 2 — Challenges | CTO | Reads all four sections, writes challenges — gaps, contradictions, missing decisions |
-| 3 — Revisions | UX, Data, Systems, Planner (parallel) | Each addresses the CTO's challenges, flags unresolvable items as OPEN DECISIONs |
-| Final — Author | CTO | Resolves open decisions, writes the unified `SPEC.md` |
+Each `SPEC.md` contains: data model (full schema + ERD), API contracts (all endpoints with request/response), UX flows (key journeys and edge cases), a story table with sizes and dependencies, and copy-paste `/squad` commands for every story.
 
 ### Output Structure
 
-Each scope produces a folder with all working artifacts and a final `SPEC.md`:
+Each scope produces one `SPEC.md`. Progress and index files track the full project:
 
 ```
 spec/
   PROGRESS.md              ← scope checklist, updated after each run
-  INDEX.md                 ← master TOC linking all SPEC.md files
+  INDEX.md                 ← links to every completed SPEC.md
 
   01-identity-auth/
-    00-brief.md            ← CTO's scoping brief
-    01-ux.md               ← UX flows and screens
-    02-data.md             ← DB schema and relationships
-    03-systems.md          ← API contracts and services
-    04-plan.md             ← build phases and stories
-    05-challenges.md       ← CTO's Round 2 challenges
-    SPEC.md                ← final unified spec for this scope
-```
+    SPEC.md                ← full spec for this scope
 
-Run `/spec` once per scope. Each run appends to `spec/INDEX.md`. When all scopes are done, feed individual `SPEC.md` files into `/squad` as implementation tasks.
+  02-jobs-scheduling/
+    SPEC.md
+```
 
 ### First Run
 
 On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
 
 If no standard overview file is found, `/spec` lists all `.md` files in the directory and asks you to pick.
+
+### From Spec to Squad
+
+Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement an entire scope automatically:
+
+```bash
+# Option 1 — one story at a time
+/squad "S1 — Workspace schema: create workspaces table with RLS policies"
+/squad-auto
+
+# Option 2 — entire scope, context-safe
+/loop /clear /squad-spec 01-identity-auth
+```
 
 ---
 

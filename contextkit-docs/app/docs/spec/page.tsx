@@ -2,15 +2,14 @@
 
 import React, { useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
+import { ChevronRight, ArrowLeft, ArrowRight, Terminal } from "lucide-react"
 
 export default function SpecPage() {
   const headings = [
     { id: 'overview', text: 'Overview' },
-    { id: 'pipeline', text: 'Pipeline Personas' },
     { id: 'usage', text: 'Usage' },
     { id: 'output', text: 'Output Structure' },
-    { id: 'rounds', text: 'How Rounds Work' },
+    { id: 'spec-format', text: 'What SPEC.md Contains' },
     { id: 'overview-file', text: 'Overview File Detection' },
     { id: 'squad', text: 'From Spec to Squad' },
   ];
@@ -49,7 +48,7 @@ export default function SpecPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Spec Pipeline</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Turn a high-level product overview into an implementation-ready spec — UX flows, DB schema, API contracts, and a phased build plan — before a single line of code is written.
+          Turn a product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories — one scope at a time.
         </p>
       </div>
 
@@ -57,90 +56,20 @@ export default function SpecPage() {
       <div id="overview" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Overview</h2>
         <p className="text-muted-foreground leading-relaxed">
-          The spec pipeline sits upstream of the <Link href="/docs/squad" className="text-primary hover:underline">Squad Workflow</Link>. Squad assumes stories are ready to implement. Spec produces those stories — and the full technical context that makes them implementable — from a product overview document.
+          The spec pipeline sits upstream of the <Link href="/docs/squad" className="text-primary hover:underline">Squad Workflow</Link>. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> to break your product overview into scopes, then spec each scope into a <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> that the squad pipeline can build from directly.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          It works scope by scope. Each run takes one area of the product (e.g. identity &amp; auth, invoicing, marketplace), runs four domain experts in parallel, challenges their output through a CTO persona, and produces a unified <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> that a developer can build from directly.
+          Each run is a single inline CTO pass — no sub-agents, no revision rounds. The CTO reads the overview and any prior scope specs (for consistency), then writes the full spec for that scope in one pass. Fast, low token cost, and the output includes copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story.
         </p>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
           <p className="text-sm font-medium mb-2">How it works</p>
           <div className="space-y-1 text-sm text-muted-foreground">
-            <p>1. On first run, a CTO agent reads your product overview and identifies all logical scopes</p>
-            <p>2. Each run processes one scope — brief → 4 domain experts → CTO challenges → revisions → final SPEC.md</p>
+            <p>1. On first run, the CTO reads your product overview and identifies all logical scopes</p>
+            <p>2. Each run specs one scope — data model, API contracts, UX flows, story list with squad commands</p>
             <p>3. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> again to continue with the next scope — progress is tracked automatically</p>
           </div>
         </div>
-      </div>
-
-      {/* Pipeline Personas */}
-      <div id="pipeline" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Pipeline Personas</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Each persona is a sub-agent with a specific role. The CTO persona appears three times — as scoper, challenger, and author — because it holds the most context across all rounds.
-        </p>
-        <div className="overflow-x-auto">
-          <table aria-label="Spec pipeline personas" className="w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th scope="col" className="text-left py-2 pr-4 font-semibold">Round</th>
-                <th scope="col" className="text-left py-2 pr-4 font-semibold">Persona</th>
-                <th scope="col" className="text-left py-2 font-semibold">What it does</th>
-              </tr>
-            </thead>
-            <tbody className="text-muted-foreground">
-              <tr className="border-b">
-                <td className="py-2 pr-4">Init (once)</td>
-                <td className="py-2 pr-4 font-medium">CTO — Scoper</td>
-                <td className="py-2">Reads the full product overview, identifies logical scopes, writes <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 0</td>
-                <td className="py-2 pr-4 font-medium">CTO — Briefer</td>
-                <td className="py-2">Defines scope boundaries, surfaces key constraints, writes questions each domain must answer</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 1</td>
-                <td className="py-2 pr-4 font-medium">UX Architect</td>
-                <td className="py-2">Maps all user flows and screens — entry points, steps, edge cases, empty states, mobile differences</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 1</td>
-                <td className="py-2 pr-4 font-medium">Data Architect</td>
-                <td className="py-2">Designs the full DB schema — entities, columns, indexes, relationships (ERD), multi-tenancy, data lifecycle</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 1</td>
-                <td className="py-2 pr-4 font-medium">Systems Architect</td>
-                <td className="py-2">Defines API contracts, auth model, external services, background jobs, file storage</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 1</td>
-                <td className="py-2 pr-4 font-medium">Build Planner</td>
-                <td className="py-2">Phases the work into epics and stories with specific, testable acceptance criteria and a risk register</td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 2</td>
-                <td className="py-2 pr-4 font-medium">CTO — Challenger</td>
-                <td className="py-2">Reads all four sections, challenges gaps and cross-section conflicts, writes <code className="rounded bg-muted px-1 font-mono text-xs">05-challenges.md</code></td>
-              </tr>
-              <tr className="border-b">
-                <td className="py-2 pr-4">Round 3</td>
-                <td className="py-2 pr-4 font-medium">All four domains</td>
-                <td className="py-2">Each agent revises their section based on the CTO's challenges. Unresolvable items are flagged as OPEN DECISIONs</td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-4">Final</td>
-                <td className="py-2 pr-4 font-medium">CTO — Author</td>
-                <td className="py-2">Resolves all OPEN DECISIONs, writes the unified <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, updates PROGRESS.md and INDEX.md</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-sm text-muted-foreground">
-          Round 1 and Round 3 agents run <strong>in parallel</strong> — all four spawn simultaneously. Round 2 (challenges) and the Final (author) are sequential because they need all prior outputs.
-        </p>
       </div>
 
       {/* Usage */}
@@ -151,27 +80,25 @@ export default function SpecPage() {
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">First run — initialization</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec
 # Finds PROJECT_OVERVIEW.md (or asks you to pick)
-# CTO scoper identifies all scopes → writes spec/PROGRESS.md
-# Immediately runs the full pipeline for scope 01`}</pre>
+# CTO identifies all scopes → writes spec/PROGRESS.md
+# Immediately specs scope 01`}</pre>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Continuing — next scope</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec
-# Reads spec/PROGRESS.md
-# Picks the next unchecked scope and runs the full pipeline`}</pre>
+# Reads spec/PROGRESS.md → picks the next unchecked scope`}</pre>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Target a specific scope</p>
-          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec 03-invoicing-payments
-# Runs the pipeline for that scope directly, regardless of order`}</pre>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec 03-invoicing-payments`}</pre>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Re-run a completed scope</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --redo 01-identity-auth
-# Deletes the scope folder and reruns all rounds from scratch`}</pre>
+# Deletes the scope folder and reruns from scratch`}</pre>
         </div>
 
         <div className="space-y-3">
@@ -185,66 +112,83 @@ export default function SpecPage() {
       <div id="output" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Output Structure</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Every scope produces a folder with all working artifacts preserved alongside the final <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>. Nothing is deleted — you can always see how the CTO challenged the initial sections and what changed in revision.
+          Each scope produces one <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>. Progress and index files track the full project.
         </p>
 
         <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`spec/
   PROGRESS.md              ← scope checklist — updated after each run
-  INDEX.md                 ← master TOC linking all SPEC.md files
+  INDEX.md                 ← links to every completed SPEC.md
 
   01-identity-auth/
-    00-brief.md            ← CTO's scoping brief (Round 0)
-    01-ux.md               ← UX flows and screens (revised in Round 3)
-    02-data.md             ← DB schema and relationships (revised in Round 3)
-    03-systems.md          ← API contracts and services (revised in Round 3)
-    04-plan.md             ← build phases and stories (revised in Round 3)
-    05-challenges.md       ← CTO's challenges (Round 2)
-    SPEC.md                ← final unified spec for this scope
+    SPEC.md                ← full spec for this scope
 
   02-jobs-scheduling/
-    ...
+    SPEC.md
 
   03-invoicing-payments/
-    ...`}</pre>
+    SPEC.md`}</pre>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-          <p className="text-sm font-medium mb-1">PROGRESS.md</p>
-          <p className="text-sm text-muted-foreground">Tracks which scopes are done and which are pending. The orchestrator reads this at the start of every <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> run. The <code className="rounded bg-muted px-1 font-mono text-xs">source:</code> field records which overview file was used, so you never have to specify it again.</p>
+          <p className="text-sm font-medium mb-1">Cross-scope consistency</p>
+          <p className="text-sm text-muted-foreground">Every spec run reads all previously completed <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> files before writing the next one. Entities and API conventions defined in scope 01 are respected by scope 02 — no redefinitions, no contradictions.</p>
         </div>
       </div>
 
-      {/* How Rounds Work */}
-      <div id="rounds" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">How Rounds Work</h2>
+      {/* What SPEC.md Contains */}
+      <div id="spec-format" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">What SPEC.md Contains</h2>
         <p className="text-muted-foreground leading-relaxed">
-          The back-and-forth between rounds is what makes the output implementation-ready. Domain experts making decisions in isolation often contradict each other — the challenge round surfaces those contradictions before they become code.
+          Every <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> is a self-contained reference document. It covers all domains needed to implement the scope — no separate files, no switching between documents.
         </p>
 
-        <div className="space-y-3">
-          <div className="rounded-lg border p-4 space-y-2">
-            <p className="text-sm font-semibold">Round 0 — Brief</p>
-            <p className="text-sm text-muted-foreground">The CTO reads the product overview and prior scope specs, then writes a brief that all four domain agents share. The brief defines scope boundaries, constraints, and specific questions each domain must answer. This prevents agents from making conflicting assumptions about the same part of the product.</p>
-          </div>
+        <div className="overflow-x-auto">
+          <table aria-label="SPEC.md sections" className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th scope="col" className="text-left py-2 pr-4 font-semibold">Section</th>
+                <th scope="col" className="text-left py-2 font-semibold">What it contains</th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">Summary</td>
+                <td className="py-2">2–3 sentences on what this scope covers and what the team will ship</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">Personas</td>
+                <td className="py-2">Who uses this scope and what they need from it</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">Data Model</td>
+                <td className="py-2">Full schema — columns, types, indexes, constraints, ERD, multi-tenancy enforcement, data lifecycle</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">API Contracts</td>
+                <td className="py-2">Every endpoint with request/response shapes, auth role, and error codes</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">UX Flows</td>
+                <td className="py-2">Key user journeys — goal, steps, success state, and edge cases that affect implementation</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">Stories</td>
+                <td className="py-2">Story table with size and dependencies, plus copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for each story</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2 pr-4 font-mono text-xs">Open Questions</td>
+                <td className="py-2">Unresolved items — what they block and who needs to decide</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-4 font-mono text-xs">Out of Scope</td>
+                <td className="py-2">Features explicitly deferred, with the scope they belong to</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-          <div className="rounded-lg border p-4 space-y-2">
-            <p className="text-sm font-semibold">Round 1 — Domain Experts (parallel)</p>
-            <p className="text-sm text-muted-foreground">All four agents spawn simultaneously. Each reads the brief and the product overview, then produces their full section. They don't read each other's output — they work from the same brief independently.</p>
-          </div>
-
-          <div className="rounded-lg border p-4 space-y-2">
-            <p className="text-sm font-semibold">Round 2 — CTO Challenges</p>
-            <p className="text-sm text-muted-foreground">The CTO reads all four sections and produces a challenge file — one section per domain plus a cross-cutting conflicts section. Challenges are specific: "The UX assumes paginated job lists but the data spec has no index on <code className="rounded bg-muted px-1 font-mono text-xs">workspace_id + created_at</code>." Generic observations are excluded.</p>
-          </div>
-
-          <div className="rounded-lg border p-4 space-y-2">
-            <p className="text-sm font-semibold">Round 3 — Revisions (parallel)</p>
-            <p className="text-sm text-muted-foreground">Each domain agent reads its own section and the challenges relevant to its domain, then revises in place. Items that need a decision from another domain are marked <code className="rounded bg-muted px-1 font-mono text-xs">OPEN DECISION: [question] — needs Data / Systems</code>.</p>
-          </div>
-
-          <div className="rounded-lg border p-4 space-y-2">
-            <p className="text-sm font-semibold">Final — CTO Author</p>
-            <p className="text-sm text-muted-foreground">The CTO reads all revised sections, resolves every OPEN DECISION with a call and one-line reasoning, then writes the unified <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>. The CTO decisions table at the bottom of each SPEC.md shows exactly what was resolved and why.</p>
-          </div>
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-sm font-medium mb-1">ASSUMPTION: markers</p>
+          <p className="text-sm text-muted-foreground">When the CTO fills in detail not explicit in the overview, it marks the claim inline with <code className="rounded bg-muted px-1 font-mono text-xs">ASSUMPTION: [what] — [why]</code>. Review these before building — assumptions in the spec become bugs if they&apos;re wrong.</p>
         </div>
       </div>
 
@@ -252,7 +196,7 @@ export default function SpecPage() {
       <div id="overview-file" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Overview File Detection</h2>
         <p className="text-muted-foreground leading-relaxed">
-          On first run, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> looks for a product overview file automatically. It checks these names in order:
+          On first run, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> looks for a product overview file automatically:
         </p>
         <ul className="list-none space-y-1 text-sm text-muted-foreground font-mono">
           <li><code className="rounded bg-muted px-1">PROJECT_OVERVIEW.md</code></li>
@@ -262,10 +206,7 @@ export default function SpecPage() {
           <li><code className="rounded bg-muted px-1">product-brief.md</code></li>
         </ul>
         <p className="text-muted-foreground leading-relaxed">
-          If one is found it's used automatically. If multiple match, you're asked to pick. If none match, all <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> files in the current directory are listed and you select the one that is your product overview.
-        </p>
-        <p className="text-muted-foreground leading-relaxed">
-          Once selected, the path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code> under <code className="rounded bg-muted px-1 font-mono text-xs">source:</code>. All subsequent runs read it from there — you never need to specify it again.
+          If one is found it&apos;s used automatically. If multiple match, you&apos;re asked to pick. The path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code> — you never need to specify it again.
         </p>
       </div>
 
@@ -273,25 +214,28 @@ export default function SpecPage() {
       <div id="squad" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">From Spec to Squad</h2>
         <p className="text-muted-foreground leading-relaxed">
-          The spec pipeline produces the input that the squad pipeline consumes. Once a scope's <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> is complete, feed its build plan stories into <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> one at a time:
+          Each <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> ends with a <code className="rounded bg-muted px-1 font-mono text-xs">### Squad Commands</code> section — copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story, self-contained enough to run without reading the spec.
         </p>
 
-        <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`# 1. Run /spec until all scopes are done
-/spec   # scope 01
-/spec   # scope 02
-/spec   # scope 03 ... and so on
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Option 1 — run stories one at a time</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Copy a command from spec/01-identity-auth/SPEC.md → Squad Commands
+/squad "S1 — Workspace schema: create workspaces table with RLS policies"
+/squad-auto`}</pre>
+        </div>
 
-# 2. Open spec/01-identity-auth/SPEC.md
-#    Pick a story from the Build Plan section
-
-# 3. Hand it to /squad
-/squad "implement workspace creation — tradie signs up, workspace is created, they land on the empty dashboard"
-
-# 4. /squad-auto runs architect → dev → test → review → doc`}</pre>
-
-        <p className="text-muted-foreground leading-relaxed">
-          The spec's data model, API contracts, and acceptance criteria all become reference material for the squad's Architect and Developer agents — either by pasting relevant sections or by pointing the agents to the spec files directly.
-        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Option 2 — run all stories continuously with /squad-spec</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/loop /clear /squad-spec 01-identity-auth
+# Processes every story in the scope — one per loop iteration,
+# context cleared between each so it never bloats`}</pre>
+        </div>
 
         <Link
           href="/docs/squad"

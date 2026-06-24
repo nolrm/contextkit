@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0] - 2026-06-24
+
+### Changed
+- **`/spec` — complete redesign to single inline CTO pass** — replaced the multi-agent pipeline (4 parallel domain experts, CTO challenges, revision round, 8+ agent spawns per scope) with a single inline CTO pass. One `SPEC.md` per scope instead of 7 intermediate files. Output now includes a `### Squad Commands` section with copy-paste `/squad` commands for every story. Significantly lower token cost and simpler output.
+- **`/spec` output format** — `SPEC.md` now contains: Summary, Personas, Data Model (full schema + ERD), API Contracts (all endpoints), UX Flows (key journeys + edge cases), Stories table with sizes and dependencies, Squad Commands, Open Questions, Out of Scope. The `ASSUMPTION:` inline marker flags inferred detail for CTO review.
+- **Removed** `spec-ux.md`, `spec-data.md`, `spec-systems.md`, `spec-planner.md` — domain agent sub-commands no longer needed.
+
+### Added
+- **`/squad-spec [scope]`** — new command that loads a completed spec scope and runs the full squad pipeline (architect → dev → test → review → doc) for every story automatically. PO phase is skipped — the spec already is the PO spec. Designed for use with `/loop /clear /squad-spec [scope]` to process one story per loop iteration with a fresh context each time, preventing context bloat across long runs.
+
 ## [1.0.3] - 2026-06-24
 
 ### Changed

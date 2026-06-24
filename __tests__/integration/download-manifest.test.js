@@ -143,20 +143,21 @@ describe('Download manifest validation', () => {
     expect(content).toContain('standards');
   });
 
-  it('13. all spec pipeline commands are in both install and update manifests', () => {
-    const specFiles = [
-      'commands/spec/spec.md',
+  it('13. spec pipeline commands are in both manifests; removed domain agents are not', () => {
+    // Only spec.md remains — single CTO pass, no domain sub-agents
+    expect(installPaths).toContain('commands/spec/spec.md');
+    expect(updatePaths).toContain('commands/spec/spec.md');
+
+    // squad-spec is the spec-to-squad bridge command
+    expect(installPaths).toContain('commands/squad/squad-spec.md');
+    expect(updatePaths).toContain('commands/squad/squad-spec.md');
+
+    // domain agent files and old sequential CTO files removed
+    const removedFiles = [
       'commands/spec/spec-ux.md',
       'commands/spec/spec-data.md',
       'commands/spec/spec-systems.md',
       'commands/spec/spec-planner.md',
-    ];
-    for (const f of specFiles) {
-      expect(installPaths).toContain(f);
-      expect(updatePaths).toContain(f);
-    }
-    // sequential CTO agent files removed — logic is inlined in spec.md
-    const removedFiles = [
       'commands/spec/spec-init.md',
       'commands/spec/spec-brief.md',
       'commands/spec/spec-challenge.md',
@@ -184,28 +185,35 @@ describe('Download manifest validation', () => {
     expect(content).toContain('spec/INDEX.md');
   });
 
-  it('16. commands/spec/spec.md orchestrator contains all four domain challenge sections inline', () => {
+  it('16. commands/spec/spec.md single CTO pass covers all domains in one SPEC.md', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('## UX Challenges');
-    expect(content).toContain('## Data Challenges');
-    expect(content).toContain('## Systems Challenges');
-    expect(content).toContain('## Planner Challenges');
-    expect(content).toContain('## Cross-cutting Conflicts');
+    expect(content).toContain('## Data Model');
+    expect(content).toContain('## API Contracts');
+    expect(content).toContain('## UX Flows');
+    expect(content).toContain('## Stories');
+    expect(content).toContain('### Squad Commands');
   });
 
-  it('17. commands/spec/spec.md spawns four domain agents in parallel for Round 1 and Round 3', () => {
+  it('17. commands/spec/spec.md uses ASSUMPTION: marker and does not reference domain agent files', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('spec-ux.md');
-    expect(content).toContain('spec-data.md');
-    expect(content).toContain('spec-systems.md');
-    expect(content).toContain('spec-planner.md');
-    expect(content).toContain('Launch all four at once');
+    expect(content).toContain('ASSUMPTION:');
+    expect(content).not.toContain('spec-ux.md');
+    expect(content).not.toContain('spec-data.md');
+    expect(content).not.toContain('spec-systems.md');
+    expect(content).not.toContain('spec-planner.md');
   });
 
-  it('18. commands/spec/spec.md orchestrator updates PROGRESS.md and INDEX.md and resolves open decisions', () => {
+  it('18. commands/spec/spec.md updates PROGRESS.md and INDEX.md', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
     expect(content).toContain('PROGRESS.md');
     expect(content).toContain('INDEX.md');
-    expect(content).toContain('OPEN DECISION');
+  });
+
+  it('19. commands/squad/squad-spec.md processes one story per invocation and skips PO phase', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-spec.md'), 'utf8');
+    expect(content).toContain('manifest.md');
+    expect(content).toContain('status: architect');
+    expect(content).toContain('spec/[scope-slug]/SPEC.md');
+    expect(content).toContain('/loop /clear /squad-spec');
   });
 });

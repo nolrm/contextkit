@@ -11,6 +11,7 @@ export default function SquadPage() {
     { id: 'single-task', text: 'Single-Task Flow' },
     { id: 'visual-assets', text: 'Visual Assets (Optional)' },
     { id: 'batch', text: 'Batch Flow' },
+    { id: 'squad-spec', text: 'From Spec — squad-spec' },
     { id: 'configuration', text: 'Configuration' },
     { id: 'reset', text: 'Resetting Squad State' },
     { id: 'feedback', text: 'Feedback Loop' },
@@ -207,6 +208,45 @@ export default function SquadPage() {
         </div>
       </div>
 
+      {/* Squad Spec */}
+      <div id="squad-spec" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">From Spec — <code className="text-xl font-mono">/squad-spec</code></h2>
+        <p className="text-muted-foreground leading-relaxed">
+          If you&apos;ve run <Link href="/docs/spec" className="text-primary hover:underline">/spec</Link> to generate a scope, use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> to implement every story in that scope automatically — no manual handoff needed between stories.
+        </p>
+        <p className="text-muted-foreground leading-relaxed">
+          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the scope&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, creates handoff files with the PO spec pre-filled from the spec (skipping the PO phase), then runs architect → dev → test → review → doc for each story in dependency order.
+        </p>
+
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium mb-2">Recommended: run with loop + clear</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            Each story adds implementation detail, tests, and review output to the context. By story 4 or 5, the context window is large. Running with <code className="rounded bg-muted px-1 font-mono text-xs">/loop /clear</code> resets the context between stories so each one starts fresh.
+          </p>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/loop /clear /squad-spec 01-identity-auth
+# Processes one story per loop iteration
+# Context cleared between each — never bloats
+# Stops automatically when all stories are done`}</pre>
+        </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Single run (one story only)</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad-spec 01-identity-auth
+# Picks up the next pending story and runs it to completion
+# Run again to continue with the next story`}</pre>
+        </div>
+
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-sm font-medium mb-1">If a story gets needs-work</p>
+          <p className="text-sm text-muted-foreground">
+            The pipeline pauses and surfaces the review issues. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart the loop) to continue.
+          </p>
+        </div>
+      </div>
+
       {/* Configuration */}
       <div id="configuration" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Configuration</h2>
@@ -287,10 +327,10 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
           CI Squad lets you label any issue <code className="rounded bg-muted px-1 font-mono text-xs">squad-ready</code> and have the full pipeline run in GitHub Actions — no local setup required. A draft PR is opened when it&apos;s done.
         </p>
         <Link
-          href="/docs/spec"
+          href="/docs/ci-squad"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
         >
-          Learn about Spec Pipeline <ArrowRight className="h-3.5 w-3.5" />
+          Learn about CI Squad <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
 
