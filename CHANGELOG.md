@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.2] - 2026-06-25
+
+### Removed
+- **`/squad-auto-parallel`** — removed. Parallel subagents have no write coordination; tasks in a real batch almost always touch shared files (e.g. `lib/index.js`, `README.md`), producing conflicts that cost more to resolve than the parallelism saves. Use `/squad-auto` for all batch runs.
+
 ## [1.1.1] - 2026-06-24
 
 ### Changed
