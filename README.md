@@ -72,7 +72,7 @@ contextkit install claude   # or: contextkit install (interactive picker)
 ck claude      # creates CLAUDE.md + .claude/rules/ — skips if already up to date
 ck cursor      # creates .cursor/rules/ (scoped .mdc files) — skips if already up to date
 ck copilot     # creates .github/copilot-instructions.md
-ck codex       # creates AGENTS.md
+ck codex       # creates AGENTS.md + .codex/skills/ (24 skills)
 ck opencode    # creates AGENTS.md
 ck gemini      # creates GEMINI.md + .gemini/settings.json
 ck aider       # creates CONVENTIONS.md + .aider/rules.md
@@ -134,10 +134,11 @@ claude "create checkout flow for customer"
 @.contextkit Create checkout flow for customer
 ```
 
-**Codex CLI** — reads `AGENTS.md` automatically
+**Codex CLI** — reads `AGENTS.md` automatically + skills in `.codex/skills/`
 
 ```bash
 codex "create checkout flow for customer"
+# Skills available: $spec, $squad, $squad-auto, $squad-spec, $analyze, $ck, and more
 ```
 
 **OpenCode** — reads `AGENTS.md` automatically
@@ -450,7 +451,7 @@ ck install --force    # regenerate all files, including user-customized standard
 ck claude      # add or refresh Claude integration — skips if already up to date
 ck cursor      # add or refresh Cursor integration — skips if already up to date
 ck copilot     # add GitHub Copilot integration
-ck codex       # add Codex CLI integration (AGENTS.md)
+ck codex       # add Codex CLI integration (AGENTS.md + .codex/skills/)
 ck opencode    # add OpenCode integration (AGENTS.md)
 ck gemini      # add Gemini CLI integration (GEMINI.md)
 ck aider       # add Aider integration (CONVENTIONS.md)

@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.1] - 2026-06-24
+
+### Changed
+- **Codex integration — full skills support** — `ck codex` now creates `.codex/skills/` with 24 skill files (same set as Claude Code): spec, squad, squad-auto, squad-spec, squad-go, all squad phase commands, doc family, dev commands, and agent commands. Each skill reads the corresponding `.contextkit/commands/` file. Previously only created `AGENTS.md` with no skill support.
+
 ## [1.1.0] - 2026-06-24
 
 ### Changed
