@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4] - 2026-06-29
+
+### Fixed
+- **`ck update` resilience** — types files (`strict.tsconfig.json`, `global.d.ts`, `type-check.sh`, `typescript-strict.json`) and `scripts/update.sh` are now downloaded with graceful fallback. A transient network error on any of these non-critical files previously aborted the entire update and rolled back the backup. They now log a warning and continue.
+- **`squad-config` integration test** — fixed test paths that expected squad commands at `.contextkit/commands/squad.md` (flat) instead of the correct `.contextkit/commands/squad/squad.md` (subdirectory).
+
 ## [1.1.3] - 2026-06-29
 
 ### Added
