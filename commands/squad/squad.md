@@ -30,9 +30,11 @@ Wait for the user's reply:
 
 ## Step 1 — Parse Input
 
-Count the task descriptions the user provided. Tasks may be quoted strings, a numbered list, or comma-separated items.
+Count the explicit task descriptions the user provided. Tasks may be quoted strings, a numbered list, or comma-separated items.
 
-- **0 tasks provided** → Jump to [Clarification Mode](#clarification-mode).
+**Distinguish tasks from directives:** Phrases like "let's do it", "split into tasks", "let's go", "go ahead", "run it", "proceed" are directives — not task descriptions. Do not count them as tasks.
+
+- **0 tasks provided** → Go to [Conversation Extraction](#conversation-extraction).
 - **1 task provided** → Single-task mode. Continue to Step 2.
 - **2+ tasks provided** → Batch mode. Continue to Step 2.
 
@@ -199,6 +201,62 @@ _Triggered when: batch in progress and user provides new tasks._
 5. Create new `handoff-[N].md` files using the [Handoff Template](#handoff-template).
 6. Write PO specs for new tasks only — one at a time. Write each handoff file to disk and update the manifest before moving to the next. Do not touch existing handoff files.
 7. Tell the user: "Added [N] new task(s) to the batch (now [NEW_TOTAL] total). Run `/squad-auto` to continue."
+
+---
+
+## Conversation Extraction
+
+_Triggered when: 0 explicit tasks provided and no blocking in-progress handoffs._
+
+**First, check for in-progress work:**
+
+Read `.contextkit/squad/` for existing handoffs:
+- If `handoff.md` or any `handoff-[N].md` has `status: po-clarify` → jump to [Clarification Mode](#clarification-mode) instead.
+- If any handoff has a non-`done`, non-`po-clarify` status → stop. Tell the user: "There's an in-progress squad session. Run `/squad-auto` to resume it, or `/squad-reset` to clear and start fresh."
+- If all handoffs are `done` or none exist → continue with extraction below.
+
+**Extract tasks from the current conversation:**
+
+Scan the conversation for agreed-upon work items. Look for:
+- Features, bugs, or changes explicitly discussed and accepted
+- Items the user said "we need to", "let's", "I want to", "we should", or "add/fix/improve" about
+- A plan or approach that emerged from the discussion
+- Distinct technical concerns that were scoped and agreed upon
+
+**A "distinct task" means:**
+- It could be implemented independently
+- It has a clear outcome
+- It maps to a concrete code change
+
+**Do NOT extract:**
+- Background context or explanations
+- Questions that weren't resolved
+- Things explicitly said to be out of scope
+- Vague aspirations without agreed-upon outcomes
+
+**After extraction:**
+
+Present the list and wait for one reply:
+
+> I found [N] task(s) from our conversation:
+>
+> 1. [one-line task description]
+> 2. [one-line task description]
+>
+> Shall I proceed?
+> - **yes** — continue
+> - **edit** — give me a revised list and I'll use that instead
+> - **cancel** — stop here
+
+- `yes` → Use extracted list. If 1 task → Single-task mode. If 2+ → Batch mode. Continue to Step 2.
+- `edit` → Use the user's revised list. Continue to Step 2.
+- `cancel` → Stop here.
+
+**If no tasks were found in the conversation:**
+
+> I couldn't find any clear tasks in our conversation. What would you like to build? Describe the task(s) and I'll set up the handoff.
+
+Wait for the user's description, then use it as the task input and continue to Step 2.
 
 ---
 

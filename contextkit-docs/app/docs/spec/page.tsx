@@ -8,6 +8,7 @@ export default function SpecPage() {
   const headings = [
     { id: 'overview', text: 'Overview' },
     { id: 'usage', text: 'Usage' },
+    { id: 'sessions', text: 'Sessions & Archiving' },
     { id: 'output', text: 'Output Structure' },
     { id: 'spec-format', text: 'What SPEC.md Contains' },
     { id: 'overview-file', text: 'Overview File Detection' },
@@ -102,9 +103,60 @@ export default function SpecPage() {
         </div>
 
         <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Start from a specific file</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec MY_OVERVIEW.md
+# Uses that file as the session source — prompts before archiving any existing spec`}</pre>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Append a new scope</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --add analytics
+# Adds 05-analytics to PROGRESS.md and specs it immediately`}</pre>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Add stories to an existing scope</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --extend 02-jobs-scheduling
+# Identifies new stories not already in the scope, appends them to Stories + Squad Commands
+# Data model, API contracts, and UX flows are left untouched`}</pre>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Overnight batch — all remaining scopes</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/loop /clear /spec
+# Runs each unchecked scope in sequence, context cleared between each
+# Stops automatically when all scopes are done`}</pre>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Re-run a completed scope</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --redo 01-identity-auth
+# Deletes the scope folder and reruns from scratch`}</pre>
+        </div>
+
+        <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Reset everything</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --reset
 # Confirms with you first, then deletes the entire spec/ folder`}</pre>
+        </div>
+      </div>
+
+      {/* Sessions & Archiving */}
+      <div id="sessions" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Sessions &amp; Archiving</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          The overview file you use is the session identity — it&apos;s saved as <code className="rounded bg-muted px-1 font-mono text-xs">source:</code> in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code>. Passing the same file always resumes the same session with no prompts.
+        </p>
+        <p className="text-muted-foreground leading-relaxed">
+          When you pass a <em>different</em> <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> file and existing progress is detected, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> confirms before doing anything:
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`Found existing spec from PROJECT_OVERVIEW.md (3 of 5 scopes done).
+Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
+        </div>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p><span className="font-medium text-foreground">yes</span> — renames <code className="rounded bg-muted px-1 font-mono text-xs">spec/</code> to <code className="rounded bg-muted px-1 font-mono text-xs">spec-archived-[timestamp]/</code> and starts fresh. Old work is preserved, just out of the way.</p>
+          <p><span className="font-medium text-foreground">no</span> — stops. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> to continue the existing session, or <code className="rounded bg-muted px-1 font-mono text-xs">/spec --reset</code> to clear it manually.</p>
         </div>
       </div>
 
@@ -196,7 +248,16 @@ export default function SpecPage() {
       <div id="overview-file" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Overview File Detection</h2>
         <p className="text-muted-foreground leading-relaxed">
-          On first run, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> looks for a product overview file automatically:
+          You can pass the overview file explicitly or let <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> find it automatically.
+        </p>
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pass it explicitly</p>
+        <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec MY_OVERVIEW.md`}</pre>
+        <p className="text-muted-foreground leading-relaxed">
+          Any argument ending in <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> is treated as an overview file, not a scope slug. See <a href="#sessions" className="text-primary hover:underline">Sessions &amp; Archiving</a> for what happens if existing progress is detected.
+        </p>
+        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Auto-detection (no argument)</p>
+        <p className="text-muted-foreground leading-relaxed">
+          On first run with no argument, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> looks for these filenames in the project root:
         </p>
         <ul className="list-none space-y-1 text-sm text-muted-foreground font-mono">
           <li><code className="rounded bg-muted px-1">PROJECT_OVERVIEW.md</code></li>
@@ -206,7 +267,7 @@ export default function SpecPage() {
           <li><code className="rounded bg-muted px-1">product-brief.md</code></li>
         </ul>
         <p className="text-muted-foreground leading-relaxed">
-          If one is found it&apos;s used automatically. If multiple match, you&apos;re asked to pick. The path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code> — you never need to specify it again.
+          If one is found it&apos;s used automatically. If multiple match, you&apos;re asked to pick. The path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code> — you never need to specify it again on subsequent runs.
         </p>
       </div>
 

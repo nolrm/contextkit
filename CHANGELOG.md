@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.3] - 2026-06-29
+
+### Added
+- **`/spec OVERVIEW.md`** — pass an overview file directly to start a new spec session. If an existing spec is detected from a different source file, prompts before archiving (`spec/` → `spec-archived-[timestamp]/`). Same source resumes normally with no prompt.
+- **`/spec --add [scope-slug]`** — append a new scope to an in-progress spec and run it immediately. No need to manually edit `PROGRESS.md`.
+- **`/spec --extend [scope-slug]`** — add new stories to an already-written scope. Appends to the Stories table and Squad Commands block; leaves data model, API contracts, and UX flows untouched unless strictly required.
+- **`/spec` loop termination** — Step 5 now emits a stop signal so `/loop /clear /spec` terminates cleanly when all scopes are done (overnight batch runs).
+- **`/squad` conversation extraction** — running `/squad` with no explicit task args (or with a directive phrase like "let's do it", "let's go", "go ahead") now scans the current conversation for agreed tasks, shows a confirmation list, and proceeds. Previously required explicit task descriptions.
+
+### Changed
+- **`/squad-go`** — simplified to "squad + auto-run": follows the full `/squad` workflow (including conversation extraction) then immediately runs the pipeline with no checkpoint pause. Previously duplicated squad logic; now delegates to `squad.md` with `checkpoint: none`.
+- **`/squad-go` SKILL.md** — removed `context: fork`. Currently inert (fork is not yet implemented in Claude Code) but future-proofs the skill: when fork lands, leaving it would break conversation access.
+
+### Improved
+- **`ai-guidelines.md` + `AGENTS.md`** — added "Working on This Package" rule: when editing commands or skills in this repo, all mirror locations must be updated together (`.contextkit/commands/` + `commands/`, `.claude/skills/` + `.codex/skills/`).
+- **`.claude/skills/spec/SKILL.md`** — updated argument hint to include new flags; replaced stale "multi-round domain experts" description with accurate single-pass CTO description; removed `context: fork`.
+- **`.codex/skills/spec/SKILL.md`** — updated description to match new flags and behaviour.
+
 ## [1.1.2] - 2026-06-25
 
 ### Removed

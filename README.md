@@ -203,15 +203,18 @@ The squad workflow turns a single AI session into a structured multi-role pipeli
 | 5    | Reviewer      | `/squad-review`    | Reviews everything and gives a PASS or NEEDS-WORK verdict                                                                                                                                                      |
 | 6    | Doc Writer    | `/squad-doc`       | Creates companion `.md` files for every new/modified code file                                                                                                                                                 |
 
-### Express Flow (conversation-first)
+### Conversation-First Flow
 
-After discussing a feature or fix with your AI tool, run a single command to go hands-free:
+After a planning conversation, `/squad` extracts the agreed tasks automatically — no need to retype them:
 
 ```bash
-/squad-go
-# Reads tasks from the current conversation, confirms the list, writes specs,
-# and immediately runs architect → dev → test → review → doc — no second command needed
+/squad                    # scans the conversation, shows extracted tasks, confirms before writing specs
+/squad "let's do this"    # directive phrase — same behaviour, not treated as a task
+
+/squad-go                 # same as above but immediately runs the full pipeline after specs — no second command needed
 ```
+
+Phrases like "let's do it", "go ahead", "let's go" are recognised as directives and trigger conversation extraction. Quoted task descriptions bypass extraction and go straight to the PO spec.
 
 ### Single-Task Flow
 
@@ -271,10 +274,13 @@ If you have a screenshot, mockup, or design image relevant to the task, paste or
 The spec pipeline turns a high-level product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories. It runs before the squad, one scope at a time.
 
 ```bash
-/spec          # Start or continue — picks up the next unchecked scope automatically
-/spec 02-jobs  # Run a specific scope by name
+/spec                        # Start or continue — picks up the next unchecked scope automatically
+/spec OVERVIEW.md            # Start a new spec from a specific file (prompts before archiving an existing spec)
+/spec 02-jobs                # Run a specific scope by name
 /spec --redo 01-identity-auth  # Re-run a completed scope from scratch
-/spec --reset  # Delete the entire spec/ folder and start over
+/spec --reset                # Delete the entire spec/ folder and start over
+/spec --add analytics        # Append a new scope and run it immediately
+/spec --extend 02-jobs       # Add new stories to an existing scope's SPEC.md
 ```
 
 ### How It Works
@@ -303,7 +309,7 @@ spec/
 
 On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
 
-If no standard overview file is found, `/spec` lists all `.md` files in the directory and asks you to pick.
+You can also pass the overview file directly: `/spec MY_OVERVIEW.md`. If an existing spec is detected from a different file, you'll be prompted before anything is archived.
 
 ### From Spec to Squad
 

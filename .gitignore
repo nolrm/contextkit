@@ -176,3 +176,4 @@ contextkit-docs/out/
 contextkit-docs/.vercel/
 
 test-project/
+.claude/settings.local.json

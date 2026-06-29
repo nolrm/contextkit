@@ -8,6 +8,7 @@ export default function SquadPage() {
   const headings = [
     { id: 'overview', text: 'Overview' },
     { id: 'pipeline', text: 'Pipeline Roles' },
+    { id: 'conversation-first', text: 'Conversation-First Flow' },
     { id: 'single-task', text: 'Single-Task Flow' },
     { id: 'visual-assets', text: 'Visual Assets (Optional)' },
     { id: 'batch', text: 'Batch Flow' },
@@ -127,11 +128,45 @@ export default function SquadPage() {
         </div>
       </div>
 
+      {/* Conversation-First Flow */}
+      <div id="conversation-first" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Conversation-First Flow</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          After a planning conversation, <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> can extract the agreed tasks automatically — no need to retype them. Directive phrases like &quot;let&apos;s do it&quot;, &quot;go ahead&quot;, or &quot;let&apos;s go&quot; trigger extraction rather than being treated as task descriptions.
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Extract from conversation</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad                    # scans conversation, shows extracted tasks, confirms before writing specs
+/squad "let's do this"    # directive phrase — same behaviour, not treated as a task`}</pre>
+        </div>
+        <p className="text-muted-foreground leading-relaxed">
+          Use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-go</code> to do the same thing and immediately run the full pipeline after — no second command needed:
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Express: extract + run pipeline hands-free</span>
+          </div>
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/squad-go
+# Reads tasks from the current conversation, confirms the list,
+# writes PO specs, then immediately runs architect → dev → test → review → doc`}</pre>
+        </div>
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium mb-1">squad vs squad-go</p>
+          <p className="text-sm text-muted-foreground">
+            <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> stops after writing PO specs so you can review before the pipeline runs. <code className="rounded bg-muted px-1 font-mono text-xs">/squad-go</code> skips that pause and runs everything in one shot. Both extract tasks from the conversation the same way.
+          </p>
+        </div>
+      </div>
+
       {/* Single-Task Flow */}
       <div id="single-task" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Single-Task Flow</h2>
         <p className="text-muted-foreground leading-relaxed">
-          After kickoff, run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> to let the pipeline run hands-free, or step through manually if you want to review each stage:
+          Pass an explicit task description to skip extraction and go straight to the PO spec. After kickoff, run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> hands-free or step through manually:
         </p>
         <div className="rounded-lg border bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
