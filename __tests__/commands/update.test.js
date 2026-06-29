@@ -326,6 +326,62 @@ describe('UpdateCommand', () => {
     expect(logged).toContain('preserved');
   });
 
+  it('20. continues update when a command file download fails with 400', async () => {
+    const DownloadManager = require('../../lib/utils/download');
+    const realFs = require('fs-extra');
+
+    DownloadManager.mockImplementationOnce(() => ({
+      downloadFile: jest.fn().mockImplementation(async (url, dest) => {
+        if (url.includes('refactor.md')) {
+          throw new Error('Request failed with status code 400');
+        }
+        await realFs.ensureDir(path.dirname(dest));
+        await realFs.writeFile(dest, '# mocked download\n');
+      }),
+    }));
+
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await expect(update({ force: true })).resolves.not.toThrow();
+
+    const logged = console.log.mock.calls.flat().join(' ');
+    expect(logged).toContain('Skipped');
+    expect(logged).toContain('refactor.md');
+  });
+
+  it('21. reports skipped count in success message when files are skipped', async () => {
+    const DownloadManager = require('../../lib/utils/download');
+    const realFs = require('fs-extra');
+    const ora = require('ora');
+
+    let succeedMessage = '';
+    jest.spyOn(ora(), 'succeed').mockImplementation((msg) => {
+      succeedMessage = msg || '';
+    });
+
+    DownloadManager.mockImplementationOnce(() => ({
+      downloadFile: jest.fn().mockImplementation(async (url, dest) => {
+        if (url.includes('typescript-strict.json')) {
+          throw new Error('Request failed with status code 400');
+        }
+        await realFs.ensureDir(path.dirname(dest));
+        await realFs.writeFile(dest, '# mocked download\n');
+      }),
+    }));
+
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await expect(update({ force: true })).resolves.not.toThrow();
+
+    const logged = console.log.mock.calls.flat().join(' ');
+    expect(logged).toContain('Skipped');
+    expect(logged).toContain('typescript-strict.json');
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];

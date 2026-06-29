@@ -11,8 +11,8 @@ const ROOT = path.resolve(__dirname, '..', '..');
 function extractDownloadPaths(sourceFile) {
   const content = fs.readFileSync(sourceFile, 'utf8');
   const paths = [];
-  // Match: `${this.repoUrl}/some/path`
-  const regex = /\$\{this\.repoUrl\}\/([\w./-]+)/g;
+  // Match: `${this.repoUrl}/some/path` or `${base}/some/path`
+  const regex = /\$\{(?:this\.repoUrl|base)\}\/([\w./-]+)/g;
   let match;
   while ((match = regex.exec(content)) !== null) {
     paths.push(match[1]);

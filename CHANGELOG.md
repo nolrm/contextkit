@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.5] - 2026-06-29
+
+### Fixed
+- **`ck update` resilience (complete)** — ALL file downloads (commands, hooks, standards, types, scripts) are now non-fatal. Any single file failure logs a `⚠ Skipped` warning and the update continues. Previously only types and legacy scripts were graceful; a transient 400 on any command file still aborted the entire update and rolled back the backup.
+- **`ck update` skipped-file reporting** — spinner now shows `Files updated (N skipped — retry if issues persist)` when downloads were skipped, making partial updates visible.
+
+### Tests
+- **`update` unit tests** — added tests 20–21 verifying that a 400 on a command file download is non-fatal and logs a warning instead of aborting.
+- **CLI integration tests** — expanded `cli.test.js` from 9 to 18 numbered tests; now covers `ck update`, `ck check`, `ck analyze`, `ck note`, `ck run` at the CLI level, and verifies `ck update` exits cleanly when ContextKit is not installed.
+- **`download-manifest` test** — updated URL regex to match refactored `${base}` variable alongside original `${this.repoUrl}`.
+
 ## [1.1.4] - 2026-06-29
 
 ### Fixed
