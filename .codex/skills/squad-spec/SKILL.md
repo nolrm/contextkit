@@ -5,4 +5,7 @@ description: Implement every story in a spec scope — run /spec first to genera
 
 Read `.contextkit/commands/squad/squad-spec.md` and execute it.
 
-Processes one story per invocation. Pass the scope slug (e.g. `01-identity-auth`). Run `$spec` first to generate the scope, then `$squad-spec [scope-slug]` to implement it story by story.
+Processes one story per invocation. With a slug, runs that scope only. Without a slug, runs ALL completed spec scopes in sequence — advances to the next scope automatically when one finishes.
+
+Single scope: `$squad-spec 01-identity-auth`
+All scopes:   `$squad-spec` (auto mode)

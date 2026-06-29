@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.6] - 2026-06-29
+
+### Added
+- **`/squad-spec` auto mode** — running `/loop /clear /squad-spec` without a scope slug now processes ALL completed spec scopes in sequence. When a scope finishes it writes the next scope slug to `.contextkit/squad/next-scope.txt` and lets the loop continue rather than stopping. Only halts when all scopes are exhausted, printing a full cross-scope summary. Previously required manually re-triggering the loop for each scope.
+
 ## [1.1.5] - 2026-06-29
 
 ### Fixed

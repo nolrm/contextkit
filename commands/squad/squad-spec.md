@@ -2,9 +2,14 @@
 
 You are the **Spec Runner**. Each invocation processes exactly one story from a spec scope — no more. All state lives on disk. Designed to be called repeatedly by `/loop` with context cleared between runs.
 
-Typical usage:
+Typical usage (single scope):
 ```
 /loop /clear /squad-spec 01-identity-auth
+```
+
+Auto mode — runs ALL completed scopes in sequence without a slug:
+```
+/loop /clear /squad-spec
 ```
 
 ---
@@ -25,7 +30,10 @@ Check whether `.contextkit/squad/manifest.md` exists:
 Parse input for a scope slug (e.g. `01-identity-auth`).
 
 - **Slug provided** → read `spec/[scope-slug]/SPEC.md`. If not found: stop — "No spec at `spec/[scope-slug]/SPEC.md`. Run `/spec` first."
-- **No slug** → read `spec/PROGRESS.md`, use the first completed scope (`[x]`). Tell user which scope was found. If none: stop — "No completed scopes. Run `/spec` first."
+- **No slug** → auto mode:
+  1. Check `.contextkit/squad/next-scope.txt` — if it exists, read the slug from it, then **delete the file**. Use that slug.
+  2. Otherwise, read `spec/PROGRESS.md` and use the first completed scope (`[x]`). Tell the user which scope was found.
+  3. If no completed scopes exist: stop — "No completed scopes. Run `/spec` first."
 
 ### Create handoff files
 
@@ -39,6 +47,7 @@ Create `.contextkit/squad/manifest.md`:
 batch: true
 total: [N]
 source-spec: spec/[scope-slug]/SPEC.md
+scope: [scope-slug]
 created: [TIMESTAMP]
 
 ## Tasks
@@ -174,7 +183,7 @@ Read `manifest.md`. Scan for the next story to process, respecting dependency or
 
 - A story is **ready** when its `status` is `pending` and all stories it `Depends on` are `done`.
 - **No ready stories, but some are pending** → dependencies not yet met. Stop: "Waiting on dependencies. Re-run when blocking stories are complete."
-- **All stories `done`** → print the final report (Step 5) and stop. Do not continue the loop.
+- **All stories `done`** → go to Step 5.
 - **Any story has `needs-work`** → stop: "Story [S#] needs rework. Fix the issues and re-run."
 
 Take the first ready story. Read its handoff file.
@@ -224,7 +233,9 @@ Announce:
 
 ---
 
-## Step 5 — Final Report (all stories done)
+## Step 5 — Scope Complete
+
+All stories in the current scope are done. Print the scope summary:
 
 ```
 ✓ Squad-spec complete: [scope-slug]
@@ -235,7 +246,35 @@ Announce:
 | S2 | [description] | pass |
 
 All [N] stories implemented.
-Next: /spec for the next scope, then /loop /clear /squad-spec [next-scope-slug]
 ```
 
-Stop. Do not signal continuation — the loop should end here.
+### Advance to next scope (auto mode)
+
+Read `spec/PROGRESS.md`. Get all completed scopes (`[x]`) in order. Find the current scope's position. Check if any completed scope comes after it.
+
+**Next scope found:**
+1. Delete `.contextkit/squad/manifest.md`
+2. Write the next scope slug to `.contextkit/squad/next-scope.txt`
+3. Print:
+   ```
+   → Advancing to next scope: [next-scope-slug]
+     Continuing loop...
+   ```
+4. Do NOT stop — the loop will re-invoke, Step 1 will find no manifest, Step 2 will read `next-scope.txt` and continue.
+
+**No next scope (all scopes exhausted):**
+
+Print the full run summary:
+
+```
+✓ All scopes complete.
+
+| Scope | Stories | Status |
+|-------|---------|--------|
+| [scope-1] | [N] | done |
+| [scope-2] | [N] | done |
+
+Full spec implemented. Loop complete.
+```
+
+Stop. Do not signal continuation — the loop ends here.

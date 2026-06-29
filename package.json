@@ -1,6 +1,6 @@
 {
   "name": "@nolrm/contextkit",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "ContextKit - Context Engineering + Agentic AI Pipelines. Scaffold structured standards for AI assistants and run autonomous multi-role pipelines (PO → Architect → Dev → Test → Review → Doc) grounded by that same context layer. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
   "main": "lib/index.js",
   "bin": {

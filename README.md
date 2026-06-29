@@ -171,7 +171,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
-| `/squad-spec [scope]`  | Load a spec scope and run the full pipeline for every story. Use with `/loop /clear /squad-spec [scope]` for context-safe continuous execution. |
+| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Use with `/loop /clear /squad-spec`. |
 | `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
 | `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
@@ -313,15 +313,18 @@ You can also pass the overview file directly: `/spec MY_OVERVIEW.md`. If an exis
 
 ### From Spec to Squad
 
-Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement an entire scope automatically:
+Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement scopes automatically:
 
 ```bash
 # Option 1 — one story at a time
 /squad "S1 — Workspace schema: create workspaces table with RLS policies"
 /squad-auto
 
-# Option 2 — entire scope, context-safe
+# Option 2 — single scope, context-safe
 /loop /clear /squad-spec 01-identity-auth
+
+# Option 3 — all scopes in sequence, fully automatic
+/loop /clear /squad-spec
 ```
 
 ---
