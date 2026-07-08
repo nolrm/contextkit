@@ -2,6 +2,8 @@
 
 Run this checklist before every `git push`. Quality gates will run the same checks — this catches them before the gate blocks you.
 
+Read `.contextkit/standards/workflows.md` first for this project's dev process (commit format, quality gates, release process) before building the checklist below.
+
 ---
 
 ## Before You Push

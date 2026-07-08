@@ -30,6 +30,17 @@ describe('ClaudeIntegration', () => {
     );
     expect(content).toContain('Project Standards');
     expect(content).toContain('.contextkit/standards/code-style.md');
+    expect(content).toContain('@.contextkit/standards/architecture.md');
+    expect(content).toContain('@.contextkit/product/mission-lite.md');
+    expect(content).not.toContain('@.contextkit/standards/testing.md');
+    expect(content).not.toContain('@.contextkit/standards/workflows.md');
+    expect(content).not.toContain('@.contextkit/standards/ai-guidelines.md');
+    expect(content).not.toContain('@.contextkit/standards/glossary.md');
+    expect(content).not.toContain('@.contextkit/product/decisions.md');
+    expect(content).not.toContain('@.contextkit/product/roadmap.md');
+    expect(content).not.toContain('@.contextkit/corrections.md');
+    expect(content).toContain('`test` skill');
+    expect(content).toContain('`product-context` skill');
   });
 
   test('2. creates .claude/rules/contextkit-standards.md with alwaysApply', async () => {
@@ -41,7 +52,10 @@ describe('ClaudeIntegration', () => {
     const content = await fs.readFile(filePath, 'utf-8');
     expect(content).toContain('alwaysApply: true');
     expect(content).toContain('auto-loaded via CLAUDE.md imports');
-    expect(content).toContain('Code style conventions (from code-style.md)');
+    expect(content).toContain('`test` skill');
+    expect(content).toContain('`standards-aware` skill');
+    expect(content).toContain('`product-context` skill');
+    expect(content).not.toContain('from ai-guidelines.md');
   });
 
   test('3. creates .claude/rules/contextkit-testing.md with test file globs', async () => {
@@ -54,6 +68,7 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('**/*.test.*');
     expect(content).toContain('**/*.spec.*');
     expect(content).toContain('numbered');
+    expect(content).toContain('loaded via the `test` skill');
   });
 
   test('4. creates .claude/rules/contextkit-code-style.md with source globs', async () => {
@@ -80,6 +95,7 @@ describe('ClaudeIntegration', () => {
       'spec',
       'spec-component',
       'ck',
+      'compress',
       'squad',
       'squad-architect',
       'squad-dev',
@@ -95,6 +111,7 @@ describe('ClaudeIntegration', () => {
       'agent-push-checklist',
       'context-budget',
       'standards-aware',
+      'product-context',
     ];
     for (const skill of allSkills) {
       const filePath = `.claude/skills/${skill}/SKILL.md`;
@@ -110,7 +127,12 @@ describe('ClaudeIntegration', () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    const agentSkills = ['agent-push-checklist', 'context-budget', 'standards-aware'];
+    const agentSkills = [
+      'agent-push-checklist',
+      'context-budget',
+      'standards-aware',
+      'product-context',
+    ];
     for (const skill of agentSkills) {
       const filePath = `.claude/skills/${skill}/SKILL.md`;
       expect(await fs.pathExists(filePath)).toBe(true);
@@ -231,6 +253,14 @@ describe('ClaudeIntegration', () => {
     const content = await fs.readFile('.claude/skills/spec-component/SKILL.md', 'utf-8');
     expect(content).toContain('.contextkit/commands/dev/spec-component.md');
     expect(content).not.toContain('spec/spec.md');
+  });
+
+  test('18. standards-aware skill has Bash in allowed-tools for the self-update offer', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const content = await fs.readFile('.claude/skills/standards-aware/SKILL.md', 'utf-8');
+    expect(content).toContain('allowed-tools: Read, Glob, Grep, Bash');
   });
 
   test('15. install completes without error even if hook installation throws', async () => {

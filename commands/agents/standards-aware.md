@@ -8,6 +8,10 @@ Use this command when you discover a pattern that might be worth adding to the p
 
 Without the standards, agents guess. Without the gates, the guesses reach the repo unchecked. Your role is to close the loop by surfacing patterns worth standardising.
 
+## Check Prior Corrections First
+
+Read `.contextkit/corrections.md` for prior AI performance corrections before repeating a known mistake — it's this loop's own output log, so a pattern you're about to flag may already be recorded there.
+
 ## When to Update a Standards File
 
 Add to `code-style.md` when:
@@ -42,6 +46,16 @@ Add to `ai-guidelines.md` when:
 4. If the rule is non-obvious, include a one-line rationale in a comment or parenthetical
 5. Commit the standards update separately from code changes:
    `docs(standards): add [pattern] to [filename]`
+
+## Staleness Check & Self-Update
+
+Before doing agentic work in a ContextKit project:
+
+1. Read `.contextkit/status.json`'s `version` field. If missing, skip this section silently.
+2. Run: `npm view @nolrm/contextkit version` (same check as `.contextkit/commands/dev/health-check.md` step 7 — reuse it, don't reinvent).
+3. If the command fails or returns nothing, skip silently.
+4. If the npm version is strictly higher than the installed version, tell the user: "ContextKit vINSTALLED → vLATEST is available — shall I run `ck update` now?"
+5. If confirmed, run `ck update` via Bash. If declined, continue the original task without blocking on it.
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react"
 import Link from "next/link"
-import { AlertTriangle, ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
+import { AlertTriangle, ChevronRight, ArrowLeft, ArrowRight, Info } from "lucide-react"
 
 export default function HowContextWorksPage() {
   const headings = [
@@ -64,7 +64,10 @@ export default function HowContextWorksPage() {
     ▼
 Layer 1 — Bridge file (always loaded)
     CLAUDE.md / CONVENTIONS.md / GEMINI.md / etc.
-    └── @imports expand all linked standards files into context
+    └── @imports expand core standards files into context
+        (Claude Code/Codex: code-style + architecture + mission only —
+         testing/workflows/AI-guidelines/glossary/decisions/roadmap load
+         via Skills on demand instead)
     │
     ▼
 Layer 2 — Scoped rules (conditionally loaded)
@@ -114,6 +117,16 @@ AI receives context and generates code`}</pre>
               </li>
             </ul>
           </div>
+        </div>
+
+        <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 mt-4">
+          <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+            <Info className="h-4 w-4 text-primary shrink-0" />
+            Claude Code &amp; Codex: a third, Skill-triggered tier
+          </p>
+          <p className="text-sm text-muted-foreground">
+            For these two platforms, only <code className="rounded bg-muted px-1 font-mono text-xs">code-style.md</code> and <code className="rounded bg-muted px-1 font-mono text-xs">architecture.md</code> are always-loaded via <code className="rounded bg-muted px-1 font-mono text-xs">@import</code>. <code className="rounded bg-muted px-1 font-mono text-xs">testing.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">workflows.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">ai-guidelines.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">glossary.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">decisions.md</code>, and <code className="rounded bg-muted px-1 font-mono text-xs">roadmap.md</code> load only once a matching Skill fires (<code className="rounded bg-muted px-1 font-mono text-xs">test</code>, <code className="rounded bg-muted px-1 font-mono text-xs">agent-push-checklist</code>, <code className="rounded bg-muted px-1 font-mono text-xs">standards-aware</code>, <code className="rounded bg-muted px-1 font-mono text-xs">product-context</code>) — not every session. Other platforms (Cursor, Aider, Gemini, Copilot, Windsurf) still auto-load the full standards set.
+          </p>
         </div>
       </div>
 

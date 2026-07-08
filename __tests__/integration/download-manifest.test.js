@@ -216,4 +216,74 @@ describe('Download manifest validation', () => {
     expect(content).toContain('spec/[scope-slug]/SPEC.md');
     expect(content).toContain('/loop /clear /squad-spec');
   });
+
+  it('20. doc-arch/doc-feature/doc-component/add-documentation each define a Length Check with a concrete threshold', () => {
+    const cases = [
+      { file: 'commands/docs/doc-arch.md', threshold: '300 lines' },
+      { file: 'commands/docs/doc-feature.md', threshold: '250 lines' },
+      { file: 'commands/docs/doc-component.md', threshold: '150 lines' },
+    ];
+    for (const { file, threshold } of cases) {
+      const content = fs.readFileSync(path.join(ROOT, file), 'utf8');
+      expect(content).toContain('## Length Check');
+      expect(content).toContain(threshold);
+      expect(content).toContain('never split silently');
+    }
+    const addDocsContent = fs.readFileSync(
+      path.join(ROOT, 'commands/docs/add-documentation.md'),
+      'utf8'
+    );
+    expect(addDocsContent).toContain('## Length Check');
+  });
+
+  it('21. commands/dev/compress.md is in both manifests and contains the measure/marker-safety/backup workflow', () => {
+    expect(installPaths).toContain('commands/dev/compress.md');
+    expect(updatePaths).toContain('commands/dev/compress.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/compress.md'), 'utf8');
+    expect(content).toContain('wc -l');
+    expect(content).toContain('## Marker Safety');
+    expect(content).toContain('## Backup Before Editing Generated Files');
+  });
+
+  it('22. commands/agents/product-context.md is in both manifests and reads decisions.md + roadmap.md', () => {
+    expect(installPaths).toContain('commands/agents/product-context.md');
+    expect(updatePaths).toContain('commands/agents/product-context.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/product-context.md'), 'utf8');
+    expect(content).toContain('.contextkit/product/decisions.md');
+    expect(content).toContain('.contextkit/product/roadmap.md');
+  });
+
+  it('23. commands/dev/run-tests.md reads testing.md as its first step', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/run-tests.md'), 'utf8');
+    expect(content).toContain('0. Read `.contextkit/standards/testing.md`');
+  });
+
+  it('24. commands/agents/agent-push-checklist.md reads workflows.md before building the checklist', () => {
+    const content = fs.readFileSync(
+      path.join(ROOT, 'commands/agents/agent-push-checklist.md'),
+      'utf8'
+    );
+    expect(content).toContain('Read `.contextkit/standards/workflows.md` first');
+  });
+
+  it('25. commands/agents/standards-aware.md reads corrections.md before flagging a new pattern', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
+    expect(content).toContain('.contextkit/corrections.md');
+  });
+
+  it('26. commands/dev/analyze.md generates compact-by-default and points to the compress skill', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/analyze.md'), 'utf8');
+    expect(content).toContain('### ✍️ Output Density — Generate Compact by Default');
+    expect(content).toContain('No Mermaid diagrams unless the user asks for one');
+    expect(content).toContain('`compress` skill');
+    expect(content).toContain('docs/token-efficiency.md');
+  });
+
+  it('27. commands/agents/standards-aware.md offers (not silently runs) a self-update when stale', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
+    expect(content).toContain('## Staleness Check & Self-Update');
+    expect(content).toContain('npm view @nolrm/contextkit version');
+    expect(content).toContain('ck update');
+    expect(content).toContain('shall I run');
+  });
 });

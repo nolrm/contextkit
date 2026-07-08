@@ -36,7 +36,20 @@ describe('CodexIntegration', () => {
     expect(await fs.pathExists('AGENTS.md')).toBe(true);
     const content = await fs.readFile('AGENTS.md', 'utf-8');
     expect(content).toContain('.contextkit/standards/code-style.md');
+    expect(content).toContain('.contextkit/standards/architecture.md');
     expect(content).toContain('.contextkit/product/mission-lite.md');
+    expect(content).not.toContain('.contextkit/standards/testing.md');
+    expect(content).not.toContain('.contextkit/standards/workflows.md');
+    expect(content).not.toContain('.contextkit/standards/ai-guidelines.md');
+    expect(content).not.toContain('.contextkit/standards/glossary.md');
+    expect(content).not.toContain('.contextkit/product/decisions.md');
+    expect(content).not.toContain('.contextkit/product/roadmap.md');
+    expect(content).not.toContain(
+      '- `.contextkit/corrections.md` — Track AI performance improvements'
+    );
+    expect(content).toContain('is loaded on demand via the `standards-aware` skill');
+    expect(content).toContain('`test` skill');
+    expect(content).toContain('`product-context` skill');
     expect(content).toContain('.codex/skills/');
   });
 
@@ -55,6 +68,7 @@ describe('CodexIntegration', () => {
       'spec',
       'spec-component',
       'ck',
+      'compress',
       'squad',
       'squad-architect',
       'squad-dev',
@@ -71,6 +85,7 @@ describe('CodexIntegration', () => {
       'agent-push-checklist',
       'context-budget',
       'standards-aware',
+      'product-context',
     ];
     for (const skill of expectedSkills) {
       expect(await fs.pathExists(`.codex/skills/${skill}/SKILL.md`)).toBe(true);

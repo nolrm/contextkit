@@ -624,4 +624,118 @@ describe('pre-push hook', () => {
       expect(content).toContain('Agent push blocked');
     });
   });
+
+  describe('AC15: ContextKit update-check nudge', () => {
+    let fakeBinDir;
+
+    beforeEach(async () => {
+      fakeBinDir = path.join(tmpDir, 'fakebin');
+      await fs.ensureDir(fakeBinDir);
+    });
+
+    async function writeFakeNpm(script) {
+      const npmPath = path.join(fakeBinDir, 'npm');
+      await fs.writeFile(npmPath, `#!/bin/bash\n${script}\n`);
+      await fs.chmod(npmPath, 0o755);
+    }
+
+    function runHook(env = {}) {
+      try {
+        const output = execSync(path.join(hookPath, 'pre-push'), {
+          stdio: ['pipe', 'pipe', 'pipe'],
+          encoding: 'utf8',
+          shell: '/bin/bash',
+          env: { ...process.env, PATH: `${fakeBinDir}:${process.env.PATH}`, ...env },
+        });
+        return { success: true, output };
+      } catch (error) {
+        const allOutput = (error.stdout || '') + (error.stderr || '') + (error.message || '');
+        return { success: false, output: allOutput };
+      }
+    }
+
+    async function waitFor(conditionFn, timeoutMs = 3000, intervalMs = 50) {
+      const start = Date.now();
+      while (Date.now() - start < timeoutMs) {
+        if (await conditionFn()) return true;
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      }
+      return false;
+    }
+
+    const cacheFile = () => path.join(tmpDir, '.contextkit', '.last-update-check');
+
+    it('53. cold cache: exits 0, prints no nudge this run, warms the cache in the background', async () => {
+      await fs.writeJSON('.contextkit/status.json', { version: '1.0.0' });
+      await writeFakeNpm('echo "9.9.9"');
+
+      const result = runHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toContain('ContextKit v');
+
+      const warmed = await waitFor(async () => fs.pathExists(cacheFile()));
+      expect(warmed).toBe(true);
+      expect((await fs.readFile(cacheFile(), 'utf8')).trim()).toBe('9.9.9');
+    });
+
+    it('54. fresh cache with a newer version: prints the nudge, still exits 0', async () => {
+      await fs.writeJSON('.contextkit/status.json', { version: '1.0.0' });
+      await fs.ensureDir(path.dirname(cacheFile()));
+      await fs.writeFile(cacheFile(), '9.9.9');
+      await writeFakeNpm('echo "9.9.9"');
+
+      const result = runHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('ContextKit v1.0.0 → v9.9.9 available');
+      expect(result.output).toContain('run ck update');
+    });
+
+    it('55. stale cache: only refreshes once even across two pushes in the same window', async () => {
+      await fs.writeJSON('.contextkit/status.json', { version: '1.0.0' });
+      const counterFile = path.join(tmpDir, 'npm-call-count');
+      await fs.writeFile(counterFile, '');
+      await writeFakeNpm(`echo "9.9.9"; echo x >> "${counterFile}"`);
+
+      // Pre-seed a stale cache (mtime far in the past) so the first run refreshes.
+      await fs.ensureDir(path.dirname(cacheFile()));
+      await fs.writeFile(cacheFile(), '1.0.0');
+      const longAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+      await fs.utimes(cacheFile(), longAgo, longAgo);
+
+      const first = runHook();
+      expect(first.success).toBe(true);
+
+      const refreshed = await waitFor(async () => {
+        const stat = await fs.stat(cacheFile());
+        return stat.mtimeMs > longAgo.getTime() + 1000;
+      });
+      expect(refreshed).toBe(true);
+
+      // Second push immediately after — cache is now fresh, must not call npm again.
+      const second = runHook();
+      expect(second.success).toBe(true);
+
+      // Give any wrongly-fired async job a moment to (not) run before counting.
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      const calls = (await fs.readFile(counterFile, 'utf8')).trim().split('\n').filter(Boolean);
+      expect(calls.length).toBe(1);
+    });
+
+    it('56. npm failure (offline): still exits 0, no crash, no error text', async () => {
+      await fs.writeJSON('.contextkit/status.json', { version: '1.0.0' });
+      await writeFakeNpm('exit 1');
+
+      const result = runHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toContain('FAILED');
+      expect(result.output).not.toContain('ContextKit v');
+    });
+
+    it('57. no .contextkit/status.json: behaves exactly as before, no nudge-related output', async () => {
+      const result = runHook();
+      expect(result.success).toBe(true);
+      expect(result.output).not.toContain('ContextKit v');
+      expect(result.output).not.toContain('ℹ️');
+    });
+  });
 });

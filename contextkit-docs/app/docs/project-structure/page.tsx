@@ -235,7 +235,7 @@ export default function ProjectStructurePage() {
           <div className="rounded-lg border bg-card p-4">
             <h3 className="font-semibold text-lg mb-2">Claude Code - CLAUDE.md + .claude/rules/ + .claude/commands/</h3>
             <p className="text-sm text-muted-foreground">
-              <strong>Auto-loaded via @imports:</strong> CLAUDE.md uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> syntax to import standards and product files directly into context. No manual file reads needed — saves tokens and ensures standards are always available. Run <code className="rounded bg-muted px-1 font-mono text-xs">/context</code> in Claude Code to verify.
+              <strong>Auto-loaded via @imports:</strong> CLAUDE.md uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> syntax to always import <code className="rounded bg-muted px-1 font-mono text-xs">code-style.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">architecture.md</code>, and <code className="rounded bg-muted px-1 font-mono text-xs">mission-lite.md</code> directly into context. Other standards (testing, workflows, AI-behavior rules, terminology, decisions, roadmap) load on demand the first time a matching Skill triggers, instead of every session. Run <code className="rounded bg-muted px-1 font-mono text-xs">/context</code> in Claude Code to verify.
             </p>
           </div>
 

@@ -26,6 +26,10 @@ Write usage examples for the config parser
 - **Examples** — Runnable code snippets showing common usage
 - **Architecture** — High-level design notes for complex modules
 
+## Length Check
+
+After writing or updating any README/doc file, count its lines (`wc -l`). If it's grown too long for its documentation level (see `.contextkit/standards/architecture.md` — Documentation Levels), don't just densify prose — propose splitting along the architecture/feature/component boundaries and wait for confirmation before creating new files.
+
 ## Standards Applied
 
 - `.contextkit/standards/code-style.md` — Coding conventions

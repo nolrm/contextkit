@@ -131,6 +131,16 @@ export default function SlashCommandsPage() {
                 <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-component.md</code></td>
               </tr>
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/compress</span></td>
+                <td className="py-3 px-4">Measure a file's size, rewrite it for density, and report the before/after diff</td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/dev/compress.md</code></td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-card transition-colors">
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/product-context</span></td>
+                <td className="py-3 px-4">Load architecture decisions and roadmap context before proposing changes</td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/agents/product-context.md</code></td>
+              </tr>
+              <tr className="border-b border-border/50 hover:bg-card transition-colors">
                 <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/spec</span></td>
                 <td className="py-3 px-4">Turn a product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories</td>
                 <td className="py-3 px-4"><Link href="/docs/spec" className="text-primary hover:underline text-xs">See Spec docs →</Link></td>

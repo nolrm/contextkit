@@ -56,6 +56,19 @@ Before writing any file, check its current content:
 
 This ensures that standards files evolve and improve over multiple `/analyze` runs without losing prior work.
 
+### ✍️ Output Density — Generate Compact by Default
+
+When writing any `.contextkit/standards/*.md` file:
+
+- No Mermaid diagrams unless the user asks for one.
+- Minimal tables — prose bullets over multi-column tables where both convey the same rule.
+- Short bullets, not paragraphs. One rule per bullet.
+- One real code example beats three paragraphs of style description — prefer a snippet pulled from this project's actual codebase over a generic one.
+- No repeated rationale — state a rule once; don't restate why in three different sections.
+- Base rules on patterns actually observed in this codebase (see Analysis Process below), not exhaustive speculative coverage — speculative, LLM-generated rules measure lower task success and higher inference cost (see `docs/token-efficiency.md` Evidence section).
+
+This applies to newly generated files. Existing oversized files are retrofit via the `compress` skill, not by re-running `/analyze`.
+
 ## Analysis Process:
 
 1. **📁 Project Structure Scan**

@@ -4,24 +4,20 @@
 This project uses [ContextKit](https://github.com/nolrm/contextkit) for AI development standards.
 
 ## ContextKit
-Version: 1.1.3
+Version: 1.1.6
 
 ## Project Standards
 
 The following standards are auto-loaded into context via @imports:
 
 - @.contextkit/standards/code-style.md — Coding conventions and style rules
-- @.contextkit/standards/testing.md — Testing patterns and requirements
 - @.contextkit/standards/architecture.md — Architecture decisions and patterns
-- @.contextkit/standards/ai-guidelines.md — AI behavior and usage guidelines
-- @.contextkit/standards/workflows.md — Development workflows and processes
-- @.contextkit/standards/glossary.md — Project terminology and shortcuts
+
+Loaded on demand via skills, not always-loaded: testing.md (`test` skill), workflows.md (`agent-push-checklist` skill), ai-guidelines.md and glossary.md (`standards-aware` skill), decisions.md and roadmap.md (`product-context` skill).
 
 ## Product Context
 
 - @.contextkit/product/mission-lite.md — Product mission (condensed)
-- @.contextkit/product/decisions.md — Architecture Decision Records
-- @.contextkit/product/roadmap.md — Development roadmap
 
 ## Commands
 
@@ -31,9 +27,7 @@ The following standards are auto-loaded into context via @imports:
 - `.contextkit/commands/dev/run-tests.md` — Run tests
 - `.contextkit/commands/dev/quality-check.md` — Quality checks
 
-## Corrections Log
-
-- @.contextkit/corrections.md — Track AI performance improvements
+Corrections log (`.contextkit/corrections.md`) is loaded on demand via the `standards-aware` skill, not always-loaded.
 
 ## Quick Reference
 

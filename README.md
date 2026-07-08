@@ -31,7 +31,7 @@ Update your `.md` standards as your project evolves; every agent that runs after
 
 Works with: **Cursor** • **Claude Code** • **GitHub Copilot** • **Codex CLI** • **OpenCode** • **Gemini CLI** • **Aider** • **Continue** • **Windsurf**
 
-Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.windsurfrules`, etc.) so your AI tools read project standards automatically. Claude Code uses `@` imports in CLAUDE.md to load standards content directly into context — no extra token cost from manual file reads.
+Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.windsurfrules`, etc.) so your AI tools read project standards automatically. Claude Code and Codex always-load `code-style.md` and `architecture.md` via `@` imports; testing, workflows, AI-behavior rules, terminology, decisions, and roadmap load on demand the first time a matching skill triggers, instead of every session. Other platforms still auto-load the full standards set.
 
 ---
 
@@ -160,9 +160,10 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/refactor`            | Refactor code with safety checks                                                                                                |
 | `/test`                | Generate comprehensive tests                                                                                                    |
 | `/doc`                 | Add documentation                                                                                                               |
-| `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. |
-| `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2)                                                 |
-| `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3)                                            |
+| `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. Proposes a split if the file grows too long. |
+| `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2). Proposes a split if the file grows too long. |
+| `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3). Proposes a split if the file grows too long. |
+| `/compress`            | Measure a file's size, rewrite it for information density, and report the before/after diff                                    |
 | `/spec`                | Turn a product overview into a reference spec — data model, API contracts, UX flows, and squad-ready stories. Single CTO pass per scope. |
 | `/spec-component`      | Write a component spec (MD-first) before any code is created                                                                    |
 | `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
@@ -177,7 +178,8 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
 | `/agent-push-checklist`   | Pre-push quality checklist for agents to self-check before `git push`                                                           |
 | `/context-budget`         | Prioritized guide for which standards files to load for a given task                                                            |
-| `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files                                       |
+| `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files. Also checks `corrections.md` first and offers to self-run `ck update` when the install is stale. |
+| `/product-context`        | Load architecture decisions and roadmap context before proposing changes that might conflict with a prior decision or plan      |
 
 **Claude Code** — available as `/analyze`, `/review`, etc. via `.claude/skills/`
 **Cursor** — available as slash commands in Chat via `.cursor/prompts/`
@@ -461,7 +463,9 @@ ck vscode      # alias for copilot
 /analyze       # customize standards to your project (slash command in your AI tool)
 ck update             # pull latest commands/hooks — never overwrites your standards or glossary
 ck update --force     # also regenerate user-owned files (standards, glossary)
-                      # updates are also flagged automatically after each ck command (24h cache)
+                      # updates are also flagged automatically after each ck command (24h cache),
+                      # on git push (pre-push hook nudge, 24h cache), and in-session via /standards-aware
+                      # (which offers to run ck update itself when stale)
 ck status      # check install & integrations
 
 # Validation & Compliance

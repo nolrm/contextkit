@@ -97,6 +97,13 @@ If the doc file already exists, update in place.
 - Exported symbols and descriptions
 - Usage example if discernible
 
+## Length Check
+
+After writing or updating the target file, count its lines (`wc -l`).
+
+- Over ~150 lines → don't just densify prose. If this file covers a group of related items, propose splitting into sub-component READMEs, linked from this file.
+- State the proposed split explicitly and wait for confirmation before creating new files — never split silently.
+
 ## Standards Applied
 
 - `.contextkit/standards/architecture.md` — 3-level documentation hierarchy (Component Level)

@@ -117,6 +117,13 @@ Create the `docs/` directory if missing. If the file already exists, update in p
 - Directory structure only
 - High-level flow prose
 
+## Length Check
+
+After writing or updating the target file, count its lines (`wc -l`).
+
+- Over ~300 lines → don't just densify prose. Propose splitting the overrun section into its own `docs/<topic>.md` and link back from this file.
+- State the proposed split explicitly and wait for confirmation before creating new files — never split silently.
+
 ## Standards Applied
 
 - `.contextkit/standards/architecture.md` — 3-level documentation hierarchy

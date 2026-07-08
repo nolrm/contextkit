@@ -102,6 +102,47 @@ gate_disabled() {
   grep -qE "^\s*-\s+$key\s*$" "$config"
 }
 
+# ── ContextKit update nudge (informational, never blocks push) ──
+
+CK_UPDATE_CACHE=".contextkit/.last-update-check"
+CK_UPDATE_CACHE_TTL_SECS=86400 # ~24h
+
+check_ck_update() {
+  [ -f ".contextkit/status.json" ] || return 0
+  has_cmd node || return 0
+  has_cmd npm || return 0
+
+  local installed now cache_age
+  installed=$(node -e "try{console.log(require('./.contextkit/status.json').version||'')}catch(e){}" 2>/dev/null) || return 0
+  [ -n "$installed" ] || return 0
+
+  now=$(date +%s 2>/dev/null) || return 0
+  if [ -f "$CK_UPDATE_CACHE" ]; then
+    cache_age=$((now - $(date -r "$CK_UPDATE_CACHE" +%s 2>/dev/null || echo "$now")))
+  else
+    cache_age=$CK_UPDATE_CACHE_TTL_SECS
+  fi
+
+  if [ "$cache_age" -ge "$CK_UPDATE_CACHE_TTL_SECS" ] 2>/dev/null; then
+    # Refresh the cache in the background — never block this push on network I/O.
+    # The nudge (if any) shows on a later push once the cache is warm.
+    (npm view @nolrm/contextkit version > "$CK_UPDATE_CACHE.tmp" 2>/dev/null &&
+      mv "$CK_UPDATE_CACHE.tmp" "$CK_UPDATE_CACHE") > /dev/null 2>&1 &
+    disown 2> /dev/null || true
+    return 0
+  fi
+
+  local latest
+  latest=$(cat "$CK_UPDATE_CACHE" 2>/dev/null) || return 0
+  [ -n "$latest" ] || return 0
+
+  if [ "$latest" != "$installed" ]; then
+    echo ""
+    echo "  ℹ️  ContextKit v$installed → v$latest available (includes: compress skill) — run ck update"
+  fi
+  return 0
+}
+
 # ── Project Type Detection ──────────────────
 
 detect_project_type() {
@@ -667,3 +708,5 @@ echo "│  Total: $_TOTAL_ELAPSED"
 fi
 echo "└─────────────────────────────────────────────┘"
 echo ""
+
+check_ck_update || true

@@ -4,6 +4,7 @@ Generate or run tests for the specified code.
 
 ## What I'll Do
 
+0. Read `.contextkit/standards/testing.md` for this project's testing conventions before writing/running tests.
 1. Identify the testing framework used in the project
 2. Find or create test files for the target code
 3. Write tests covering core behavior, edge cases, and error paths

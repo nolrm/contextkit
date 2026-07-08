@@ -1,6 +1,6 @@
 ---
 name: standards-aware
-description: Load and apply project standards before acting in an agentic context
+description: Load and apply project standards — AI-behavior rules and glossary/terminology — before acting in an agentic context
 ---
 
 Read `.contextkit/commands/agents/standards-aware.md` and execute the standards-aware workflow.

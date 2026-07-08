@@ -104,6 +104,13 @@ Create `docs/features/` if missing. If the file already exists, update in place 
 - File list with descriptions
 - Main flow prose
 
+## Length Check
+
+After writing or updating the target file, count its lines (`wc -l`).
+
+- Over ~250 lines → don't just densify prose. Propose splitting the bloated Key Components/Modules list into per-component READMEs (Component Level), linked from this file.
+- State the proposed split explicitly and wait for confirmation before creating new files — never split silently.
+
 ## Standards Applied
 
 - `.contextkit/standards/architecture.md` — 3-level documentation hierarchy
