@@ -157,6 +157,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
   const { orientation } = useCarousel()
 
   return (
+    // eslint-disable-next-line a11y/aria-validation -- "group" is a valid WAI-ARIA role; missing from this plugin's role table
     <div
       role="group"
       aria-roledescription="slide"

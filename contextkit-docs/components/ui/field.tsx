@@ -85,6 +85,7 @@ function Field({
   ...props
 }: React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>) {
   return (
+    // eslint-disable-next-line a11y/aria-validation -- "group" is a valid WAI-ARIA role; missing from this plugin's role table
     <div
       role="group"
       data-slot="field"

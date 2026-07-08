@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
+    // eslint-disable-next-line a11y/aria-validation -- "group" is a valid WAI-ARIA role; missing from this plugin's role table
     <div
       data-slot="input-group"
       role="group"
@@ -62,6 +63,7 @@ function InputGroupAddon({
   ...props
 }: React.ComponentProps<'div'> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
+    // eslint-disable-next-line a11y/aria-validation -- "group" is a valid WAI-ARIA role; missing from this plugin's role table
     <div
       role="group"
       data-slot="input-group-addon"

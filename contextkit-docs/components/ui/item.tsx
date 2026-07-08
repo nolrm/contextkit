@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 
 function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
+    // eslint-disable-next-line a11y/aria-validation -- "list" is a valid WAI-ARIA role; missing from this plugin's role table
     <div
       role="list"
       data-slot="item-group"
