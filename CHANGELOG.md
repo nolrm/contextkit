@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.7] - 2026-07-09
+
+### Changed
+- **Always-loaded standards footprint cut ~6x** — Claude Code and Codex now always-load only `code-style.md` and `architecture.md` via `CLAUDE.md`/`AGENTS.md` `@imports`. `testing.md`, `workflows.md`, `ai-guidelines.md`, `glossary.md`, `decisions.md`, `roadmap.md`, and `corrections.md` now load on demand via the `test`, `agent-push-checklist`, `standards-aware`, and new `product-context` skills instead. See `docs/token-efficiency.md` for the rationale.
+- **`analyze` generates compact output by default**, and the `doc-*` skills gained a Length Check split-proposal step.
+
+### Added
+- **`compress` skill** — retrofits oversized standards/docs files for information density; marker-safe on bridge files and backs up hand-edited skill files first.
+- **`product-context` skill** — loads architecture decisions and roadmap context on demand before proposing changes.
+- **Update nudges** — a throttled pre-push hook check and a self-update offer surfaced via `standards-aware`, so existing installs that never check for updates still get pointed at `ck update`.
+
 ## [1.1.6] - 2026-06-29
 
 ### Added
