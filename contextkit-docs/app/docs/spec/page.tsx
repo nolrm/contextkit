@@ -123,7 +123,8 @@ export default function SpecPage() {
 
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Overnight batch — all remaining scopes</p>
-          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/loop /clear /spec
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/loop /clear /spec                                # Claude Code
+/goal complete every remaining scope via /spec    # Codex
 # Runs each unchecked scope in sequence, context cleared between each
 # Stops automatically when all scopes are done`}</pre>
         </div>
@@ -293,8 +294,9 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
             <Terminal className="h-4 w-4" />
             <span className="font-mono">Option 2 — run all stories continuously with /squad-spec</span>
           </div>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/loop /clear /squad-spec 01-identity-auth
-# Processes every story in the scope — one per loop iteration,
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/loop /clear /squad-spec 01-identity-auth                              # Claude Code
+/goal complete every story in scope 01-identity-auth via /squad-spec   # Codex
+# Processes every story in the scope — one per iteration,
 # context cleared between each so it never bloats`}</pre>
         </div>
 

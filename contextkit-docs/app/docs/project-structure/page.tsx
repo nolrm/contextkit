@@ -220,7 +220,7 @@ export default function ProjectStructurePage() {
             <h3 className="font-semibold text-lg mb-2">config.yml</h3>
             <p className="text-sm text-muted-foreground mb-3">Enhanced manifest schema</p>
             <p className="text-sm text-muted-foreground">
-              Configuration file with versioning, required/optional standards, conditional loading rules, and analysis scope tracking.
+              Configuration file with versioning, required/optional standards, conditional loading rules, analysis scope tracking, and a <code className="rounded bg-muted px-1 font-mono text-xs">response_style</code> block to toggle chat terseness and doc diagrams per project.
             </p>
           </div>
 

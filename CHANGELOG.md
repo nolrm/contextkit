@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] - 2026-07-13
+
+### Added
+- **Configurable response style** — new `response_style` block in `config.yml` with two independent per-project flags: `chat_minimal_words` (terse, plain-text chat explanations) and `diagrams_in_docs` (allow Mermaid in generated `.contextkit/standards/*.md`). Both default to the existing compact behavior (`true`/`false`). Checked by `ai-guidelines.md`, `/analyze`'s Output Density rules, and the `compress` skill.
+- Generated `CLAUDE.md` now points to the `response_style` config block so the toggle is discoverable every session, not just when `ai-guidelines.md` loads via the `standards-aware` skill.
+
+### Tests
+- **`install` unit tests** — added tests 64–65 verifying `config.yml` ships the `response_style` defaults and `ai-guidelines.md` documents both flags.
+- **`claude-integration` unit tests** — added test 19 verifying generated `CLAUDE.md` references `response_style` / `config.yml`.
+- **`download-manifest` test** — updated test 26 for the reworded (now config-aware) Output Density bullet in `analyze.md`.
+
 ## [1.1.7] - 2026-07-09
 
 ### Changed

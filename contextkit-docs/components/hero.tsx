@@ -11,7 +11,7 @@ export function Hero() {
           {/* Pill badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
             <Sparkles className="h-3 w-3" />
-            Context Engineering + Agentic AI Pipelines
+            Token-Efficient Context Engineering + Agentic AI Pipelines
           </div>
 
           {/* Headline */}

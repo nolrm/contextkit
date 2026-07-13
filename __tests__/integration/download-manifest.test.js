@@ -274,7 +274,8 @@ describe('Download manifest validation', () => {
   it('26. commands/dev/analyze.md generates compact-by-default and points to the compress skill', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/dev/analyze.md'), 'utf8');
     expect(content).toContain('### ✍️ Output Density — Generate Compact by Default');
-    expect(content).toContain('No Mermaid diagrams unless the user asks for one');
+    expect(content).toContain('response_style.diagrams_in_docs');
+    expect(content).toContain('no Mermaid diagrams unless the user asks for one');
     expect(content).toContain('`compress` skill');
     expect(content).toContain('docs/token-efficiency.md');
   });

@@ -1,6 +1,6 @@
 # ContextKit
 
-> Context Engineering + Agentic AI Pipelines
+> Token-Efficient Context Engineering + Agentic AI Pipelines
 
 ContextKit gives your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf) structured context through markdown files—and gives you a multi-role autonomous pipeline (PO → Architect → Dev → Test → Review → Doc) to execute work with those same agents. The context layer is what keeps the pipeline grounded: agents read your standards, so they never hallucinate your conventions.
 
@@ -19,6 +19,7 @@ ContextKit is a CLI tool with two capabilities: **context engineering** (`.conte
 - **Standards** — code style, testing patterns, architecture rules
 - **Templates** — canonical component shapes
 - **Platform bridges** — auto-generated `CLAUDE.md`, `AGENTS.md`, `.windsurfrules`, etc. so every AI tool reads the same context without manual setup
+- **Token-efficient by design** — tiered loading (core standards always on, the rest on-demand via skills), a `compress` skill to retrofit oversized docs, and a `response_style` config to tune chat/doc density per project
 
 **Pillar 2: Agentic squad pipeline**
 - A six-role pipeline (PO → Architect → Dev → Tester → Reviewer → Doc Writer) runs in a single AI session
@@ -50,7 +51,7 @@ cd your-project
 contextkit install
 ```
 
-Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and an attribution block in `config.yml` so any developer who encounters the folder knows what manages it.
+Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and an attribution block in `config.yml` (including a `response_style` toggle for chat terseness and doc diagrams) so any developer who encounters the folder knows what manages it.
 
 **3. Generate your standards**
 
@@ -172,7 +173,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
-| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Use with `/loop /clear /squad-spec`. |
+| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Claude Code: use with `/loop /clear /squad-spec` (context clearing matters — stories add up fast). Codex: use `/goal`, which clears context between turns natively. |
 | `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
 | `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
@@ -323,11 +324,15 @@ Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` 
 /squad-auto
 
 # Option 2 — single scope, context-safe
-/loop /clear /squad-spec 01-identity-auth
+/loop /clear /squad-spec 01-identity-auth        # Claude Code
+/goal complete every story in scope 01-identity-auth via /squad-spec   # Codex
 
 # Option 3 — all scopes in sequence, fully automatic
-/loop /clear /squad-spec
+/loop /clear /squad-spec        # Claude Code
+/goal complete every story in every scope via /squad-spec   # Codex
 ```
+
+Both drive `/squad-spec` repeatedly and clear context between stories, so a scope with many stories won't blow the context window. Claude's `/loop /clear` re-invokes on an interval; Codex's `/goal` keeps working autonomously until the stated condition holds, then stops on its own.
 
 ---
 
@@ -440,6 +445,7 @@ Then add your Anthropic API key as a repository secret:
 - ⚡ **Zero Config** - Auto-detects project type and package manager
 - ✅ **Policy Enforcement** - Configurable validation with `ck check`
 - 📝 **Corrections Tracking** - Track AI performance issues with corrections log
+- ⚙️ **Configurable Output** - Tune chat terseness and doc diagrams per project via `config.yml`
 
 ## Commands
 

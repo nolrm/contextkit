@@ -32,4 +32,17 @@ Corrections log (`.contextkit/corrections.md`) is loaded on demand via the `stan
 ## Quick Reference
 
 Before writing code, check the relevant standards files above. Always follow the project's established patterns and conventions.
+
+Chat terseness and doc diagrams are configurable per-project — see `.contextkit/config.yml` `response_style` block and `ai-guidelines.md` § Response Style.
 <!-- End ContextKit -->
+
+## Working on ContextKit Itself
+
+This repo IS the ContextKit package, not a project that installed it. `.contextkit/` and `.claude/` here are gitignored local copies — `ck install`/`ck update` regenerates them from real source. Edits inside them don't commit and never ship.
+
+Edit the real source instead:
+- Command workflow content → `commands/[path]`
+- Skill wrapper text (`.claude/skills/[name]/SKILL.md`, `.codex/skills/[name]/SKILL.md`) → defined inline in `lib/integrations/claude-integration.js` / `codex-integration.js`; the wrapper usually just points at a `commands/[path]` file, so a workflow change often needs both
+- Shipped file templates (this CLAUDE.md's bridge content, the `ai-guidelines.md` skeleton, etc.) → `lib/commands/install.js` and `lib/integrations/*.js`
+
+After editing source, run `ck update` locally if you need `.contextkit/`/`.claude/` refreshed for testing — don't hand-edit them.

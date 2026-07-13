@@ -36,7 +36,7 @@ const features = [
     icon: Terminal,
     title: "Slash Commands",
     description:
-      "17 reusable AI workflows installed across all platforms: /analyze, /fix, /refactor, /spec, /squad, and more. One command set, every tool.",
+      "25 reusable AI workflows installed across all platforms: /analyze, /review, /refactor, /spec, /squad, and more. One command set, every tool.",
   },
 ]
 

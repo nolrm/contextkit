@@ -254,14 +254,19 @@ export default function SquadPage() {
         </p>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-          <p className="text-sm font-medium mb-2">Recommended: run with loop + clear</p>
+          <p className="text-sm font-medium mb-2">Recommended: drive it with /loop (Claude Code) or /goal (Codex)</p>
           <p className="text-sm text-muted-foreground mb-3">
-            Each story adds implementation detail, tests, and review output to the context. By story 4 or 5, the context window is large. Running with <code className="rounded bg-muted px-1 font-mono text-xs">/loop /clear</code> resets the context between stories so each one starts fresh.
+            Each story adds implementation detail, tests, and review output to the context. By story 4 or 5, the context window is large. Claude Code&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">/loop /clear</code> and Codex&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code> both clear context between stories so each one starts fresh — they just get there differently: <code className="rounded bg-muted px-1 font-mono text-xs">/loop</code> re-invokes on an interval, <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code> keeps working autonomously until its condition holds, then stops itself.
           </p>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`/loop /clear /squad-spec 01-identity-auth
-# Processes one story per loop iteration
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Claude Code
+/loop /clear /squad-spec 01-identity-auth
+
+# Codex
+/goal complete every story in scope 01-identity-auth via /squad-spec
+
+# Both: process one story per iteration
 # Context cleared between each — never bloats
-# Stops automatically when all stories are done`}</pre>
+# Stop automatically when all stories are done`}</pre>
         </div>
 
         <div className="rounded-lg border bg-muted/50 p-4">
@@ -277,7 +282,7 @@ export default function SquadPage() {
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
           <p className="text-sm font-medium mb-1">If a story gets needs-work</p>
           <p className="text-sm text-muted-foreground">
-            The pipeline pauses and surfaces the review issues. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart the loop) to continue.
+            The pipeline pauses and surfaces the review issues. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart <code className="rounded bg-muted px-1 font-mono text-xs">/loop</code> or <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>) to continue.
           </p>
         </div>
       </div>

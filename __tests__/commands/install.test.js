@@ -859,4 +859,25 @@ describe('InstallCommand — _writeUserOwnedFile (skip on reinstall)', () => {
     expect(logged).toContain('standards/testing.md already exists');
     expect(logged).toContain('--force');
   });
+
+  it('64. config.yml includes response_style block defaulting to terse chat and no diagrams', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('response_style:');
+    expect(config).toContain('chat_minimal_words: true');
+    expect(config).toContain('diagrams_in_docs: false');
+  });
+
+  it('65. ai-guidelines.md skeleton documents the response_style config flags', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const content = await fs.readFile('.contextkit/standards/ai-guidelines.md', 'utf8');
+    expect(content).toContain('## Response Style');
+    expect(content).toContain('response_style');
+    expect(content).toContain('chat_minimal_words');
+    expect(content).toContain('diagrams_in_docs');
+  });
 });

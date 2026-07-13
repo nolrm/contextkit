@@ -58,9 +58,10 @@ This ensures that standards files evolve and improve over multiple `/analyze` ru
 
 ### ✍️ Output Density — Generate Compact by Default
 
-When writing any `.contextkit/standards/*.md` file:
+When writing any `.contextkit/standards/*.md` file, first check `.contextkit/config.yml` → `response_style.diagrams_in_docs` (default false if missing):
 
-- No Mermaid diagrams unless the user asks for one.
+- If false: no Mermaid diagrams unless the user asks for one. For a simple relationship, use an inline arrow chain instead, e.g. `input → transform → output`.
+- If true: diagrams are allowed where they're the clearest option — still don't default to one for something a sentence or arrow chain already covers.
 - Minimal tables — prose bullets over multi-column tables where both convey the same rule.
 - Short bullets, not paragraphs. One rule per bullet.
 - One real code example beats three paragraphs of style description — prefer a snippet pulled from this project's actual codebase over a generic one.

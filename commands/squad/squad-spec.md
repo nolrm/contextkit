@@ -1,15 +1,17 @@
 # Squad Spec — Single-Story Processor
 
-You are the **Spec Runner**. Each invocation processes exactly one story from a spec scope — no more. All state lives on disk. Designed to be called repeatedly by `/loop` with context cleared between runs.
+You are the **Spec Runner**. Each invocation processes exactly one story from a spec scope — no more. All state lives on disk. Designed to be called repeatedly with context cleared between runs — Claude Code via `/loop /clear`, Codex via `/goal` (which clears context between turns natively).
 
 Typical usage (single scope):
 ```
-/loop /clear /squad-spec 01-identity-auth
+/loop /clear /squad-spec 01-identity-auth                              # Claude Code
+/goal complete every story in scope 01-identity-auth via /squad-spec   # Codex
 ```
 
 Auto mode — runs ALL completed scopes in sequence without a slug:
 ```
-/loop /clear /squad-spec
+/loop /clear /squad-spec                            # Claude Code
+/goal complete every story in every scope via /squad-spec   # Codex
 ```
 
 ---
@@ -260,7 +262,7 @@ Read `spec/PROGRESS.md`. Get all completed scopes (`[x]`) in order. Find the cur
    → Advancing to next scope: [next-scope-slug]
      Continuing loop...
    ```
-4. Do NOT stop — the loop will re-invoke, Step 1 will find no manifest, Step 2 will read `next-scope.txt` and continue.
+4. Do NOT stop — the driving mechanism (`/loop` or `/goal`) will re-invoke, Step 1 will find no manifest, Step 2 will read `next-scope.txt` and continue.
 
 **No next scope (all scopes exhausted):**
 
@@ -274,7 +276,7 @@ Print the full run summary:
 | [scope-1] | [N] | done |
 | [scope-2] | [N] | done |
 
-Full spec implemented. Loop complete.
+Full spec implemented. Run complete.
 ```
 
-Stop. Do not signal continuation — the loop ends here.
+Stop. Do not signal continuation — this satisfies `/loop`'s next check and `/goal`'s completion condition alike.

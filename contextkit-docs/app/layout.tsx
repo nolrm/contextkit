@@ -9,7 +9,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://contextkit-docs.vercel.app'),
-  title: "ContextKit - Context Engineering + Agentic AI Pipelines",
+  title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
   description:
     "Scaffold structured context for your AI tools and run autonomous multi-role pipelines grounded by that context. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
   generator: "next.js",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://github.com/nolrm/contextkit/tree/main/contextkit-docs",
     siteName: "ContextKit",
-    title: "ContextKit - Context Engineering + Agentic AI Pipelines",
+    title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
     description: "Scaffold structured standards for your AI tools and run a grounded multi-role agentic pipeline — PO to Architect to Dev to Tester to Reviewer — without agents hallucinating your conventions.",
     images: [
       {
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ContextKit - Context Engineering + Agentic AI Pipelines",
+    title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
     description: "Structured context for your AI tools + an autonomous multi-role pipeline grounded by that context. No hallucinated conventions.",
     creator: "@nolrm",
     images: ["/contextkit-logo.svg"],
@@ -73,7 +73,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "ContextKit",
-              "description": "Context Engineering + Agentic AI Pipelines — scaffold project standards for AI assistants and run grounded autonomous pipelines that never hallucinate your conventions",
+              "description": "Token-Efficient Context Engineering + Agentic AI Pipelines — scaffold project standards for AI assistants and run grounded autonomous pipelines that never hallucinate your conventions",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Any",
               "offers": {

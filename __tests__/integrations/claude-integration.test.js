@@ -263,6 +263,15 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('allowed-tools: Read, Glob, Grep, Bash');
   });
 
+  test('19. CLAUDE.md points to the response_style config flags', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const content = await fs.readFile('CLAUDE.md', 'utf-8');
+    expect(content).toContain('response_style');
+    expect(content).toContain('.contextkit/config.yml');
+  });
+
   test('15. install completes without error even if hook installation throws', async () => {
     // Corrupt the hook-detector to throw
     jest.mock('../../lib/utils/hook-detector', () => {
