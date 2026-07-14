@@ -71,6 +71,10 @@ export default function SquadPage() {
             <p>3. The next role picks up from there — full context, no re-prompting</p>
           </div>
         </div>
+
+        <p className="text-muted-foreground leading-relaxed">
+          Because pipeline state lives in plain markdown on disk instead of an in-memory session, handoff files survive closing the terminal, context compaction, even switching tools mid-pipeline — start a task in Claude Code, pick it up in Codex or Cursor tomorrow.
+        </p>
       </div>
 
       {/* Pipeline Roles */}

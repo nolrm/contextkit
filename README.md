@@ -193,6 +193,8 @@ Both platforms delegate to the universal command files in `.contextkit/commands/
 
 The squad workflow turns a single AI session into a structured multi-role pipeline. Each role has its own slash command that reads and writes to a shared handoff file (`.contextkit/squad/handoff.md`), simulating a team of specialists.
 
+Because state lives in plain markdown on disk instead of an in-memory session, handoff files survive closing the terminal, context compaction, even switching tools mid-pipeline — start a task in Claude Code, pick it up in Codex or Cursor tomorrow.
+
 > **Squad works standalone.** If `.contextkit/` isn't set up, `/squad` will offer to create just `.contextkit/squad/` so you can use the pipeline without a full `ck install`.
 
 ### Pipeline Roles

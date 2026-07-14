@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.1] - 2026-07-14
+
+### Fixed
+- **`ck update` no longer drops config.yml blocks it doesn't recognize** — `restoreUserConfig` used to fully regenerate `config.yml` from a narrow hardcoded template, silently discarding any block absent from that template (`response_style`, `required`/`optional`/`conditionals`, `analysis_scope`/`analyzed_packages`, `features.squad_ci_workflow`, `profile`, `metadata`, etc.). Replaced with `appendMissingSettings`, which diffs the raw file against a new `config-schema.js` registry and only appends whatever's missing — with an explanatory comment — leaving everything else untouched. This also restores `check.js`'s required/optional-file gate and `analyze.js`'s monorepo scope memory, both of which were being silently disabled on any project that had run `ck update` even once.
+
+### Added
+- **`lib/utils/config-schema.js`** — single registry of additive `config.yml` settings, consumed by both a future `install.js` template pass and `update.js#appendMissingSettings`. See `lib/utils/config-schema.md`.
+
+### Docs
+- **`migrations.md`** — clarified when to use format-version migrations vs. the new additive `config-schema.js` registry.
+
+### Tests
+- **`update` unit tests** — added tests 22–26 covering appending `response_style`, `required`/`optional`/`conditionals`/`analysis_scope`, inserting `features.squad_ci_workflow` into the existing `features:` block, not duplicating settings that already exist, and not reordering/removing any pre-existing line.
+
 ## [1.2.0] - 2026-07-13
 
 ### Added

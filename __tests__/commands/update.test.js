@@ -382,6 +382,83 @@ describe('UpdateCommand', () => {
     expect(logged).toContain('typescript-strict.json');
   });
 
+  it('22. appends missing response_style block with explanatory comment', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('response_style:');
+    expect(config).toContain('chat_minimal_words: true');
+    expect(config).toContain('# plain-text, terse chat explanations');
+  });
+
+  it('23. appends missing required/optional/conditionals and analysis_scope blocks', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('required:');
+    expect(config).toContain('optional:');
+    expect(config).toContain('conditionals:');
+    expect(config).toContain('analysis_scope: null');
+    expect(config).toContain('analyzed_packages: []');
+  });
+
+  it('24. inserts missing squad_ci_workflow flag inside the existing features block', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    const featuresBlock = config.slice(config.indexOf('features:'));
+    expect(featuresBlock).toContain('squad_ci_workflow: false');
+  });
+
+  it('25. does not duplicate settings that are already present', async () => {
+    const configWithResponseStyle = `${baseConfig}\nresponse_style:\n  chat_minimal_words: false\n  diagrams_in_docs: true\n`;
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', configWithResponseStyle);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config.match(/^response_style:/gm)).toHaveLength(1);
+    // User's existing value is preserved, not overwritten with the default
+    expect(config).toContain('chat_minimal_words: false');
+  });
+
+  it('26. does not remove or reorder any pre-existing line', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    // version's value is intentionally bumped by updateConfigVersion — everything else must survive untouched
+    const originalLines = baseConfig
+      .trim()
+      .split('\n')
+      .filter((line) => !line.startsWith('version:'));
+    const updatedLines = config.split('\n');
+
+    let cursor = 0;
+    for (const line of originalLines) {
+      cursor = updatedLines.indexOf(line, cursor);
+      expect(cursor).toBeGreaterThanOrEqual(0);
+      cursor++;
+    }
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];

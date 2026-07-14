@@ -43,6 +43,8 @@ Runs all pending migrations from `currentVersion` up to `CURRENT_FORMAT_VERSION`
 3. Implement `_migrate_N_to_N1(configPath)` as a private method
 4. Add test cases in `__tests__/utils/migrations.test.js`
 
+**Only do this for structural changes** — renaming or reshaping data that already exists in `config.yml`. For a brand-new setting that's purely additive (a project without it should just gain it, with no restructuring), add it to `config-schema.js`'s `SETTINGS` registry instead — see `config-schema.md`. That path doesn't need a `format_version` bump and runs on every `ck update`, not just once per version jump.
+
 ## Usage Example
 
 ```js

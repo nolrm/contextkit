@@ -5,22 +5,36 @@ This project uses [ContextKit](https://github.com/nolrm/contextkit) for AI devel
 
 ## Project Standards
 
-Read these files before writing code:
+The following standards files define this project's conventions:
 
 - `.contextkit/standards/code-style.md` — Coding conventions and style rules
+- `.contextkit/standards/testing.md` — Testing patterns and requirements
 - `.contextkit/standards/architecture.md` — Architecture decisions and patterns
-
-Loaded on demand via skills, not always-loaded: testing.md (`test` skill), workflows.md (`agent-push-checklist` skill), ai-guidelines.md and glossary.md (`standards-aware` skill), decisions.md and roadmap.md (`product-context` skill).
+- `.contextkit/standards/ai-guidelines.md` — AI behavior and usage guidelines
+- `.contextkit/standards/workflows.md` — Development workflows and processes
+- `.contextkit/standards/glossary.md` — Project terminology and shortcuts
 
 ## Product Context
 
 - `.contextkit/product/mission-lite.md` — Product mission (condensed)
+- `.contextkit/product/decisions.md` — Architecture Decision Records
+- `.contextkit/product/roadmap.md` — Development roadmap
+
+## Commands
+
+- `.contextkit/commands/analyze.md` — Analyze and customize standards
+- `.contextkit/commands/create-component.md` — Create components
+- `.contextkit/commands/create-feature.md` — Create features
+- `.contextkit/commands/run-tests.md` — Run tests
+- `.contextkit/commands/quality-check.md` — Quality checks
+
+## Corrections Log
+
+- `.contextkit/corrections.md` — Track AI performance improvements
 
 ## Quick Reference
 
-Corrections log (`.contextkit/corrections.md`) is loaded on demand via the `standards-aware` skill, not always-loaded.
-
-Before writing code, always read the relevant standards files above. ContextKit skills are available in `.codex/skills/` — use them to run the spec and squad pipelines.
+Before writing code, check the relevant standards files above. Always follow the project's established patterns and conventions.
 <!-- End ContextKit -->
 
 ## Working on This Package
