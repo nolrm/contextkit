@@ -459,6 +459,52 @@ describe('UpdateCommand', () => {
     }
   });
 
+  it('27. bumps the top-level version field, not the nested _source.version, and stops re-updating once caught up', async () => {
+    const configWithSource = `# ContextKit Configuration
+_source:
+  tool: "@nolrm/contextkit"
+  version: "0.9.0"
+  npm: "https://www.npmjs.com/package/@nolrm/contextkit"
+version: "1.0.0"
+project_name: "test-project"
+project_type: "node"
+
+features:
+  testing: true
+  documentation: true
+  code_review: true
+  linting: true
+  type_safety: true
+  pre_push_hook: false
+  commit_msg_hook: false
+`;
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', configWithSource);
+
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: { version: '1.2.0' } });
+
+    let update = getUpdateModule();
+    await update({});
+
+    let config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toMatch(/^version: "1\.2\.0"/m);
+    // The nested _source.version is metadata from install time — update.js
+    // must never touch it when bumping the project's own version field
+    expect(config).toContain('  version: "0.9.0"');
+
+    // Running update again with the same latest version must now report
+    // "already up to date" — proves the bumped version was actually
+    // persisted and read back correctly, instead of staying frozen
+    axios.get.mockResolvedValueOnce({ data: { version: '1.2.0' } });
+    console.log.mockClear();
+    update = getUpdateModule();
+    await update({});
+
+    const calls = console.log.mock.calls.flat().join(' ');
+    expect(calls).toContain('already up to date');
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];

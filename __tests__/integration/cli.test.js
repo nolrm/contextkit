@@ -127,6 +127,44 @@ describe('CLI Integration Tests', () => {
       });
       expect(result).toContain('contextkit install');
     });
+
+    test('19. update --force bumps the top-level config version, not the nested _source.version', () => {
+      // _source.version is deliberately a sentinel unrelated to the real
+      // package version, so any bleed from update.js's nested-vs-top-level
+      // version matching would be caught here without depending on npm's
+      // actual latest-published version.
+      fs.ensureDirSync(path.join(tmpDir, '.contextkit'));
+      fs.writeFileSync(
+        path.join(tmpDir, '.contextkit/config.yml'),
+        `# ContextKit Configuration
+_source:
+  tool: "@nolrm/contextkit"
+  version: "0.0.1-sentinel"
+  npm: "https://www.npmjs.com/package/@nolrm/contextkit"
+version: "1.0.0"
+project_name: "test-project"
+project_type: "node"
+
+features:
+  testing: true
+  documentation: true
+  code_review: true
+  linting: true
+  type_safety: true
+  pre_push_hook: false
+  commit_msg_hook: false
+`
+      );
+
+      execSync(`node "${cliPath}" update --force`, { encoding: 'utf8', cwd: tmpDir });
+
+      const config = fs.readFileSync(path.join(tmpDir, '.contextkit/config.yml'), 'utf8');
+      const topLevelVersion = config.match(/^version: "([^"]*)"/m)?.[1];
+      expect(topLevelVersion).toMatch(/^\d+\.\d+\.\d+/);
+      expect(topLevelVersion).not.toBe('1.0.0');
+      // Nested _source.version must survive untouched
+      expect(config).toContain('  version: "0.0.1-sentinel"');
+    });
   });
 
   describe('check command', () => {
