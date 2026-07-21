@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2] - 2026-07-21
+
+### Changed
+- **`/spec` and `/squad-spec` output moved to `.contextkit/spec/`** — previously written to a root-level `spec/` folder that was always committed. Per-feature specs are ephemeral working state (deleted/archived once the stories are implemented via squad), so the folder now lives under `.contextkit/` and is gitignored/archived the same way `.contextkit/squad/` already is (`.contextkit/spec-archived-[timestamp]/` on conflict). Updated `commands/spec/spec.md`, `commands/squad/squad-spec.md`, the `spec` skill's description text, `README.md`, and the public docs site's `/docs/spec` page. `lib/commands/install.js` now adds `.contextkit/spec/` and `.contextkit/spec-archived-*/` to generated `.gitignore` entries.
+
+### Fixed
+- **`ck update` no longer risks writing the project version into the wrong `config.yml` field** — `parseConfig` and `updateConfigVersion` matched any `version:` key, including the indented `_source.version` field (which tracks the CK tool version, not the project's). Both are now anchored to the top-level, unindented `version:` line only.
+
 ## [1.2.1] - 2026-07-14
 
 ### Fixed
