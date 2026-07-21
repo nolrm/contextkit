@@ -181,8 +181,8 @@ describe('Download manifest validation', () => {
     expect(content).toContain('PROJECT_OVERVIEW.md');
     expect(content).toContain('OVERVIEW.md');
     expect(content).toContain('BRIEF.md');
-    expect(content).toContain('spec/PROGRESS.md');
-    expect(content).toContain('spec/INDEX.md');
+    expect(content).toContain('.contextkit/spec/PROGRESS.md');
+    expect(content).toContain('.contextkit/spec/INDEX.md');
   });
 
   it('16. commands/spec/spec.md single CTO pass covers all domains in one SPEC.md', () => {
@@ -213,7 +213,7 @@ describe('Download manifest validation', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-spec.md'), 'utf8');
     expect(content).toContain('manifest.md');
     expect(content).toContain('status: architect');
-    expect(content).toContain('spec/[scope-slug]/SPEC.md');
+    expect(content).toContain('.contextkit/spec/[scope-slug]/SPEC.md');
     expect(content).toContain('/loop /clear /squad-spec');
   });
 

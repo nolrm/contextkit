@@ -81,14 +81,14 @@ export default function SpecPage() {
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">First run — initialization</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec
 # Finds PROJECT_OVERVIEW.md (or asks you to pick)
-# CTO identifies all scopes → writes spec/PROGRESS.md
+# CTO identifies all scopes → writes .contextkit/spec/PROGRESS.md
 # Immediately specs scope 01`}</pre>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Continuing — next scope</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec
-# Reads spec/PROGRESS.md → picks the next unchecked scope`}</pre>
+# Reads .contextkit/spec/PROGRESS.md → picks the next unchecked scope`}</pre>
         </div>
 
         <div className="space-y-3">
@@ -138,7 +138,7 @@ export default function SpecPage() {
         <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Reset everything</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --reset
-# Confirms with you first, then deletes the entire spec/ folder`}</pre>
+# Confirms with you first, then deletes the entire .contextkit/spec/ folder`}</pre>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ export default function SpecPage() {
       <div id="sessions" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Sessions &amp; Archiving</h2>
         <p className="text-muted-foreground leading-relaxed">
-          The overview file you use is the session identity — it&apos;s saved as <code className="rounded bg-muted px-1 font-mono text-xs">source:</code> in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code>. Passing the same file always resumes the same session with no prompts.
+          The overview file you use is the session identity — it&apos;s saved as <code className="rounded bg-muted px-1 font-mono text-xs">source:</code> in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/spec/PROGRESS.md</code>. Passing the same file always resumes the same session with no prompts.
         </p>
         <p className="text-muted-foreground leading-relaxed">
           When you pass a <em>different</em> <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> file and existing progress is detected, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> confirms before doing anything:
@@ -156,7 +156,7 @@ export default function SpecPage() {
 Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
         </div>
         <div className="space-y-2 text-sm text-muted-foreground">
-          <p><span className="font-medium text-foreground">yes</span> — renames <code className="rounded bg-muted px-1 font-mono text-xs">spec/</code> to <code className="rounded bg-muted px-1 font-mono text-xs">spec-archived-[timestamp]/</code> and starts fresh. Old work is preserved, just out of the way.</p>
+          <p><span className="font-medium text-foreground">yes</span> — renames <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/spec/</code> to <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/spec-archived-[timestamp]/</code> and starts fresh. Old work is preserved, just out of the way.</p>
           <p><span className="font-medium text-foreground">no</span> — stops. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> to continue the existing session, or <code className="rounded bg-muted px-1 font-mono text-xs">/spec --reset</code> to clear it manually.</p>
         </div>
       </div>
@@ -168,7 +168,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
           Each scope produces one <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>. Progress and index files track the full project.
         </p>
 
-        <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`spec/
+        <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`.contextkit/spec/
   PROGRESS.md              ← scope checklist — updated after each run
   INDEX.md                 ← links to every completed SPEC.md
 
@@ -268,7 +268,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
           <li><code className="rounded bg-muted px-1">product-brief.md</code></li>
         </ul>
         <p className="text-muted-foreground leading-relaxed">
-          If one is found it&apos;s used automatically. If multiple match, you&apos;re asked to pick. The path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">spec/PROGRESS.md</code> — you never need to specify it again on subsequent runs.
+          If one is found it&apos;s used automatically. If multiple match, you&apos;re asked to pick. The path is saved in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/spec/PROGRESS.md</code> — you never need to specify it again on subsequent runs.
         </p>
       </div>
 
@@ -284,7 +284,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
             <Terminal className="h-4 w-4" />
             <span className="font-mono">Option 1 — run stories one at a time</span>
           </div>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Copy a command from spec/01-identity-auth/SPEC.md → Squad Commands
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# Copy a command from .contextkit/spec/01-identity-auth/SPEC.md → Squad Commands
 /squad "S1 — Workspace schema: create workspaces table with RLS policies"
 /squad-auto`}</pre>
         </div>

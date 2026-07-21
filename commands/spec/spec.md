@@ -14,7 +14,7 @@ Read the user's message to detect flags and arguments:
 - `/spec [file.md]` (any argument ending in `.md`) → overview-file-driven init → **Step 2B**
 - `/spec [scope-name]` (argument does NOT end in `.md`) → run that specific scope → **Step 3B**
 - `/spec --redo [scope-name]` → overwrite and rerun that scope from scratch → **Step 3B**
-- `/spec --reset` → confirm with user first, then delete `spec/` entirely and stop
+- `/spec --reset` → confirm with user first, then delete `.contextkit/spec/` entirely and stop
 - `/spec --add [scope-slug]` → append a new scope and run it → **Step 3C**
 - `/spec --add` (no slug) → stop: "Provide a scope slug: `/spec --add [scope-slug]`"
 - `/spec --extend [scope-slug]` → extend an existing scope with new stories → **Step 3D**
@@ -24,7 +24,7 @@ Read the user's message to detect flags and arguments:
 
 _(Reached only from `/spec` alone)_
 
-Check if `spec/PROGRESS.md` exists:
+Check if `.contextkit/spec/PROGRESS.md` exists:
 - **Not found** → go to Step 3A (initialization mode, auto-detect overview)
 - **Found** → go to Step 3B (continuation mode)
 
@@ -34,22 +34,22 @@ _(Reached when the argument ends in `.md`)_
 
 The user supplied an explicit overview file (e.g. `/spec MY_OVERVIEW.md`).
 
-1. Check if `spec/PROGRESS.md` exists:
+1. Check if `.contextkit/spec/PROGRESS.md` exists:
 
    - **Not found** → proceed to Step 3A, using the supplied file as the overview. Skip the auto-detection logic.
 
-   - **Found, same source** → the supplied file matches the `source:` field in `spec/PROGRESS.md`. Resume normally: proceed to Step 3B (next unchecked scope).
+   - **Found, same source** → the supplied file matches the `source:` field in `.contextkit/spec/PROGRESS.md`. Resume normally: proceed to Step 3B (next unchecked scope).
 
    - **Found, different source** → conflict. Read the `source:` field and count completed vs total scopes. Prompt the user:
 
      > Found existing spec from `[OLD_SOURCE]` ([X] of [Y] scopes done). Archive it and start fresh with `[NEW_SOURCE]`? (yes/no)
 
-     - **yes** → archive: rename `spec/` to `spec-archived-[YYYYMMDDHHMMSS]/`. If that name already exists, append `-2`, `-3`, etc. until the name is free. Then proceed to Step 3A using the supplied file as the overview.
+     - **yes** → archive: rename `.contextkit/spec/` to `.contextkit/spec-archived-[YYYYMMDDHHMMSS]/`. If that name already exists, append `-2`, `-3`, etc. until the name is free. Then proceed to Step 3A using the supplied file as the overview.
      - **no** → stop: "Run `/spec` to continue the existing spec, or `/spec --reset` to clear it manually."
 
 ## Step 3A — Initialization Mode
 
-_(Reached from Step 2 when no `spec/PROGRESS.md` exists, or from Step 2B after archiving / on first run with a new file)_
+_(Reached from Step 2 when no `.contextkit/spec/PROGRESS.md` exists, or from Step 2B after archiving / on first run with a new file)_
 
 ### Find the overview file
 
@@ -82,7 +82,7 @@ Read the overview file in full. Act as CTO and identify the logical spec scopes.
 
 Typical project: 5–12 scopes. Good slug examples: `01-identity-auth`, `02-workspace-members`, `03-job-management`, `04-invoicing`
 
-**Write `spec/PROGRESS.md`:**
+**Write `.contextkit/spec/PROGRESS.md`:**
 
 ```markdown
 # Spec Progress
@@ -108,25 +108,25 @@ Tell the user the scopes identified. Then proceed to Step 4 with the first unche
 
 ## Step 3B — Continuation Mode
 
-Read `spec/PROGRESS.md`:
+Read `.contextkit/spec/PROGRESS.md`:
 - If a specific scope was passed, use that scope. If `--redo`, delete its folder first.
 - Otherwise find the first line starting with `- [ ]` — that is the next unchecked scope.
-- If all scopes show `- [x]`, tell the user: "All scopes complete. Read `spec/INDEX.md` for the full spec." Stop.
+- If all scopes show `- [x]`, tell the user: "All scopes complete. Read `.contextkit/spec/INDEX.md` for the full spec." Stop.
 
 Identify the overview file path from the `source:` field in PROGRESS.md.
 
 ## Step 3C — Add Scope (`--add`)
 
-1. Check `spec/PROGRESS.md` exists. If not: stop — "No active spec. Run `/spec OVERVIEW.md` first to initialise."
-2. Read `spec/PROGRESS.md`. Find the highest scope number in all existing scope lines (both checked and unchecked). Increment by 1, zero-pad to 2 digits (e.g. `05`).
+1. Check `.contextkit/spec/PROGRESS.md` exists. If not: stop — "No active spec. Run `/spec OVERVIEW.md` first to initialise."
+2. Read `.contextkit/spec/PROGRESS.md`. Find the highest scope number in all existing scope lines (both checked and unchecked). Increment by 1, zero-pad to 2 digits (e.g. `05`).
 3. Append the new scope line to the `## Scopes` block: `- [ ] [NN]-[scope-slug]`
 4. Tell the user: "Added scope `[NN]-[scope-slug]`. Running it now."
 5. Proceed to Step 4 for the new scope, using the `source:` file from PROGRESS.md as the overview.
 
 ## Step 3D — Extend Scope (`--extend`)
 
-1. Check that `spec/[scope-slug]/SPEC.md` exists. If not: stop — "Scope `[scope-slug]` not found. Check `spec/PROGRESS.md` for valid scope slugs."
-2. Read `spec/[scope-slug]/SPEC.md` and the overview file (from `source:` in `spec/PROGRESS.md`).
+1. Check that `.contextkit/spec/[scope-slug]/SPEC.md` exists. If not: stop — "Scope `[scope-slug]` not found. Check `.contextkit/spec/PROGRESS.md` for valid scope slugs."
+2. Read `.contextkit/spec/[scope-slug]/SPEC.md` and the overview file (from `source:` in `.contextkit/spec/PROGRESS.md`).
 3. Identify new stories — user flows or features present in the overview (or now reasonably implied) that are **not already listed** in the `## Stories` table of that SPEC.md.
 4. If none: tell the user "No new stories identified — SPEC.md is up to date." Stop.
 5. Append new rows to the `## Stories` table (continuing the existing numbering: S[N+1], S[N+2], …).
@@ -137,18 +137,18 @@ Identify the overview file path from the `source:` field in PROGRESS.md.
 
 ## Step 4 — Scope Run
 
-Create `spec/[scope]/` if it doesn't exist.
+Create `.contextkit/spec/[scope]/` if it doesn't exist.
 
 ### Read context
 
 Read:
 - The product overview
-- `spec/PROGRESS.md` — to understand where this scope sits and what ordering notes apply
+- `.contextkit/spec/PROGRESS.md` — to understand where this scope sits and what ordering notes apply
 - Any already-completed `SPEC.md` files from prior scopes — their data models and API conventions are constraints you must respect in this scope
 
 ### Write SPEC.md (single CTO pass)
 
-Act as CTO and write `spec/[scope]/SPEC.md` directly. Cover all domains in sequence. This is a reference document developers build from — be specific, not exhaustive.
+Act as CTO and write `.contextkit/spec/[scope]/SPEC.md` directly. Cover all domains in sequence. This is a reference document developers build from — be specific, not exhaustive.
 
 Where you fill in detail not explicit in the overview, mark it inline:
 `ASSUMPTION: [what you're assuming] — [brief reasoning]`
@@ -279,10 +279,10 @@ Features explicitly not built in this scope.
 
 ### Update progress files
 
-**Update `spec/PROGRESS.md`:** Mark this scope done:
+**Update `.contextkit/spec/PROGRESS.md`:** Mark this scope done:
 `- [ ] [SCOPE_SLUG]` → `- [x] [SCOPE_SLUG] — done [TODAY'S DATE]`
 
-**Update `spec/INDEX.md`:** Read it if it exists, create it if not.
+**Update `.contextkit/spec/INDEX.md`:** Read it if it exists, create it if not.
 
 ```markdown
 # Spec Index — [Project Name]
@@ -302,7 +302,7 @@ Source: [OVERVIEW_PATH]
 
 ```
 ✓ Scope complete: [SCOPE_SLUG]
-  Output: spec/[scope]/SPEC.md
+  Output: .contextkit/spec/[scope]/SPEC.md
 
   Progress: X of Y scopes done.
   Remaining: [scope names]
@@ -314,7 +314,7 @@ If all scopes are done:
 
 ```
 ✓ All scopes complete.
-  Full spec: spec/INDEX.md
+  Full spec: .contextkit/spec/INDEX.md
 ```
 
 Stop. Do not signal continuation — the loop ends here.

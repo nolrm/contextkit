@@ -283,7 +283,7 @@ The spec pipeline turns a high-level product overview into a full reference spec
 /spec OVERVIEW.md            # Start a new spec from a specific file (prompts before archiving an existing spec)
 /spec 02-jobs                # Run a specific scope by name
 /spec --redo 01-identity-auth  # Re-run a completed scope from scratch
-/spec --reset                # Delete the entire spec/ folder and start over
+/spec --reset                # Delete the entire .contextkit/spec/ folder and start over
 /spec --add analytics        # Append a new scope and run it immediately
 /spec --extend 02-jobs       # Add new stories to an existing scope's SPEC.md
 ```
@@ -299,7 +299,7 @@ Each `SPEC.md` contains: data model (full schema + ERD), API contracts (all endp
 Each scope produces one `SPEC.md`. Progress and index files track the full project:
 
 ```
-spec/
+.contextkit/spec/
   PROGRESS.md              ← scope checklist, updated after each run
   INDEX.md                 ← links to every completed SPEC.md
 
@@ -312,7 +312,7 @@ spec/
 
 ### First Run
 
-On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
+On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `.contextkit/spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
 
 You can also pass the overview file directly: `/spec MY_OVERVIEW.md`. If an existing spec is detected from a different file, you'll be prompted before anything is archived.
 

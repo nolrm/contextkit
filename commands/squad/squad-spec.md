@@ -31,10 +31,10 @@ Check whether `.contextkit/squad/manifest.md` exists:
 
 Parse input for a scope slug (e.g. `01-identity-auth`).
 
-- **Slug provided** → read `spec/[scope-slug]/SPEC.md`. If not found: stop — "No spec at `spec/[scope-slug]/SPEC.md`. Run `/spec` first."
+- **Slug provided** → read `.contextkit/spec/[scope-slug]/SPEC.md`. If not found: stop — "No spec at `.contextkit/spec/[scope-slug]/SPEC.md`. Run `/spec` first."
 - **No slug** → auto mode:
   1. Check `.contextkit/squad/next-scope.txt` — if it exists, read the slug from it, then **delete the file**. Use that slug.
-  2. Otherwise, read `spec/PROGRESS.md` and use the first completed scope (`[x]`). Tell the user which scope was found.
+  2. Otherwise, read `.contextkit/spec/PROGRESS.md` and use the first completed scope (`[x]`). Tell the user which scope was found.
   3. If no completed scopes exist: stop — "No completed scopes. Run `/spec` first."
 
 ### Create handoff files
@@ -48,7 +48,7 @@ Create `.contextkit/squad/manifest.md`:
 
 batch: true
 total: [N]
-source-spec: spec/[scope-slug]/SPEC.md
+source-spec: .contextkit/spec/[scope-slug]/SPEC.md
 scope: [scope-slug]
 created: [TIMESTAMP]
 
@@ -67,7 +67,7 @@ For each story create `.contextkit/squad/handoff-[N].md` with the PO spec pre-fi
 task: [S# squad command string from spec]
 status: architect
 created: [TIMESTAMP]
-spec: spec/[scope-slug]/SPEC.md
+spec: .contextkit/spec/[scope-slug]/SPEC.md
 
 ---
 
@@ -96,7 +96,7 @@ As a [persona from spec], I want [what this story builds], so that [benefit].
 
 ### Spec Reference
 
-Read before planning: `spec/[scope-slug]/SPEC.md`
+Read before planning: `.contextkit/spec/[scope-slug]/SPEC.md`
 - Data model constraints: `## Data Model`
 - API conventions: `## API Contracts`
 - Story dependencies: [S# depends on S# / none]
@@ -197,7 +197,7 @@ Take the first ready story. Read its handoff file.
 Process the selected story through all phases. Write the handoff file to disk after each phase.
 
 **Architect:**
-- Read the handoff and `spec/[scope-slug]/SPEC.md` — data model and API contracts are hard constraints
+- Read the handoff and `.contextkit/spec/[scope-slug]/SPEC.md` — data model and API contracts are hard constraints
 - Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps
 - Set `## 2. Architect Plan` → `status: done`, top-level `status:` → `dev`
 - Write handoff. Update manifest task status to `architect`.
@@ -252,7 +252,7 @@ All [N] stories implemented.
 
 ### Advance to next scope (auto mode)
 
-Read `spec/PROGRESS.md`. Get all completed scopes (`[x]`) in order. Find the current scope's position. Check if any completed scope comes after it.
+Read `.contextkit/spec/PROGRESS.md`. Get all completed scopes (`[x]`) in order. Find the current scope's position. Check if any completed scope comes after it.
 
 **Next scope found:**
 1. Delete `.contextkit/squad/manifest.md`

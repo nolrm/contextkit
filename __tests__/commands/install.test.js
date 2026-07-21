@@ -647,7 +647,7 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(await fs.pathExists('.gitignore')).toBe(false);
   });
 
-  it('52. appends all 6 entries and descriptive header to an empty .gitignore', async () => {
+  it('52. appends all 8 entries and descriptive header to an empty .gitignore', async () => {
     await fs.writeFile('.gitignore', '');
     await installer.addContextKitGitignoreEntries();
 
@@ -658,6 +658,8 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(content).toContain('.contextkit/context.md');
     expect(content).toContain('.contextkit/squad/');
     expect(content).toContain('.contextkit/squad-done-*/');
+    expect(content).toContain('.contextkit/spec/');
+    expect(content).toContain('.contextkit/spec-archived-*/');
     expect(content).toContain('.contextkit/backup-*/');
   });
 
@@ -679,6 +681,8 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(content).toContain('.contextkit/context.md');
     expect(content).toContain('.contextkit/squad/');
     expect(content).toContain('.contextkit/squad-done-*/');
+    expect(content).toContain('.contextkit/spec/');
+    expect(content).toContain('.contextkit/spec-archived-*/');
     expect(content).toContain('.contextkit/backup-*/');
     // Already-present entries should appear only once
     const count = (content.match(/\.contextkit\/status\.json/g) || []).length;
