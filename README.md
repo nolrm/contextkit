@@ -469,7 +469,7 @@ ck vscode      # alias for copilot
 
 # Analysis & Updates
 /analyze       # customize standards to your project (slash command in your AI tool)
-ck update             # pull latest commands/hooks — never overwrites your standards or glossary
+ck update             # pull latest commands/hooks — never bulk-overwrites your standards or glossary (may patch specific unedited sections, see CHANGELOG)
 ck update --force     # also regenerate user-owned files (standards, glossary)
                       # updates are also flagged automatically after each ck command (24h cache),
                       # on git push (pre-push hook nudge, 24h cache), and in-session via /standards-aware

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.3] - 2026-07-22
+
+### Added
+- **`lib/utils/standards-migrations.js`** — registry of content fixes to *generic* sections of already-installed `standards/*.md` files. `ck update` never re-downloads `ai-guidelines.md`/`architecture.md`/`code-style.md` (they're user-owned so `/analyze` customizations survive), which meant a wording/behaviour fix to shipped boilerplate never reached existing installs. `update.js#applyStandardsMigrations` now replaces each entry's exact `from` text with `to` when found verbatim; if the section was hand-edited (by the user or `/analyze`) and no longer matches, the entry is recorded in a new `pending_standards_updates` list in `config.yml` instead of being force-applied. See `standards-migrations.md`.
+- **`standards-aware` skill reconciles pending standards updates** — before doing agentic work, it now checks `config.yml`'s `pending_standards_updates` list and, for each entry, proposes folding the upstream change into the project's customized content rather than leaving it stale indefinitely.
+- **`pending_standards_updates` config.yml field** — added via `config-schema.js` (existing installs) and `install.js`'s fresh-install template.
+
+### Changed
+- **`ai-guidelines.md`'s "README.md Context Discovery" rule scoped down** — now skips the check for quick lookups, one-line fixes, and single-file tasks with an already-clear purpose, keeping the full check only for substantial feature/component work. This is the first entry in the new `standards-migrations.js` registry above.
+
 ## [1.2.2] - 2026-07-21
 
 ### Changed

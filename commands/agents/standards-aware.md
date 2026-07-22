@@ -57,6 +57,17 @@ Before doing agentic work in a ContextKit project:
 4. If the npm version is strictly higher than the installed version, tell the user: "ContextKit vINSTALLED → vLATEST is available — shall I run `ck update` now?"
 5. If confirmed, run `ck update` via Bash. If declined, continue the original task without blocking on it.
 
+## Pending Standards Reconciliation
+
+`ck update` sometimes finds an upstream wording/behaviour fix for a generic standards section but can't safely auto-apply it, because the section was customized (by you or `/analyze`) and no longer matches the shipped text verbatim. When that happens it records the skip in `.contextkit/config.yml`'s `pending_standards_updates` list instead of overwriting anything.
+
+Before doing agentic work in a ContextKit project:
+
+1. Read `.contextkit/config.yml`. If `pending_standards_updates` is missing or empty, skip this section silently.
+2. For each entry (`file`, `id`, `version`), read the current content of `file` and fetch that version's `CHANGELOG.md` entry from `https://raw.githubusercontent.com/nolrm/contextkit/main/CHANGELOG.md` to understand what upstream changed and why.
+3. Propose how to fold the upstream improvement into the project's existing (customized) content — preserve the customization's intent, don't just overwrite it. Show the user the proposed change before writing.
+4. Once resolved (accepted, edited, or explicitly declined), remove that entry from `pending_standards_updates`.
+
 ## Example
 
 Discovering that all API error responses in the project use a `{ error: string, code: number }` shape:

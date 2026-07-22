@@ -884,4 +884,12 @@ describe('InstallCommand — _writeUserOwnedFile (skip on reinstall)', () => {
     expect(content).toContain('chat_minimal_words');
     expect(content).toContain('diagrams_in_docs');
   });
+
+  it('66. config.yml includes an empty pending_standards_updates list', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('pending_standards_updates: []');
+  });
 });

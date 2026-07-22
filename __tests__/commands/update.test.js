@@ -505,6 +505,163 @@ features:
     expect(calls).toContain('already up to date');
   });
 
+  it('28. applies a standards migration when the shipped section matches exactly', async () => {
+    const { MIGRATIONS } = require('../../lib/utils/standards-migrations');
+    const entry = MIGRATIONS[0];
+    const versionParts = entry.version.split('.').map(Number);
+    versionParts[versionParts.length - 1] = Math.max(0, versionParts[versionParts.length - 1] - 1);
+    const fromVersion = versionParts.join('.');
+
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile(
+      '.contextkit/config.yml',
+      baseConfig.replace('version: "1.0.0"', `version: "${fromVersion}"`)
+    );
+    await fs.writeFile(entry.file, `# ai guidelines\n\n${entry.from}\n`);
+
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: { version: entry.version } });
+
+    const update = getUpdateModule();
+    await update({});
+
+    const content = await fs.readFile(entry.file, 'utf8');
+    expect(content).toContain(entry.to);
+    expect(content).not.toContain(entry.from);
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('pending_standards_updates: []');
+  });
+
+  it('29. records a pending_standards_updates entry when the section was hand-edited', async () => {
+    const { MIGRATIONS } = require('../../lib/utils/standards-migrations');
+    const entry = MIGRATIONS[0];
+    const versionParts = entry.version.split('.').map(Number);
+    versionParts[versionParts.length - 1] = Math.max(0, versionParts[versionParts.length - 1] - 1);
+    const fromVersion = versionParts.join('.');
+
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile(
+      '.contextkit/config.yml',
+      baseConfig.replace('version: "1.0.0"', `version: "${fromVersion}"`)
+    );
+    const customized = '# ai guidelines\n\nThis section was hand-edited by the user.\n';
+    await fs.writeFile(entry.file, customized);
+
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: { version: entry.version } });
+
+    const update = getUpdateModule();
+    await update({});
+
+    // Untouched — never force-apply over content that doesn't match verbatim
+    const content = await fs.readFile(entry.file, 'utf8');
+    expect(content).toBe(customized);
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('pending_standards_updates:');
+    expect(config).toContain(`id: ${entry.id}`);
+    expect(config).toContain(`file: ${entry.file}`);
+  });
+
+  it('30. does not re-apply a standards migration once the project is already at its version', async () => {
+    const { MIGRATIONS } = require('../../lib/utils/standards-migrations');
+    const entry = MIGRATIONS[0];
+
+    await fs.ensureDir('.contextkit/standards');
+    // Project's version already includes this migration — it should not run again
+    await fs.writeFile(
+      '.contextkit/config.yml',
+      baseConfig.replace('version: "1.0.0"', `version: "${entry.version}"`)
+    );
+    await fs.writeFile(entry.file, `# ai guidelines\n\n${entry.from}\n`);
+
+    const axios = require('axios');
+    const nextVersionParts = entry.version.split('.').map(Number);
+    nextVersionParts[nextVersionParts.length - 1] += 1;
+    axios.get.mockResolvedValueOnce({ data: { version: nextVersionParts.join('.') } });
+
+    const update = getUpdateModule();
+    await update({});
+
+    const content = await fs.readFile(entry.file, 'utf8');
+    expect(content).toContain(entry.from);
+    expect(content).not.toContain(entry.to);
+  });
+
+  it('31. silently skips a standards migration when the target file does not exist', async () => {
+    const { MIGRATIONS } = require('../../lib/utils/standards-migrations');
+    const entry = MIGRATIONS[0];
+    const versionParts = entry.version.split('.').map(Number);
+    versionParts[versionParts.length - 1] = Math.max(0, versionParts[versionParts.length - 1] - 1);
+    const fromVersion = versionParts.join('.');
+
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile(
+      '.contextkit/config.yml',
+      baseConfig.replace('version: "1.0.0"', `version: "${fromVersion}"`)
+    );
+
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: { version: entry.version } });
+
+    const update = getUpdateModule();
+    await update({});
+
+    expect(await fs.pathExists(entry.file)).toBe(false);
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).not.toContain(`id: ${entry.id}`);
+  });
+
+  it('32. appends a second pending entry without disturbing the first', async () => {
+    jest.resetModules();
+    jest.doMock('../../lib/utils/standards-migrations', () => ({
+      MIGRATIONS: [
+        {
+          version: '9.9.1',
+          file: '.contextkit/standards/ai-guidelines.md',
+          id: 'synthetic-a',
+          description: 'synthetic entry A',
+          from: 'AAA',
+          to: 'aaa',
+        },
+        {
+          version: '9.9.2',
+          file: '.contextkit/standards/ai-guidelines.md',
+          id: 'synthetic-b',
+          description: 'synthetic entry B',
+          from: 'BBB',
+          to: 'bbb',
+        },
+      ],
+    }));
+
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile(
+      '.contextkit/config.yml',
+      baseConfig.replace('version: "1.0.0"', 'version: "9.9.0"')
+    );
+    // Matches neither synthetic entry's `from` — both fall to the pending path
+    await fs.writeFile(
+      '.contextkit/standards/ai-guidelines.md',
+      '# custom content matching neither synthetic entry\n'
+    );
+
+    const axios = require('axios');
+    axios.get.mockResolvedValueOnce({ data: { version: '9.9.2' } });
+
+    const update = require('../../lib/commands/update');
+    await update({});
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toContain('id: synthetic-a');
+    expect(config).toContain('id: synthetic-b');
+    // Single block header — the second append must extend it, not duplicate it
+    expect(config.match(/^pending_standards_updates:/gm)).toHaveLength(1);
+
+    jest.dontMock('../../lib/utils/standards-migrations');
+  });
+
   it('11. version comparison works correctly', async () => {
     // Access the class to test isNewerVersion
     delete require.cache[require.resolve('../../lib/commands/update')];
