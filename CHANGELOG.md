@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2026-07-24
+
+### Removed
+- **Claude Code PostToolUse format+lint hook** — `ck install`/`ck update` no longer writes a `PostToolUse` hook to `.claude/settings.json`. It ran the project's format+lint command after every single Edit/Write during a Claude Code session, which noticeably slowed sessions down on any file-heavy task. Quality is still enforced at push time via the existing pre-push git hook. Removed `lib/utils/hook-detector.js` and `lib/utils/claude-settings.js` along with their tests, since nothing else used them. Existing installs keep whatever hook entry they already have in `.claude/settings.json` (it's user-owned, gitignored state) — remove it by hand if you had one; `ck update` will not re-add it.
+
 ## [1.2.3] - 2026-07-22
 
 ### Added

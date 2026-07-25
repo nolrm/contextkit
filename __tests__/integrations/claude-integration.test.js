@@ -204,7 +204,7 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain(`Version: ${version}`);
   });
 
-  test('13. writes PostToolUse hook to .claude/settings.json when Node.js tooling detected', async () => {
+  test('13. does not write .claude/settings.json even when Node.js format/lint tooling is present', async () => {
     // Set up a Node.js project with format+lint scripts in the tmpDir
     await fs.writeJson('package.json', {
       scripts: { format: 'prettier --write .', lint: 'eslint .' },
@@ -214,26 +214,7 @@ describe('ClaudeIntegration', () => {
     const integration = new ClaudeIntegration();
     await integration.install();
 
-    expect(await fs.pathExists('.claude/settings.json')).toBe(true);
-    const data = await fs.readJson('.claude/settings.json');
-    const ckHooks = (data.hooks?.PostToolUse || []).filter((e) => e._contextkit);
-    expect(ckHooks).toHaveLength(1);
-    expect(ckHooks[0].hooks[0].command).toContain('pnpm run format');
-  });
-
-  test('14. skips hook installation when no tooling detected (no package.json, go.mod, or pyproject.toml)', async () => {
-    // tmpDir is empty — no project files
-    const integration = new ClaudeIntegration();
-    await integration.install();
-
-    // settings.json should not exist or should have no ContextKit hook
-    if (await fs.pathExists('.claude/settings.json')) {
-      const data = await fs.readJson('.claude/settings.json');
-      const ckHooks = (data.hooks?.PostToolUse || []).filter((e) => e._contextkit);
-      expect(ckHooks).toHaveLength(0);
-    } else {
-      expect(true).toBe(true); // file absent is fine
-    }
+    expect(await fs.pathExists('.claude/settings.json')).toBe(false);
   });
 
   test('16. spec skill references spec/spec.md and has context: fork', async () => {
@@ -270,20 +251,5 @@ describe('ClaudeIntegration', () => {
     const content = await fs.readFile('CLAUDE.md', 'utf-8');
     expect(content).toContain('response_style');
     expect(content).toContain('.contextkit/config.yml');
-  });
-
-  test('15. install completes without error even if hook installation throws', async () => {
-    // Corrupt the hook-detector to throw
-    jest.mock('../../lib/utils/hook-detector', () => {
-      return class {
-        async detect() {
-          throw new Error('simulated hook-detector failure');
-        }
-      };
-    });
-
-    const integration = new ClaudeIntegration();
-    // Should not throw — graceful degradation
-    await expect(integration.install()).resolves.not.toThrow();
   });
 });

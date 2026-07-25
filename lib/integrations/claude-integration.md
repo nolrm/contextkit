@@ -1,6 +1,6 @@
 # claude-integration.js
 
-The Claude Code platform integration. Installs `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, and a PostToolUse hook in `.claude/settings.json`.
+The Claude Code platform integration. Installs `CLAUDE.md`, `.claude/rules/`, and `.claude/skills/`.
 
 ## Extends
 
@@ -13,21 +13,12 @@ Runs the full Claude Code setup:
 2. Ensures `.claude/skills/` directory exists
 3. Adds `.claude/settings.local.json` to `.gitignore`
 4. Removes legacy `.claude/commands/` files
-5. Detects project tooling and installs a PostToolUse hook in `.claude/settings.json`
 
-### Hook Installation (step 5)
-
-Uses `HookDetector` to detect the right format+lint command for the project (Node.js, Go, or Python). If a command is found, `ClaudeSettings.addPostToolUseHook()` writes it to `.claude/settings.json` with a `_contextkit: true` marker.
-
-- On success: logs `✓ PostToolUse hook: <command>`
-- No tooling detected: logs a dim yellow skip message
-- Any error: logs a yellow warning and continues (graceful degradation)
-
-Re-running `install()` (e.g. via `ck update → refreshIntegrations()`) replaces the existing ContextKit hook rather than duplicating it.
+ContextKit does not write to `.claude/settings.json` — an earlier version installed a PostToolUse format+lint hook there, but it ran on every Edit/Write and slowed sessions down noticeably, so it was removed (see CHANGELOG). Quality checks still run at push time via the git pre-push hook (`GitHooks`).
 
 ## generatedFiles
 
-Listed in the constructor. Does **not** include `.claude/settings.json` — that file is a merge target, not overwritten.
+Listed in the constructor. Does **not** include `.claude/settings.json`.
 
 ## Key Files Written
 
@@ -36,4 +27,3 @@ Listed in the constructor. Does **not** include `.claude/settings.json` — that
 | `CLAUDE.md` | Bridge (merged) | Auto-loaded every Claude Code session |
 | `.claude/rules/contextkit-*.md` | Generated | Scoped rules for standards, testing, code style |
 | `.claude/skills/*/SKILL.md` | Generated | All slash commands |
-| `.claude/settings.json` | Merged | PostToolUse hook entry (`_contextkit: true`) |
