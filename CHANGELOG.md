@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2026-08-05
+
+### Changed
+- **`/squad-spec` test scope** — per-story Test phase now runs only tests touching that story's changed files; the full suite runs once per scope, at the new Step 5 regression gate, backgrounded so it doesn't block reporting.
+- **`/squad-spec` review failures now self-repair** — a `needs-work` verdict sends the story back to Dev automatically (up to 2 retries, tracked via a new `attempts` field) with an independent Peer Review pass on each retry, before finally stopping for a human.
+- **`/squad-spec` Step 3 resume logic** — explicit precedence for `needs-work` stories (blocks only their dependents, not the whole run) and a defined recovery path for stories interrupted mid-phase (resumes from that phase instead of undefined behavior).
+
 ## [1.3.0] - 2026-07-24
 
 ### Removed

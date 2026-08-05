@@ -254,7 +254,7 @@ export default function SquadPage() {
           If you&apos;ve run <Link href="/docs/spec" className="text-primary hover:underline">/spec</Link> to generate a scope, use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> to implement every story in that scope automatically — no manual handoff needed between stories.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the scope&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, creates handoff files with the PO spec pre-filled from the spec (skipping the PO phase), then runs architect → dev → test → review → doc for each story in dependency order.
+          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the scope&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, creates handoff files with the PO spec pre-filled from the spec (skipping the PO phase), then runs architect → dev → test → review → doc for each story in dependency order — with an automatic retry and peer-review pass if review finds issues, and a full-suite regression check once per scope.
         </p>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
@@ -286,7 +286,7 @@ export default function SquadPage() {
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
           <p className="text-sm font-medium mb-1">If a story gets needs-work</p>
           <p className="text-sm text-muted-foreground">
-            The pipeline pauses and surfaces the review issues. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart <code className="rounded bg-muted px-1 font-mono text-xs">/loop</code> or <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>) to continue.
+            <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> retries automatically when review finds a problem — up to 2 attempts, with an independent peer-review pass added on the retry. Only if both retries fail does the pipeline pause and surface the issues for you to fix by hand. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart <code className="rounded bg-muted px-1 font-mono text-xs">/loop</code> or <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>) to continue.
           </p>
         </div>
       </div>

@@ -66,6 +66,7 @@ For each story create `.contextkit/squad/handoff-[N].md` with the PO spec pre-fi
 
 task: [S# squad command string from spec]
 status: architect
+attempts: 0
 created: [TIMESTAMP]
 spec: .contextkit/spec/[scope-slug]/SPEC.md
 
@@ -107,6 +108,8 @@ Read before planning: `.contextkit/spec/[scope-slug]/SPEC.md`
 ## 2. Architect Plan
 
 status: pending
+started:
+completed:
 
 ### Approach
 
@@ -121,6 +124,8 @@ status: pending
 ## 3. Dev Implementation
 
 status: pending
+started:
+completed:
 
 ### Changes Made
 
@@ -131,6 +136,8 @@ status: pending
 ## 4. Test Report
 
 status: pending
+started:
+completed:
 
 ### Tests Written
 
@@ -140,9 +147,13 @@ status: pending
 
 ---
 
-## 5. Peer Review (Optional)
+## 5. Peer Review
 
 status: pending
+started:
+completed:
+
+Runs on any retry pass — skipped entirely on the first attempt (`attempts: 0`). An independent second opinion on the Dev fix: actively look for reasons it might not hold, don't rubber-stamp it.
 
 ### Valid Findings
 
@@ -155,6 +166,8 @@ status: pending
 ## 6. Review
 
 status: pending
+started:
+completed:
 
 ### Checklist
 
@@ -167,6 +180,8 @@ status: pending
 ## 7. Doc
 
 status: pending
+started:
+completed:
 
 ### Files Documented
 
@@ -181,47 +196,74 @@ Then fall through to Step 3 to process the first story.
 
 ## Step 3 — Resume Mode
 
-Read `manifest.md`. Scan for the next story to process, respecting dependency order from the spec:
+Read `manifest.md`. Each handoff's top-level `status:` is one of:
 
-- A story is **ready** when its `status` is `pending` and all stories it `Depends on` are `done`.
-- **No ready stories, but some are pending** → dependencies not yet met. Stop: "Waiting on dependencies. Re-run when blocking stories are complete."
-- **All stories `done`** → go to Step 5.
-- **Any story has `needs-work`** → stop: "Story [S#] needs rework. Fix the issues and re-run."
+- `pending` — not started yet.
+- `architect` / `dev` / `test` / `review` / `doc` — in progress. Finding a story in one of these states at the *start* of a fresh invocation means the previous run was interrupted mid-phase (dropped connection, crash) — Step 4 always carries a story through to `done` or `needs-work` in one continuous pass, so it never hands control back mid-phase on its own.
+- `needs-work` — failed Review after exhausting retries (see Step 4). Terminal until a human fixes it.
+- `done` — complete.
 
-Take the first ready story. Read its handoff file.
+Select the next story, in this order:
+
+1. **Interrupted story** — any story at `architect`/`dev`/`test`/`review`/`doc` whose dependencies are `done`. Take it and resume from that exact phase in Step 4 — do not restart from Architect. Prioritize this over starting new work so partial progress isn't stranded.
+2. **Ready story** — otherwise, the first `pending` story whose dependencies are all `done`. Take it and start from Architect.
+3. **Nothing selectable:**
+   - **All stories `done`** → go to Step 5.
+   - **Every remaining `pending`/interrupted story is blocked, directly or transitively, on a `needs-work` story** → stop: "Story [S#] needs rework — [N] other stories are blocked on it. Fix the issues and re-run."
+   - **Otherwise** (remaining stories are just waiting on dependencies still in progress) → stop: "Waiting on dependencies. Re-run when blocking stories are complete."
+
+A `needs-work` story does **not** halt the whole run by itself — if other stories are still selectable under 1 or 2 above (not dependent on it), keep processing them. Only stop when no story is selectable.
+
+Read the selected story's handoff file.
 
 ---
 
 ## Step 4 — Run One Story
 
-Process the selected story through all phases. Write the handoff file to disk after each phase.
+Process the selected story through its phases in one continuous pass. Start at Architect if the story was `pending`, or at the phase Step 3 identified if it was interrupted. Write the handoff file to disk after every phase, and update the manifest task status to match.
 
-**Architect:**
+For every phase: stamp its `started:` field (a timestamp) when you begin it, and `completed:` when you finish it.
+
+**Architect** (runs once, never retried):
 - Read the handoff and `.contextkit/spec/[scope-slug]/SPEC.md` — data model and API contracts are hard constraints
 - Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps
 - Set `## 2. Architect Plan` → `status: done`, top-level `status:` → `dev`
 - Write handoff. Update manifest task status to `architect`.
 
+### Dev → Test → (Peer Review) → Review loop
+
+Repeat this block until Review passes or `attempts` hits the cap (2). `attempts` starts at 0 and is incremented each time Review sends the story back.
+
 **Dev:**
-- Implement following the architect's steps
+- Attempt 1 (`attempts: 0`): implement following the architect's plan.
+- Retry (`attempts: 1`): read `## 6. Review` → Issues Found from the failed pass. Fix specifically those issues — don't re-architect or expand scope. Note in Decisions & Deviations that this is a retry addressing review feedback, and what changed.
 - Fill in `## 3. Dev Implementation`: Changes Made, Decisions & Deviations
 - Set `## 3. Dev Implementation` → `status: done`, top-level `status:` → `test`
 - Write handoff.
 
 **Test:**
 - Write tests against the acceptance criteria
-- Run tests
+- Run only the tests scoped to this story — the files it touched and their direct dependents (e.g. `go test ./pkg/changed/...`, `jest path/to/changed`, `pytest path::`). Do not run the full project suite here; that runs once per scope, at the Step 5 gate. Use the runner's parallel/worker flags and its cache where available — avoid forcing a clean run unless something is actually stale.
 - Fill in `## 4. Test Report`: Tests Written, Results, Coverage Notes
 - Set `## 4. Test Report` → `status: done`, top-level `status:` → `review`
 - Write handoff.
 
-**Review:**
-- Read the full handoff
-- Fill in `## 6. Review`: verify AC met, code quality, test coverage
-- If `needs-work`: set top-level `status:` → `needs-work`. Write handoff. Update manifest. **Stop** — surface issues to user. Do not continue.
-- If `pass`: set top-level `status:` → `doc`. Continue.
+**Peer Review** (retry only — skip entirely when `attempts: 0`):
+- Independently re-read the diff and the failed Review's Issues Found, without assuming the Dev fix worked
+- Fill in `## 5. Peer Review`: Valid Findings, Dismissed Findings, Verdict
+- Set `## 5. Peer Review` → `status: done`
+- Write handoff.
 
-**Doc:**
+**Review:**
+- Read the full handoff, including Peer Review's findings if present
+- Fill in `## 6. Review`: verify AC met, code quality, test coverage
+- **Pass** → set top-level `status:` → `doc`. Exit the loop, continue to Doc below.
+- **Needs-work:**
+  - Increment `attempts`.
+  - `attempts <= 2` → set top-level `status:` → `dev` (automatic retry). Write handoff, update manifest task status to `dev`. Announce: `↻ [S#] needs rework (attempt [attempts]/2) — retrying automatically.` Loop back to Dev.
+  - `attempts > 2` → set top-level `status:` → `needs-work`. Write handoff. Update manifest. **Stop** — surface issues to user. Do not continue.
+
+**Doc** (only reached after Review passes):
 - Update companion docs for new or significantly changed files
 - Fill in `## 7. Doc`
 - Set `## 7. Doc` → `status: done`, top-level `status:` → `done`
@@ -229,7 +271,7 @@ Process the selected story through all phases. Write the handoff file to disk af
 
 Announce:
 ```
-✓ [S#] complete — [story description]
+✓ [S#] complete — [story description] ([attempts] attempt(s))
   [X] of [N] stories done. Running /clear and continuing...
 ```
 
@@ -237,7 +279,22 @@ Announce:
 
 ## Step 5 — Scope Complete
 
-All stories in the current scope are done. Print the scope summary:
+All stories in the current scope are done.
+
+### Full-suite regression gate
+
+This is the only point in the pipeline that runs the project's complete test suite — every story's Test phase above only ran tests scoped to its own changes. Start the full suite in the background (Bash `run_in_background`) using whatever parallel/worker flags the runner supports, so you can prepare the summary below while it runs, then wait for the result before proceeding.
+
+- **Pass** → continue to the summary below.
+- **Fail** → do not advance to the next scope. Match the failing test(s) against each story's "Files to Change" / "Changes Made" to identify the likely cause. Reopen that story: set its handoff and manifest status back to `needs-work`, and add to `## 6. Review` → Issues Found: "Full-suite regression: [failing test] — caught at scope gate, not story review." Print:
+  ```
+  ✗ Full-suite regression at scope gate: [scope-slug]
+    Likely cause: [S#] — [failing test summary]
+    Story reopened for rework. Re-run to fix before advancing.
+  ```
+  Stop. Do not print the scope summary or advance to the next scope.
+
+Print the scope summary:
 
 ```
 ✓ Squad-spec complete: [scope-slug]
