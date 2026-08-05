@@ -4,7 +4,7 @@
 This project uses [ContextKit](https://github.com/nolrm/contextkit) for AI development standards.
 
 ## ContextKit
-Version: 1.2.2
+Version: 1.4.0
 
 ## Project Standards
 
