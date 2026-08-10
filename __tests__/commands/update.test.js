@@ -140,6 +140,40 @@ describe('UpdateCommand', () => {
     expect(config).toContain('version: "1.1.0"');
   });
 
+  it('33. syncs status.json version after update, not just config.yml', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeJson('.contextkit/status.json', {
+      version: '0.10.0',
+      installed_at: '2026-02-23T06:58:23.595Z',
+      last_updated: '2026-02-23T06:58:23.595Z',
+    });
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const status = await fs.readJson('.contextkit/status.json');
+    expect(status.version).toBe('1.1.0');
+  });
+
+  it("34. strips single quotes from config.yml's version, not just double quotes", async () => {
+    // Some generated config.yml files use single-quoted YAML strings
+    // (version: '1.0.0') rather than double-quoted (version: "1.0.0").
+    // parseConfig()'s quote-stripping only handled double quotes, so the
+    // literal quote characters leaked into the "Updating from X to Y"
+    // message and into getCurrentVersion()'s version-comparison input.
+    const singleQuotedConfig = baseConfig.replace('version: "1.0.0"', "version: '1.0.0'");
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', singleQuotedConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const calls = console.log.mock.calls.flat().join(' ');
+    expect(calls).toContain('Updating from 1.0.0 to 1.1.0');
+    expect(calls).not.toContain("'1.0.0'");
+  });
+
   it('5. removes legacy pre-commit hook', async () => {
     await fs.ensureDir('.contextkit/hooks');
     await fs.writeFile('.contextkit/config.yml', baseConfig);

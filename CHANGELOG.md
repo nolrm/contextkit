@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1] - 2026-08-11
+
+### Fixed
+- **`ck update` now syncs `status.json`'s version field, not just `config.yml`'s** — `status.json` was only ever written once at `ck install` time; `StatusManager.updateVersion()` existed but was never called from the update flow, so `status.json`'s version (and `ck status`'s own independent update-check, which reads it) drifted permanently stale after every subsequent `ck update`, while `config.yml`'s version stayed correct.
+- **Pre-push quality gate failures now actually show the failure banner** — `hooks/pre-push` set `trap on_gate_failure ERR` but was missing `set -o errtrace`, so the trap never fired for a failure inside a function (which every real gate runs through: `run_gate`, `run_node_gates_core`, etc.). A failing gate blocked the push correctly but silently — no "❌ Quality Gates FAILED" banner, no indication of what happened or where. Also fixed the summary box's `Gates:`/`Total:` lines, which used hardcoded padding and could render with a missing or misaligned border; they're now printed as plain lines below the box instead.
+- **`ck update`/`ck status` no longer leak literal quote characters from single-quoted `config.yml` values** — their hand-rolled YAML parsers only stripped double quotes (`.replace(/"/g, '')`), so a `version: '1.0.0'`-style (single-quoted) config produced messages like `Updating from '1.0.0' to 1.6.0`. Beyond the display glitch, the mangled string fed into `isNewerVersion()`'s numeric comparison, where corrupted segments parse to `NaN` — a real (if edge-case) correctness bug, not just cosmetic. Also fixed `status.js`'s `version:` match missing the top-level-only guard `update.js` already had, which could pick up the indented `_source.version` depending on field order.
+
 ## [1.6.0] - 2026-08-11
 
 ### Changed

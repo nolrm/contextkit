@@ -65,6 +65,22 @@ describe('pre-push hook', () => {
       expect(content).toContain('trap on_gate_failure ERR');
     });
 
+    it('1b. errtrace is enabled so the ERR trap fires inside functions', async () => {
+      // Every real gate runs through at least one function (run_gate, called
+      // from run_node_gates_core, called from run_node_gates, ...). Without
+      // `set -o errtrace`, bash does not propagate the ERR trap into function
+      // calls, so on_gate_failure would silently never fire for any real
+      // gate failure — see test 4b for the execution-level proof.
+      const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
+      const content = fs.readFileSync(hooksFile, 'utf8');
+      const setEIndex = content.indexOf('set -e');
+      const errtraceIndex = content.indexOf('set -o errtrace');
+      const trapIndex = content.indexOf('trap on_gate_failure ERR');
+      expect(errtraceIndex).toBeGreaterThan(-1);
+      expect(errtraceIndex).toBeGreaterThan(setEIndex);
+      expect(errtraceIndex).toBeLessThan(trapIndex);
+    });
+
     it('2. failure banner function is defined with correct format', async () => {
       const hooksFile = path.join(originalCwd, 'hooks', 'pre-push');
       const content = fs.readFileSync(hooksFile, 'utf8');
@@ -102,6 +118,22 @@ describe('pre-push hook', () => {
         // Exit code should be non-zero
         expect(error.status).not.toBe(0);
       }
+    });
+
+    it('4b. failure banner actually prints for a real gate failure through the full call chain', async () => {
+      // A real failure runs through case -> run_node_gates -> run_node_gates_core
+      // -> run_gate -> the failing command — i.e. nested function calls, the
+      // exact scenario errtrace fixes. Asserts on the banner text itself, not
+      // just the exit code, so this can't silently pass with a dead trap.
+      await fs.writeJSON('package.json', {
+        name: 'test-project',
+        scripts: { test: 'false' },
+      });
+
+      const result = runPrePushHook();
+      expect(result.success).toBe(false);
+      expect(result.output).toContain('✗ Gate failed (see output above)');
+      expect(result.output).toContain('❌ Quality Gates FAILED — push blocked.');
     });
   });
 
@@ -148,8 +180,12 @@ describe('pre-push hook', () => {
 
   describe('PO Spec: Skipped Gates Do Not Trigger Failure', () => {
     it('8. skipped gates do not trigger failure banner', async () => {
-      // Create a Node project where npm/npx will not be found, causing gates to be skipped
-      // Simulate project with TypeScript in package.json but npx unavailable
+      // Disable the typescript gate via config so it takes the skip_gate path
+      // deterministically. (Previously this cleared process.env.PATH to make
+      // npx "not found" — unreliable, since execSync's spawned shell can
+      // still resolve npx via an OS-level default PATH regardless of what
+      // process.env.PATH says, so the gate actually ran and could fail for
+      // real instead of skipping.)
       await fs.writeJSON('package.json', {
         name: 'test-project',
         devDependencies: {
@@ -157,18 +193,13 @@ describe('pre-push hook', () => {
         },
         scripts: {},
       });
+      await fs.ensureDir('.contextkit');
+      await fs.writeFile('.contextkit/quality-gates.yml', 'disable:\n  - typescript\n');
 
-      // Save original PATH
-      const originalPath = process.env.PATH;
-      try {
-        // Clear PATH to ensure npx is not found
-        process.env.PATH = '';
-        const result = runPrePushHook();
-        // When gates are skipped (npx not found), should still succeed with no failure banner
-        expect(result.output).not.toContain('FAILED');
-      } finally {
-        process.env.PATH = originalPath;
-      }
+      const result = runPrePushHook();
+      // When a gate is skipped, should still succeed with no failure banner
+      expect(result.success).toBe(true);
+      expect(result.output).not.toContain('FAILED');
     });
 
     it('9. skip_gate function increments counter without running command', async () => {
@@ -615,6 +646,8 @@ describe('pre-push hook', () => {
       const result = runPrePushHookAgentMode();
       expect(result.success).toBe(false);
       expect(result.output).not.toContain('Result: PASSED');
+      expect(result.output).toContain('FAIL — gate failed');
+      expect(result.output).toContain('❌ Agent push blocked — quality gates failed.');
     });
 
     it('52. agent mode on_gate_failure function outputs FAIL message (static check)', () => {

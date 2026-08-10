@@ -3,6 +3,10 @@
 # Detects your project type and runs the right checks automatically.
 
 set -e
+set -o errtrace # without this, `trap ... ERR` never fires for failures inside
+                # a function (run_gate, run_node_gates_core, etc.) — every
+                # real gate failure runs through at least one function, so
+                # on_gate_failure was silently never firing without this.
 
 # ─────────────────────────────────────────────
 # Quality Gates — ContextKit Pre-Push Checks
@@ -698,15 +702,14 @@ echo "┌───────────────────────�
 if [ "$AGENT_MODE" = "1" ]; then
 echo "│  Agent Push Review Complete                  │"
 echo "│  Result: PASSED                              │"
-echo "│  Gates: $PASSED passed, $SKIPPED skipped     │"
 else
 echo "│  ✅ Quality Gates passed                     │"
-echo "│  Gates: $PASSED passed, $SKIPPED skipped     │"
-fi
-if [ -n "$_TOTAL_ELAPSED" ]; then
-echo "│  Total: $_TOTAL_ELAPSED"
 fi
 echo "└─────────────────────────────────────────────┘"
+echo "  Gates: $PASSED passed, $SKIPPED skipped"
+if [ -n "$_TOTAL_ELAPSED" ]; then
+echo "  Total: $_TOTAL_ELAPSED"
+fi
 echo ""
 
 check_ck_update || true
