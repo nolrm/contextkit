@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2026-08-11
+
+### Changed
+- **`/squad-spec` and `/squad-auto` commit per story/task, not just at the end of a run** — right after a story's (or task's) Doc phase passes, the orchestrator stages exactly the files named in that unit's Changes Made/Tests Written/Doc Notes (not a blanket `git add -A`) and commits in Conventional Commits format, before moving on. Skips cleanly if there's nothing to commit or the project isn't a git repo; if anything unrelated shows up staged, or the commit itself fails (e.g. a pre-commit hook), it stops and surfaces that instead of continuing with uncommitted work. Keeps history bisectable and revertable per story instead of one scope-sized commit at the end.
+- **`/squad-spec` Architect now resolves blocking open questions itself** — a new `### Open Question Resolutions` section in the handoff template requires Architect to record the assumption made and its rationale for each open question a story's spec flags as blocking, instead of silently deciding and leaving it buried in prose. Scoped to `/squad-spec` specifically, since (unlike `/squad`/`/squad-auto`, which can pause via `arch-clarify`) it runs unattended with no human to escalate to mid-run.
+
 ## [1.5.0] - 2026-08-10
 
 ### Changed

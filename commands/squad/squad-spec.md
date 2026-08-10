@@ -118,6 +118,8 @@ completed:
 
 ### Implementation Steps
 
+### Open Question Resolutions
+
 ---
 
 ## 3. Dev Implementation
@@ -236,6 +238,9 @@ Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec`.
 Spec: .contextkit/spec/[scope-slug]/SPEC.md — data model and API contracts are hard constraints.
 
 Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps.
+
+If `## 1. PO Spec` → Spec Reference → "Open questions blocking this story" lists anything other than "none": squad-spec runs unattended — there is no human to escalate to, so resolve each question yourself. Under `### Open Question Resolutions`, write one line per question: `- Q: "[question]" → Resolved: "[assumption made]" — Rationale: "[why]"`. Do not leave a listed question unresolved and do not skip this section when questions exist; if there are none, leave it empty.
+
 Stamp `started:`/`completed:`. Set `## 2. Architect Plan` → `status: done`, top-level `status:` → `dev`.
 Write the handoff file yourself. Return "done" or "error: <description>".
 ```
@@ -318,11 +323,34 @@ Stamp `started:`/`completed:`. Set `## 7. Doc` → `status: done`, top-level `st
 Write the handoff file yourself. Return "done" or "error: <description>".
 ```
 
+**Commit** (orchestrator — not a subagent; runs after Doc's handoff write is verified):
+
+Commit this story's changes now, before moving to the next story, so history stays story-granular and bisectable/revertable per story.
+
+- Not a git repository (no `.git`) → skip this step entirely, no announcement needed.
+- Otherwise, run `git status --porcelain`. Stage the files that correspond to this story — cross-check against `## 3. Dev Implementation` → Changes Made, `## 4. Test Report` → Tests Written, and `## 7. Doc` → Files Documented — with `git add <file> <file> ...`. If `git status --porcelain` shows anything unrelated to those (e.g. leftover changes from an earlier interrupted run), stop and surface it to the user instead of committing it blindly.
+- Nothing staged (story was a no-op, e.g. a spike that only produced a finding doc already committed separately) → skip the commit, note "no changes to commit" in the story's announcement below, and continue.
+- Otherwise commit:
+  ```
+  git commit -m "$(cat <<'EOF'
+  <type>(<scope>): S[N] — <short story description>
+
+  <1-2 sentence summary from Changes Made>
+  [only if attempts > 0: "Required [attempts] retry attempt(s) after review."]
+
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+  EOF
+  )"
+  ```
+  Pick `<type>(<scope>)` per the same Conventional Commits rules `agent-push-checklist` enforces (`feat`/`fix`/`improve`/`docs`/`chore`/`refactor`/`test`).
+- If `git commit` fails (e.g. a pre-commit hook rejects it): do not retry with `--no-verify`. Fix the underlying issue if it's something this pass caused (e.g. a lint failure), or if it can't be resolved here, set the story's top-level `status:` to `needs-work` with the failure recorded under `## 6. Review` → Issues Found, and stop this story — do not continue to the next story with this one uncommitted.
+
 Update manifest task status to `done`.
 
 Announce:
 ```
 ✓ [S#] complete — [story description] ([attempts] attempt(s))
+  Committed: [commit subject line, or "no changes to commit"]
   [X] of [N] stories done. Running /clear and continuing...
 ```
 

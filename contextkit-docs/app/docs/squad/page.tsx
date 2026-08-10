@@ -303,6 +303,20 @@ export default function SquadPage() {
             Every story&apos;s own Test phase only runs tests scoped to its changes. Once per scope, after all stories are done, <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> runs the complete test suite in the foreground with serial or low parallelism (not backgrounded at max workers) — this gate doesn&apos;t need to be fast, it needs your machine to stay usable while it confirms the scope is clean before the next one starts.
           </p>
         </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <p className="text-sm font-medium mb-1">Each story is committed on its own</p>
+          <p className="text-sm text-muted-foreground">
+            Right after a story&apos;s Doc phase passes, <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> stages exactly the files that story&apos;s Changes Made/Tests Written/Doc Notes name — never a blanket <code className="rounded bg-muted px-1 font-mono text-xs">git add -A</code> — and commits in Conventional Commits format before moving to the next story. History stays bisectable and revertable per story instead of landing as one commit for the whole scope. Skips cleanly if nothing changed or the project isn&apos;t a git repo; if the commit itself fails, it stops rather than continuing with uncommitted work.
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <p className="text-sm font-medium mb-1">Open questions get resolved, not skipped</p>
+          <p className="text-sm text-muted-foreground">
+            <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> runs unattended, so there&apos;s no human mid-run to escalate a spec&apos;s open questions to. If a story&apos;s spec flags one as blocking, Architect resolves it directly and records the assumption plus its rationale under <code className="rounded bg-muted px-1 font-mono text-xs">Open Question Resolutions</code> in the handoff — auditable after the fact instead of buried in prose.
+          </p>
+        </div>
       </div>
 
       {/* Configuration */}
@@ -333,6 +347,12 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
             </p>
             <p className="text-sm text-muted-foreground mt-2">
               <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> takes the opposite split and isn&apos;t configurable: Review and Peer Review always run on Haiku (they&apos;re checking already-written criteria), Architect and Dev always run on your primary model (the judgment-heavy work). There&apos;s no <code className="rounded bg-muted px-1 font-mono text-xs">model_routing</code> flag for it.
+            </p>
+          </div>
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm font-medium mb-1">Per-task commits</p>
+            <p className="text-sm text-muted-foreground">
+              <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> commits each task individually right after its Doc phase, before moving to the next task — same staged-files-only, Conventional Commits approach as <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code>&apos;s per-story commits above.
             </p>
           </div>
         </div>

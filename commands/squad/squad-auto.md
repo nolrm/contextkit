@@ -122,8 +122,28 @@ Take the **first** task with status `architect`. Run all phases to completion fo
 - Set `## 7. Doc` status to `status: done`
 - Set the top-level `status:` to `done`
 - **Write the handoff file to disk now.**
+
+**Commit** (runs after the handoff write above, before touching the manifest):
+
+- Not a git repository (no `.git`) → skip this step entirely.
+- Otherwise, run `git status --porcelain`. Stage the files that correspond to this task — cross-check against `## 3. Dev Implementation` → Changes Made, `## 4. Test Report` → Tests Written, and `## 7. Doc` → Files Documented — with `git add <file> <file> ...`. If `git status --porcelain` shows anything unrelated to this task (e.g. leftovers from an interrupted earlier run), stop and surface it to the user instead of committing it blindly.
+- Nothing staged → skip the commit, note "no changes to commit" in the completion announcement, and continue.
+- Otherwise commit, one task = one commit:
+  ```
+  git commit -m "$(cat <<'EOF'
+  <type>(<scope>): Task #N — <short task description>
+
+  <1-2 sentence summary from Changes Made>
+
+  Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+  EOF
+  )"
+  ```
+  Pick `<type>(<scope>)` per the same Conventional Commits rules `agent-push-checklist` enforces (`feat`/`fix`/`improve`/`docs`/`chore`/`refactor`/`test`).
+- If `git commit` fails (e.g. a pre-commit hook rejects it): do not retry with `--no-verify`. Fix the underlying issue if it's something this pass caused, otherwise set the task's top-level `status:` to `needs-work` with the failure recorded under `## 6. Review` → Issues Found, and stop this task — do not continue to the next task with this one uncommitted.
+
 - Update the manifest: change this task's status to `done`
-- Announce: `✓ Task #N complete: [description]` — then and only then move to the next task with status `architect`.
+- Announce: `✓ Task #N complete: [description]` — note the commit subject line or "no changes to commit" — then and only then move to the next task with status `architect`.
 
 5. After all tasks are complete, print a summary:
 

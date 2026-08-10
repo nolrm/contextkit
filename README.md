@@ -249,6 +249,8 @@ Pass multiple tasks to `/squad` and it automatically runs in batch mode:
 
 **Model routing (Claude Code only):** Set `model_routing: true` in `.contextkit/squad/config.md` to have `/squad-auto` automatically use Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens with no quality loss — the standards files and Review gate maintain quality.
 
+Each task is committed individually right after its Doc phase, before `/squad-auto` moves on to the next one — staged from that task's own Changes Made/Tests Written/Doc Notes, Conventional Commits format, skipped cleanly if there's nothing to commit or no git repo.
+
 ```markdown
 # .contextkit/squad/config.md
 
@@ -337,6 +339,8 @@ Each `SPEC.md`'s `## Stories` section has an `### Acceptance Criteria` block per
 Both drive `/squad-spec` repeatedly and clear context between stories, so a scope with many stories won't blow the context window. Claude's `/loop /clear` re-invokes on an interval; Codex's `/goal` keeps working autonomously until the stated condition holds, then stops on its own.
 
 Within a story, Claude Code dispatches each phase (Architect/Dev/Test/Review/Doc) as its own isolated Task subagent — Review runs on Haiku by default, checking each EARS-format acceptance criterion individually against the diff. Codex runs phases inline in the current context; no subagent isolation there yet. At the end of each scope, the full-suite regression gate runs in the foreground with serial/low parallelism rather than backgrounded at max workers, so it doesn't saturate your machine while confirming the scope is clean before the next one starts.
+
+Each story is committed individually right after its Doc phase passes, before moving to the next story — Conventional Commits format, staged from that story's own Changes Made/Tests Written/Doc Notes rather than a blanket `git add -A`, so history stays bisectable and revertable per story instead of landing as one scope-sized commit. If a story's spec lists open questions blocking it, Architect resolves them itself and records the assumption plus rationale under Open Question Resolutions in the handoff — squad-spec runs unattended, so there's no human mid-run to escalate to.
 
 ---
 
