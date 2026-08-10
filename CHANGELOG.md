@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0] - 2026-08-10
+
+### Changed
+- **`/squad-spec` dispatches each phase as an isolated subagent** — Architect, Dev, Test, Peer Review, Review, and Doc each now run in a fresh Task-tool context on Claude Code, reading only the handoff file rather than the accumulated reasoning of earlier phases. Prevents Review from anchoring on Dev's own account of its work. Codex falls back to the previous inline-in-context behavior — no equivalent subagent-spawn primitive is available to a `/goal`-driven skill yet.
+- **`/squad-spec` Review and Peer Review default to `claude-haiku-4-5-20251001`** — both are verification passes against an already-written checklist (acceptance criteria, prior Issues Found), not design work, so they route to the cheaper model by default. Architect and Dev stay on the primary model.
+- **`/spec` writes acceptance criteria in EARS format** — `SPEC.md`'s `## Stories` section now has a dedicated `### Acceptance Criteria` block per story (`WHEN [event], the system SHALL [response]` / `IF [precondition], THEN the system SHALL [response]`), instead of folding criteria into the one-line `/squad` command string. `/squad-spec`'s handoff pre-fill now copies this block verbatim rather than re-deriving criteria, and Review checks each line individually against the diff. `/spec --extend` appends new stories' AC blocks alongside their table rows.
+- **`/squad-spec` Step 5 full-suite gate runs in the foreground with low/serial parallelism** — replaces the previous backgrounded, max-worker run. The background+parallelism combo was pinning the machine's CPU while barely saving any real time (it only overlapped the trivial summary-writing step, not actual work), and the gate already blocked until the suite finished either way. Advancing to the next scope still waits for a clean result.
+
+### Fixed
+- **`squad-spec` skill was missing `Task` in `allowed-tools`** — would have silently blocked the subagent dispatch above from working at all.
+
 ## [1.4.0] - 2026-08-05
 
 ### Changed

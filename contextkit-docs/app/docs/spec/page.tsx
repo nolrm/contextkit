@@ -225,7 +225,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Stories</td>
-                <td className="py-2">Story table with size and dependencies, plus copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for each story</td>
+                <td className="py-2">Story table with size and dependencies, an EARS-format <code className="rounded bg-muted px-1 font-mono text-xs">### Acceptance Criteria</code> block per story, plus copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for each story</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Open Questions</td>
@@ -276,7 +276,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
       <div id="squad" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">From Spec to Squad</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Each <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> ends with a <code className="rounded bg-muted px-1 font-mono text-xs">### Squad Commands</code> section — copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story, self-contained enough to run without reading the spec.
+          Each story in <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> has an <code className="rounded bg-muted px-1 font-mono text-xs">### Acceptance Criteria</code> block written in EARS format (<code className="rounded bg-muted px-1 font-mono text-xs">WHEN [event], the system SHALL [response]</code>) followed by <code className="rounded bg-muted px-1 font-mono text-xs">### Squad Commands</code> — copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story, self-contained enough to run without reading the spec. <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the Acceptance Criteria block directly instead.
         </p>
 
         <div className="rounded-lg border bg-muted/50 p-4">
@@ -299,6 +299,10 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
 # Processes every story in the scope — one per iteration,
 # context cleared between each so it never bloats`}</pre>
         </div>
+
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          On Claude Code, each phase within a story (Architect/Dev/Test/Review/Doc) runs as its own isolated subagent, and Review checks the EARS acceptance criteria above line by line — see <Link href="/docs/squad#squad-spec" className="text-primary hover:underline">Squad Workflow</Link> for the full pipeline.
+        </p>
 
         <Link
           href="/docs/squad"

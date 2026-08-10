@@ -254,7 +254,7 @@ export default function SquadPage() {
           If you&apos;ve run <Link href="/docs/spec" className="text-primary hover:underline">/spec</Link> to generate a scope, use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> to implement every story in that scope automatically — no manual handoff needed between stories.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the scope&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, creates handoff files with the PO spec pre-filled from the spec (skipping the PO phase), then runs architect → dev → test → review → doc for each story in dependency order — with an automatic retry and peer-review pass if review finds issues, and a full-suite regression check once per scope.
+          <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads the scope&apos;s <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>, creates handoff files with the PO spec pre-filled from the spec&apos;s EARS-format acceptance criteria (skipping the PO phase), then runs architect → dev → test → review → doc for each story in dependency order — with an automatic retry and peer-review pass if review finds issues, and a full-suite regression check once per scope.
         </p>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
@@ -274,6 +274,13 @@ export default function SquadPage() {
         </div>
 
         <div className="rounded-lg border bg-muted/50 p-4">
+          <p className="text-sm font-medium mb-2">Each phase runs as its own subagent (Claude Code)</p>
+          <p className="text-sm text-muted-foreground">
+            Architect, Dev, Test, Peer Review, Review, and Doc each dispatch as a fresh Task-tool subagent, reading only the handoff file — not the reasoning trail from earlier phases. This keeps Review from anchoring on Dev&apos;s own account of its work. Review and Peer Review default to <code className="rounded bg-muted px-1 font-mono text-xs">claude-haiku-4-5-20251001</code>, since both are checking the EARS-format acceptance criteria already written in <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> line by line, not designing anything. Architect and Dev stay on your primary model. Codex runs every phase inline in the current context — no subagent isolation there yet.
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             <Terminal className="h-4 w-4" />
             <span className="font-mono">Single run (one story only)</span>
@@ -287,6 +294,13 @@ export default function SquadPage() {
           <p className="text-sm font-medium mb-1">If a story gets needs-work</p>
           <p className="text-sm text-muted-foreground">
             <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> retries automatically when review finds a problem — up to 2 attempts, with an independent peer-review pass added on the retry. Only if both retries fail does the pipeline pause and surface the issues for you to fix by hand. Fix the problems, then re-run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> (or restart <code className="rounded bg-muted px-1 font-mono text-xs">/loop</code> or <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>) to continue.
+          </p>
+        </div>
+
+        <div className="rounded-lg border bg-muted/50 p-4">
+          <p className="text-sm font-medium mb-1">The full-suite gate runs in the foreground, on purpose</p>
+          <p className="text-sm text-muted-foreground">
+            Every story&apos;s own Test phase only runs tests scoped to its changes. Once per scope, after all stories are done, <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> runs the complete test suite in the foreground with serial or low parallelism (not backgrounded at max workers) — this gate doesn&apos;t need to be fast, it needs your machine to stay usable while it confirms the scope is clean before the next one starts.
           </p>
         </div>
       </div>
@@ -316,6 +330,9 @@ model_routing: false # set true to use Haiku for dev + test phases`}</pre>
             <p className="text-sm font-medium mb-1"><code className="rounded bg-muted px-1 font-mono text-xs">model_routing</code> <span className="text-xs text-muted-foreground ml-1">Claude Code only</span></p>
             <p className="text-sm text-muted-foreground">
               When <code className="rounded bg-muted px-1 font-mono text-xs">true</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> automatically spawns Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens — the standards files and Review gate maintain output quality. Default is <code className="rounded bg-muted px-1 font-mono text-xs">false</code>.
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> takes the opposite split and isn&apos;t configurable: Review and Peer Review always run on Haiku (they&apos;re checking already-written criteria), Architect and Dev always run on your primary model (the judgment-heavy work). There&apos;s no <code className="rounded bg-muted px-1 font-mono text-xs">model_routing</code> flag for it.
             </p>
           </div>
         </div>

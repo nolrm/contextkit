@@ -39,7 +39,7 @@ Parse input for a scope slug (e.g. `01-identity-auth`).
 
 ### Create handoff files
 
-Read the full SPEC.md. Extract every story from the `## Stories` table and the `### Squad Commands` section.
+Read the full SPEC.md. Extract every story from the `## Stories` table, its EARS-format block in `### Acceptance Criteria`, and the `### Squad Commands` section.
 
 Create `.contextkit/squad/manifest.md`:
 
@@ -82,10 +82,9 @@ As a [persona from spec], I want [what this story builds], so that [benefit].
 
 ### Acceptance Criteria
 
-[From the squad command string and spec context — specific and testable]
-- [ ] [criterion]
-- [ ] [criterion]
-- [ ] [criterion]
+Copy this story's EARS-format block from SPEC.md's `## Stories` → `### Acceptance Criteria` verbatim — do not paraphrase or re-derive from the squad command string. Each line stays a single WHEN/IF…SHALL statement so Review can check it individually.
+- [ ] WHEN [trigger], the system SHALL [response]
+- [ ] IF [precondition], THEN the system SHALL [response]
 
 ### Edge Cases
 
@@ -220,54 +219,106 @@ Read the selected story's handoff file.
 
 ## Step 4 — Run One Story
 
-Process the selected story through its phases in one continuous pass. Start at Architect if the story was `pending`, or at the phase Step 3 identified if it was interrupted. Write the handoff file to disk after every phase, and update the manifest task status to match.
+Process the selected story through its phases, dispatching a fresh subagent per phase — each one gets an isolated context containing only the handoff file and the spec, never the reasoning trail from earlier phases. This prevents Review from anchoring on Dev's own account of its work. Start at Architect if the story was `pending`, or at the phase Step 3 identified if it was interrupted.
 
-For every phase: stamp its `started:` field (a timestamp) when you begin it, and `completed:` when you finish it.
+**Claude Code:** dispatch each phase below using the Task tool (`run_in_background: false` — phases are sequential, the orchestrator waits for each result before moving on). Pass exactly the prompt shown for that phase. The subagent reads the handoff file itself and writes its own section directly; it does not tell the user to run any command.
+
+**Codex:** no equivalent isolated-subagent primitive is available to a `/goal`-driven skill today — run each phase's prompt inline in the current context instead, exactly as written, skipping the "dispatch a subagent" framing. This is a known gap versus Claude Code's version of this pipeline, not a design choice — Codex stories don't get phase-level context isolation yet.
+
+Every dispatched prompt ends with: `Write the handoff file yourself. Return "done" or "error: <description>".` If a phase returns anything other than `"done"` (or `"done: pass"` / `"done: needs-work"` for Review): surface the error to the user and stop this story. After every phase completes, verify the handoff file actually changed (`started:`/`completed:` stamped, section `status:` set) before trusting a `"done"` — if it didn't, treat it as `error: subagent did not persist the handoff`.
 
 **Architect** (runs once, never retried):
-- Read the handoff and `.contextkit/spec/[scope-slug]/SPEC.md` — data model and API contracts are hard constraints
-- Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps
-- Set `## 2. Architect Plan` → `status: done`, top-level `status:` → `dev`
-- Write handoff. Update manifest task status to `architect`.
+
+```
+You are the Architect for one story in a squad-spec run. You have not seen any other phase's reasoning — work only from what's written below and in the files you read.
+
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec`.
+Spec: .contextkit/spec/[scope-slug]/SPEC.md — data model and API contracts are hard constraints.
+
+Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps.
+Stamp `started:`/`completed:`. Set `## 2. Architect Plan` → `status: done`, top-level `status:` → `dev`.
+Write the handoff file yourself. Return "done" or "error: <description>".
+```
+
+Update manifest task status to `architect`.
 
 ### Dev → Test → (Peer Review) → Review loop
 
-Repeat this block until Review passes or `attempts` hits the cap (2). `attempts` starts at 0 and is incremented each time Review sends the story back.
+Repeat this block until Review passes or `attempts` hits the cap (2). `attempts` starts at 0 and is incremented each time Review sends the story back — this bookkeeping stays with the orchestrator, it isn't the Dev subagent's job to decide whether to loop.
 
 **Dev:**
-- Attempt 1 (`attempts: 0`): implement following the architect's plan.
-- Retry (`attempts: 1`): read `## 6. Review` → Issues Found from the failed pass. Fix specifically those issues — don't re-architect or expand scope. Note in Decisions & Deviations that this is a retry addressing review feedback, and what changed.
-- Fill in `## 3. Dev Implementation`: Changes Made, Decisions & Deviations
-- Set `## 3. Dev Implementation` → `status: done`, top-level `status:` → `test`
-- Write handoff.
+
+```
+You are the Dev for one story in a squad-spec run. You have not seen the Architect's exploratory reasoning — only what's written in the handoff.
+
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` and `## 2. Architect Plan`.
+[On retry only (attempts >= 1): also read `## 6. Review` → Issues Found from the failed pass. Fix specifically those issues — don't re-architect or expand scope. Note in Decisions & Deviations that this is a retry addressing review feedback, and what changed.]
+
+Fill in `## 3. Dev Implementation`: Changes Made, Decisions & Deviations.
+Stamp `started:`/`completed:`. Set `## 3. Dev Implementation` → `status: done`, top-level `status:` → `test`.
+Write the handoff file yourself. Return "done" or "error: <description>".
+```
 
 **Test:**
-- Write tests against the acceptance criteria
-- Run only the tests scoped to this story — the files it touched and their direct dependents (e.g. `go test ./pkg/changed/...`, `jest path/to/changed`, `pytest path::`). Do not run the full project suite here; that runs once per scope, at the Step 5 gate. Use the runner's parallel/worker flags and its cache where available — avoid forcing a clean run unless something is actually stale.
-- Fill in `## 4. Test Report`: Tests Written, Results, Coverage Notes
-- Set `## 4. Test Report` → `status: done`, top-level `status:` → `review`
-- Write handoff.
 
-**Peer Review** (retry only — skip entirely when `attempts: 0`):
-- Independently re-read the diff and the failed Review's Issues Found, without assuming the Dev fix worked
-- Fill in `## 5. Peer Review`: Valid Findings, Dismissed Findings, Verdict
-- Set `## 5. Peer Review` → `status: done`
-- Write handoff.
+```
+You are the Tester for one story in a squad-spec run. You have not seen the Dev's implementation reasoning — only what's written in the handoff and the diff on disk.
 
-**Review:**
-- Read the full handoff, including Peer Review's findings if present
-- Fill in `## 6. Review`: verify AC met, code quality, test coverage
-- **Pass** → set top-level `status:` → `doc`. Exit the loop, continue to Doc below.
-- **Needs-work:**
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` and `## 3. Dev Implementation`.
+
+Write tests against the acceptance criteria. Run only the tests scoped to this story — the files it touched and their direct dependents (e.g. `go test ./pkg/changed/...`, `jest path/to/changed`, `pytest path::`). Do not run the full project suite here; that runs once per scope, at the Step 5 gate. Use the runner's parallel/worker flags and its cache where available — avoid forcing a clean run unless something is actually stale.
+
+Fill in `## 4. Test Report`: Tests Written, Results, Coverage Notes.
+Stamp `started:`/`completed:`. Set `## 4. Test Report` → `status: done`, top-level `status:` → `review`.
+Write the handoff file yourself. Return "done" or "error: <description>".
+```
+
+**Peer Review** (retry only — skip entirely when `attempts: 0`; Claude Code, dispatch with `model: claude-haiku-4-5-20251001`):
+
+```
+You are an independent Peer Reviewer for one story in a squad-spec run — a verification pass against a checklist that's already written down, not a design task. You have not seen the Dev's fix reasoning, only the diff on disk and the two sections named below. Do not assume the Dev fix worked.
+
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` and the existing `## 6. Review` → Issues Found (the failed pass this retry is addressing).
+
+Independently re-read the diff on disk against those Issues Found. Fill in `## 5. Peer Review`: Valid Findings, Dismissed Findings, Verdict.
+Stamp `started:`/`completed:`. Set `## 5. Peer Review` → `status: done`.
+Write the handoff file yourself. Return "done" or "error: <description>".
+```
+
+**Review** (Claude Code, dispatch with `model: claude-haiku-4-5-20251001`):
+
+```
+You are the Reviewer for one story in a squad-spec run — a verification gate against a checklist that's already written down, not a design task. You have not seen the Dev's or Tester's reasoning, only what they recorded in the handoff and the diff/test results on disk.
+
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` (acceptance criteria), `## 3. Dev Implementation`, `## 4. Test Report`, and `## 5. Peer Review` if present.
+
+Fill in `## 6. Review`: check each acceptance criterion individually against the diff — they're EARS-format WHEN/IF…SHALL statements, so verify trigger and required response separately rather than judging the story holistically — plus code quality and test coverage against what's on disk.
+Stamp `started:`/`completed:`.
+- Pass → set top-level `status:` → `doc`.
+- Needs-work → leave top-level `status:` as `review`, list issues under Issues Found.
+Write the handoff file yourself. Return "done: pass" or "done: needs-work" (or "error: <description>").
+```
+
+On the Review result:
+- **`"done: pass"`** → continue to Doc below.
+- **`"done: needs-work"`:**
   - Increment `attempts`.
-  - `attempts <= 2` → set top-level `status:` → `dev` (automatic retry). Write handoff, update manifest task status to `dev`. Announce: `↻ [S#] needs rework (attempt [attempts]/2) — retrying automatically.` Loop back to Dev.
-  - `attempts > 2` → set top-level `status:` → `needs-work`. Write handoff. Update manifest. **Stop** — surface issues to user. Do not continue.
+  - `attempts <= 2` → set top-level `status:` → `dev` (automatic retry). Update manifest task status to `dev`. Announce: `↻ [S#] needs rework (attempt [attempts]/2) — retrying automatically.` Loop back to Dev.
+  - `attempts > 2` → set top-level `status:` → `needs-work`. Update manifest. **Stop** — surface issues to user. Do not continue.
 
 **Doc** (only reached after Review passes):
-- Update companion docs for new or significantly changed files
-- Fill in `## 7. Doc`
-- Set `## 7. Doc` → `status: done`, top-level `status:` → `done`
-- Write handoff. Update manifest task status to `done`.
+
+```
+You are the Doc writer for one story in a squad-spec run. You have not seen the Dev's implementation reasoning — only what's recorded in the handoff.
+
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 3. Dev Implementation` (Changes Made) and `## 2. Architect Plan` (Files to Change).
+
+Update companion docs for new or significantly changed files. Fill in `## 7. Doc`.
+Stamp `started:`/`completed:`. Set `## 7. Doc` → `status: done`, top-level `status:` → `done`.
+Write the handoff file yourself. Return "done" or "error: <description>".
+```
+
+Update manifest task status to `done`.
 
 Announce:
 ```
@@ -283,7 +334,7 @@ All stories in the current scope are done.
 
 ### Full-suite regression gate
 
-This is the only point in the pipeline that runs the project's complete test suite — every story's Test phase above only ran tests scoped to its own changes. Start the full suite in the background (Bash `run_in_background`) using whatever parallel/worker flags the runner supports, so you can prepare the summary below while it runs, then wait for the result before proceeding.
+This is the only point in the pipeline that runs the project's complete test suite — every story's Test phase above only ran tests scoped to its own changes. Run it directly in the foreground, with the runner's parallelism kept low or serial (e.g. `jest --runInBand`, `go test -p 1 ./...`, `pytest -p no:xdist`) — this gate doesn't need to be fast, it needs the machine to stay usable while it runs. Wait for it to finish before doing anything else; the next scope does not start until this one is verified clean.
 
 - **Pass** → continue to the summary below.
 - **Fail** → do not advance to the next scope. Match the failing test(s) against each story's "Files to Change" / "Changes Made" to identify the likely cause. Reopen that story: set its handoff and manifest status back to `needs-work`, and add to `## 6. Review` → Issues Found: "Full-suite regression: [failing test] — caught at scope gate, not story review." Print:

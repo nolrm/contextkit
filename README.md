@@ -173,7 +173,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
 | `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
 | `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
-| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline, retrying automatically on review failure before pausing for input. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Claude Code: use with `/loop /clear /squad-spec` (context clearing matters — stories add up fast). Codex: use `/goal`, which clears context between turns natively. |
+| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline, retrying automatically on review failure before pausing for input. On Claude Code, each phase runs as its own isolated Task subagent — Review defaults to Haiku since it's checking already-written acceptance criteria, not designing anything. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Claude Code: use with `/loop /clear /squad-spec` (context clearing matters — stories add up fast). Codex: use `/goal`, which clears context between turns natively. |
 | `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
 | `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
 | `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
@@ -318,7 +318,7 @@ You can also pass the overview file directly: `/spec MY_OVERVIEW.md`. If an exis
 
 ### From Spec to Squad
 
-Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement scopes automatically:
+Each `SPEC.md`'s `## Stories` section has an `### Acceptance Criteria` block per story (EARS format — `WHEN [event], the system SHALL [response]`) followed by `### Squad Commands` — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement scopes automatically:
 
 ```bash
 # Option 1 — one story at a time
@@ -335,6 +335,8 @@ Each `SPEC.md` ends with a `### Squad Commands` section — copy-paste `/squad` 
 ```
 
 Both drive `/squad-spec` repeatedly and clear context between stories, so a scope with many stories won't blow the context window. Claude's `/loop /clear` re-invokes on an interval; Codex's `/goal` keeps working autonomously until the stated condition holds, then stops on its own.
+
+Within a story, Claude Code dispatches each phase (Architect/Dev/Test/Review/Doc) as its own isolated Task subagent — Review runs on Haiku by default, checking each EARS-format acceptance criterion individually against the diff. Codex runs phases inline in the current context; no subagent isolation there yet. At the end of each scope, the full-suite regression gate runs in the foreground with serial/low parallelism rather than backgrounded at max workers, so it doesn't saturate your machine while confirming the scope is clean before the next one starts.
 
 ---
 

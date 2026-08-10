@@ -287,4 +287,30 @@ describe('Download manifest validation', () => {
     expect(content).toContain('ck update');
     expect(content).toContain('shall I run');
   });
+
+  it('28. commands/spec/spec.md writes acceptance criteria in EARS format, separate from the Squad Commands block', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
+    const storiesSection = content.slice(
+      content.indexOf('## Stories'),
+      content.indexOf('## Open Questions')
+    );
+    expect(storiesSection).toContain('### Acceptance Criteria');
+    expect(storiesSection).toContain('EARS format');
+    expect(storiesSection).toContain('WHEN [event], the system SHALL [response]');
+    expect(storiesSection).toContain('IF [precondition], THEN the system SHALL [response]');
+    // Acceptance Criteria must come before Squad Commands so squad-spec can read it directly
+    expect(storiesSection.indexOf('### Acceptance Criteria')).toBeLessThan(
+      storiesSection.indexOf('### Squad Commands')
+    );
+  });
+
+  it('29. commands/spec/spec.md Extend Scope (--extend) appends acceptance criteria blocks for new stories', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
+    const extendSection = content.slice(
+      content.indexOf('## Step 3D'),
+      content.indexOf('## Step 4')
+    );
+    expect(extendSection).toContain('### Acceptance Criteria');
+    expect(extendSection).toContain('EARS-format block');
+  });
 });

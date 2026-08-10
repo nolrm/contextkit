@@ -130,10 +130,11 @@ Identify the overview file path from the `source:` field in PROGRESS.md.
 3. Identify new stories — user flows or features present in the overview (or now reasonably implied) that are **not already listed** in the `## Stories` table of that SPEC.md.
 4. If none: tell the user "No new stories identified — SPEC.md is up to date." Stop.
 5. Append new rows to the `## Stories` table (continuing the existing numbering: S[N+1], S[N+2], …).
-6. Append new `/squad "..."` lines to the `### Squad Commands` block.
-7. Add a note immediately after the `## Stories` heading (or at the end of the section): `Extended: [TODAY'S DATE] — [N] stories added`
-8. **Do not** modify the Data Model, API Contracts, or UX Flows sections unless the new stories strictly require new fields or endpoints — if they do, append the additions rather than rewriting.
-9. Tell the user: "Extended `[scope-slug]`: [N] new stories added."
+6. Append a new EARS-format block for each new story to `### Acceptance Criteria`, matching the format already used there.
+7. Append new `/squad "..."` lines to the `### Squad Commands` block.
+8. Add a note immediately after the `## Stories` heading (or at the end of the section): `Extended: [TODAY'S DATE] — [N] stories added`
+9. **Do not** modify the Data Model, API Contracts, or UX Flows sections unless the new stories strictly require new fields or endpoints — if they do, append the additions rather than rewriting.
+10. Tell the user: "Extended `[scope-slug]`: [N] new stories added."
 
 ## Step 4 — Scope Run
 
@@ -247,14 +248,25 @@ Stories are ordered by dependency. Run them in sequence with `/squad`.
 | S1 | [one-line description of what gets built] | S/M/L | — |
 | S2 | [one-line description] | S/M/L | S1 |
 
+### Acceptance Criteria
+
+One block per story, written in EARS format (Easy Approach to Requirements Syntax) — each line names a trigger and the system's required response, so Review can check it against the diff line by line instead of judging it holistically. Use `WHEN [event], the system SHALL [response]` for behavior triggered by an action, and `IF [precondition], THEN the system SHALL [response]` for state-based rules. Keep each line testable by a single assertion — split compound criteria ("and"/"or") into separate lines.
+
+**S1 — [Story Title]**
+- WHEN [user/system action], the system SHALL [observable response]
+- IF [precondition], THEN the system SHALL [observable response]
+
+**S2 — [Story Title]**
+- WHEN [user/system action], the system SHALL [observable response]
+
 ### Squad Commands
 
 ```
-/squad "S1 — [Story Title]: [what to build + key acceptance criteria in one sentence]"
-/squad "S2 — [Story Title]: [what to build + key acceptance criteria in one sentence]"
+/squad "S1 — [Story Title]: [what to build]. AC: [criterion 1]; [criterion 2]."
+/squad "S2 — [Story Title]: [what to build]. AC: [criterion 1]."
 ```
 
-Each command is self-contained — squad can run it without reading this spec.
+Each command is self-contained — squad can run it without reading this spec. `/squad-spec` reads the `### Acceptance Criteria` block above directly instead of parsing the command string.
 
 ---
 

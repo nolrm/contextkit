@@ -252,4 +252,14 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('response_style');
     expect(content).toContain('.contextkit/config.yml');
   });
+
+  test('20. squad-spec skill has Task in allowed-tools for per-phase subagent dispatch', async () => {
+    const integration = new ClaudeIntegration();
+    await integration.install();
+
+    const content = await fs.readFile('.claude/skills/squad-spec/SKILL.md', 'utf-8');
+    expect(content).toContain('.contextkit/commands/squad/squad-spec.md');
+    expect(content).toContain('allowed-tools: Read, Edit, Write, Glob, Grep, Bash, Task');
+    expect(content).toContain('context: fork');
+  });
 });
