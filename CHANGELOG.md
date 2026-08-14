@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.0] - 2026-08-14
+
+### Added
+- **Global skills — `ck install --global`, `ck update --global`, `ck check --global`, and the new `ck uninstall --global`** — install the squad pipeline (10 skills) and spec family (`spec`, `spec-component`) once to `~/.claude/skills/`, shared across every project instead of duplicated per-repo via `ck install`. Each skill is fully self-contained (source command content is inlined at generation time — no `~/.contextkit/` mirror to manage), and the two skills with hard local-`.contextkit/`-dependencies (`spec`'s existence guard, `spec-component`'s template file) are adapted for the global variant so they work in any repo with zero local setup. `ck update --global` regenerates/overwrites in place. Every generated file carries a `contextkit-managed`/`contextkit-version` marker in its frontmatter, so `ck uninstall --global` can never remove a same-named skill you wrote yourself, and `ck check --global` can report version drift without needing separate state. Project-level `.claude/skills/` (if present) still takes precedence over the global copies, so existing per-project installs are unaffected.
+- **`ck uninstall`** — new top-level command (currently `--global` only; per-project uninstall of standards/CLAUDE.md/hooks is a separate future effort). Safe by default: a bare `ck uninstall --global` lists what's installed instead of removing anything — you need an explicit skill/family name or `--all`.
+
+### Removed
+- **`review`, `refactor`, `test`, and `doc` skills** — dropped from all three skill-generating platforms (Claude Code, Codex, Cursor). `review`/`test` were largely superseded by the squad pipeline's `squad-review`/`squad-test` phases for anyone running squad end-to-end; `doc` overlapped with the more precise `doc-arch`/`doc-feature`/`doc-component` (3-level docs) and `squad-doc`. `analyze` is unaffected and still generates `.contextkit/standards/`. Existing installs get these cleaned up automatically on the next `ck update` (added to the legacy-file cleanup list) — the removed command files remain in git history if ever needed.
+
 ## [1.6.1] - 2026-08-11
 
 ### Fixed

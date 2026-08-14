@@ -39,7 +39,7 @@ describe('ClaudeIntegration', () => {
     expect(content).not.toContain('@.contextkit/product/decisions.md');
     expect(content).not.toContain('@.contextkit/product/roadmap.md');
     expect(content).not.toContain('@.contextkit/corrections.md');
-    expect(content).toContain('`test` skill');
+    expect(content).toContain('`squad-test` skill');
     expect(content).toContain('`product-context` skill');
   });
 
@@ -52,7 +52,7 @@ describe('ClaudeIntegration', () => {
     const content = await fs.readFile(filePath, 'utf-8');
     expect(content).toContain('alwaysApply: true');
     expect(content).toContain('auto-loaded via CLAUDE.md imports');
-    expect(content).toContain('`test` skill');
+    expect(content).toContain('`squad-test` skill');
     expect(content).toContain('`standards-aware` skill');
     expect(content).toContain('`product-context` skill');
     expect(content).not.toContain('from ai-guidelines.md');
@@ -68,7 +68,7 @@ describe('ClaudeIntegration', () => {
     expect(content).toContain('**/*.test.*');
     expect(content).toContain('**/*.spec.*');
     expect(content).toContain('numbered');
-    expect(content).toContain('loaded via the `test` skill');
+    expect(content).toContain('.contextkit/standards/testing.md');
   });
 
   test('4. creates .claude/rules/contextkit-code-style.md with source globs', async () => {
@@ -88,10 +88,6 @@ describe('ClaudeIntegration', () => {
 
     const allSkills = [
       'analyze',
-      'review',
-      'refactor',
-      'test',
-      'doc',
       'spec',
       'spec-component',
       'ck',

@@ -40,6 +40,7 @@ describe('CLI Integration Tests', () => {
       expect(result).toContain('check');
       expect(result).toContain('note');
       expect(result).toContain('run');
+      expect(result).toContain('uninstall');
     });
 
     test('4. --help shows all platform commands', () => {
@@ -190,6 +191,66 @@ features:
         expect(err.status).toBe(1);
       }
       expect(threw).toBe(true);
+    });
+  });
+
+  describe('global skills', () => {
+    // These exercise CLI wiring and local-only behavior (no network fetch),
+    // isolated to a scratch HOME so they never touch the real
+    // ~/.claude/skills/. Live installs (which fetch from GitHub raw) are
+    // covered against a mocked DownloadManager in __tests__/utils/global-skills.test.js.
+    let scratchHome;
+
+    beforeEach(async () => {
+      scratchHome = await fs.mkdtemp(path.join(os.tmpdir(), 'ck-cli-global-home-'));
+    });
+
+    afterEach(async () => {
+      await fs.remove(scratchHome);
+    });
+
+    test('20. install --help documents --global', () => {
+      const result = execSync(`node "${cliPath}" install --help`, { encoding: 'utf8' });
+      expect(result).toContain('--global');
+      expect(result).toContain('~/.claude/skills/');
+    });
+
+    test('21. update --help documents --global', () => {
+      const result = execSync(`node "${cliPath}" update --help`, { encoding: 'utf8' });
+      expect(result).toContain('--global');
+    });
+
+    test('22. check --help documents --global', () => {
+      const result = execSync(`node "${cliPath}" check --help`, { encoding: 'utf8' });
+      expect(result).toContain('--global');
+    });
+
+    test('23. uninstall --help documents --global and --all', () => {
+      const result = execSync(`node "${cliPath}" uninstall --help`, { encoding: 'utf8' });
+      expect(result).toContain('--global');
+      expect(result).toContain('--all');
+    });
+
+    test('24. uninstall without --global refuses with a clear message', () => {
+      const result = execSync(`node "${cliPath}" uninstall squad`, { encoding: 'utf8' });
+      expect(result).toContain('Only `--global` uninstall is supported');
+    });
+
+    test('25. check --global reports nothing installed against an empty scratch HOME', () => {
+      const result = execSync(`node "${cliPath}" check --global`, {
+        encoding: 'utf8',
+        env: { ...process.env, HOME: scratchHome },
+      });
+      expect(result).toContain('No contextkit-managed global skills installed');
+      expect(result).toContain('ck install --global');
+    });
+
+    test('26. uninstall --global with no name/--all reports nothing to remove against an empty scratch HOME', () => {
+      const result = execSync(`node "${cliPath}" uninstall --global`, {
+        encoding: 'utf8',
+        env: { ...process.env, HOME: scratchHome },
+      });
+      expect(result).toContain('Nothing to remove');
     });
   });
 

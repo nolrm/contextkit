@@ -7,6 +7,7 @@ const analyze = require('../lib/commands/analyze');
 const check = require('../lib/commands/check');
 const note = require('../lib/commands/note');
 const run = require('../lib/commands/run');
+const uninstall = require('../lib/commands/uninstall');
 
 const packageJson = require('../package.json');
 const { checkForUpdates } = require('../lib/utils/notifier');
@@ -23,11 +24,14 @@ program
 program
   .command('install [platform]')
   .description(
-    'Initialize ContextKit in the current project directory (run once per project, not global)'
+    'Initialize ContextKit in the current project directory (run once per project, not global). ' +
+      'With --global, install skills to ~/.claude/skills/ instead — [platform] becomes an optional ' +
+      'skill/family filter ("squad", "spec", or a specific skill name).'
   )
   .option('--no-hooks', 'Skip Git hooks installation')
   .option('--non-interactive', 'Skip interactive prompts')
   .option('--force', 'Regenerate user-owned standards files even if they already exist')
+  .option('--global', 'Install squad/spec skills to ~/.claude/skills/ instead of this project')
   .action(async (platform, options) => {
     try {
       await install({ ...options, ...(platform ? { platform } : { fullInstall: true }) });
@@ -55,6 +59,7 @@ program
   .command('update')
   .description('Update to latest version')
   .option('--force', 'Force update even if no changes; also regenerates user-owned standards files')
+  .option('--global', 'Regenerate/overwrite currently installed ~/.claude/skills/ global skills')
   .action(async (options) => {
     try {
       await update(options);
@@ -87,11 +92,30 @@ program
   .description('Validate ContextKit installation and check policy compliance')
   .option('--strict', 'Treat warnings as errors')
   .option('--verbose', 'Show detailed information')
+  .option('--global', 'Report on installed ~/.claude/skills/ global skills instead')
   .action(async (options) => {
     try {
       await check(options);
     } catch (error) {
       console.error(chalk.red('Check failed:'), error.message);
+      process.exit(1);
+    }
+  });
+
+// Uninstall command
+program
+  .command('uninstall [name]')
+  .description(
+    'Remove contextkit-managed global skills from ~/.claude/skills/. ' +
+      '[name] is a skill name or family ("squad", "spec"); omit with --all to remove everything.'
+  )
+  .option('--global', 'Required — only global skill uninstall is supported today')
+  .option('--all', 'Remove every contextkit-managed global skill')
+  .action(async (name, options) => {
+    try {
+      await uninstall(name, options);
+    } catch (error) {
+      console.error(chalk.red('Uninstall failed:'), error.message);
       process.exit(1);
     }
   });

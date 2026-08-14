@@ -366,7 +366,7 @@ describe('UpdateCommand', () => {
 
     DownloadManager.mockImplementationOnce(() => ({
       downloadFile: jest.fn().mockImplementation(async (url, dest) => {
-        if (url.includes('refactor.md')) {
+        if (url.includes('quality-check.md')) {
           throw new Error('Request failed with status code 400');
         }
         await realFs.ensureDir(path.dirname(dest));
@@ -382,7 +382,7 @@ describe('UpdateCommand', () => {
 
     const logged = console.log.mock.calls.flat().join(' ');
     expect(logged).toContain('Skipped');
-    expect(logged).toContain('refactor.md');
+    expect(logged).toContain('quality-check.md');
   });
 
   it('21. reports skipped count in success message when files are skipped', async () => {

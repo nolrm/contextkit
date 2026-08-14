@@ -157,10 +157,6 @@ ContextKit installs reusable slash commands for supported platforms:
 | Command                | What it does                                                                                                                    |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `/analyze`             | Scan codebase and generate standards content                                                                                    |
-| `/review`              | Code review with checklist                                                                                                      |
-| `/refactor`            | Refactor code with safety checks                                                                                                |
-| `/test`                | Generate comprehensive tests                                                                                                    |
-| `/doc`                 | Add documentation                                                                                                               |
 | `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. Proposes a split if the file grows too long. |
 | `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2). Proposes a split if the file grows too long. |
 | `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3). Proposes a split if the file grows too long. |
@@ -182,7 +178,7 @@ ContextKit installs reusable slash commands for supported platforms:
 | `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files. Also checks `corrections.md` first and offers to self-run `ck update` when the install is stale. |
 | `/product-context`        | Load architecture decisions and roadmap context before proposing changes that might conflict with a prior decision or plan      |
 
-**Claude Code** — available as `/analyze`, `/review`, etc. via `.claude/skills/`
+**Claude Code** — available as `/analyze`, `/squad`, etc. via `.claude/skills/`
 **Cursor** — available as slash commands in Chat via `.cursor/prompts/`
 
 Both platforms delegate to the universal command files in `.contextkit/commands/`, so you maintain one set of workflows.
@@ -481,6 +477,14 @@ ck update --force     # also regenerate user-owned files (standards, glossary)
                       # on git push (pre-push hook nudge, 24h cache), and in-session via /standards-aware
                       # (which offers to run ck update itself when stale)
 ck status      # check install & integrations
+
+# Global Skills — squad/spec skills shared across all your projects, no per-repo install
+ck install --global           # install all squad + spec skills to ~/.claude/skills/
+ck install --global squad     # install just the squad family
+ck install --global spec      # install spec + spec-component
+ck update --global            # regenerate/overwrite currently installed global skills
+ck check --global             # list installed global skills + flag version drift
+ck uninstall --global squad   # remove them (--all for everything; no name/--all lists instead of deleting)
 
 # Validation & Compliance
 ck check       # validate installation & policy compliance

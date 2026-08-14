@@ -48,7 +48,7 @@ describe('CodexIntegration', () => {
       '- `.contextkit/corrections.md` — Track AI performance improvements'
     );
     expect(content).toContain('is loaded on demand via the `standards-aware` skill');
-    expect(content).toContain('`test` skill');
+    expect(content).toContain('`squad-test` skill');
     expect(content).toContain('`product-context` skill');
     expect(content).toContain('.codex/skills/');
   });
@@ -61,10 +61,6 @@ describe('CodexIntegration', () => {
 
     const expectedSkills = [
       'analyze',
-      'review',
-      'refactor',
-      'test',
-      'doc',
       'spec',
       'spec-component',
       'ck',

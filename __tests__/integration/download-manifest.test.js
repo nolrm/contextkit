@@ -217,7 +217,7 @@ describe('Download manifest validation', () => {
     expect(content).toContain('/loop /clear /squad-spec');
   });
 
-  it('20. doc-arch/doc-feature/doc-component/add-documentation each define a Length Check with a concrete threshold', () => {
+  it('20. doc-arch/doc-feature/doc-component each define a Length Check with a concrete threshold', () => {
     const cases = [
       { file: 'commands/docs/doc-arch.md', threshold: '300 lines' },
       { file: 'commands/docs/doc-feature.md', threshold: '250 lines' },
@@ -229,11 +229,6 @@ describe('Download manifest validation', () => {
       expect(content).toContain(threshold);
       expect(content).toContain('never split silently');
     }
-    const addDocsContent = fs.readFileSync(
-      path.join(ROOT, 'commands/docs/add-documentation.md'),
-      'utf8'
-    );
-    expect(addDocsContent).toContain('## Length Check');
   });
 
   it('21. commands/dev/compress.md is in both manifests and contains the measure/marker-safety/backup workflow', () => {
@@ -251,11 +246,6 @@ describe('Download manifest validation', () => {
     const content = fs.readFileSync(path.join(ROOT, 'commands/agents/product-context.md'), 'utf8');
     expect(content).toContain('.contextkit/product/decisions.md');
     expect(content).toContain('.contextkit/product/roadmap.md');
-  });
-
-  it('23. commands/dev/run-tests.md reads testing.md as its first step', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/run-tests.md'), 'utf8');
-    expect(content).toContain('0. Read `.contextkit/standards/testing.md`');
   });
 
   it('24. commands/agents/agent-push-checklist.md reads workflows.md before building the checklist', () => {

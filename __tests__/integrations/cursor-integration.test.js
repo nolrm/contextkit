@@ -74,10 +74,6 @@ describe('CursorIntegration', () => {
 
     const prompts = [
       'analyze',
-      'review',
-      'refactor',
-      'test',
-      'doc',
       'spec',
       'spec-component',
       'squad',
@@ -102,9 +98,6 @@ describe('CursorIntegration', () => {
 
     const checks = [
       ['.cursor/prompts/analyze.md', '.contextkit/commands/dev/analyze.md'],
-      ['.cursor/prompts/refactor.md', '.contextkit/commands/dev/refactor.md'],
-      ['.cursor/prompts/test.md', '.contextkit/commands/dev/run-tests.md'],
-      ['.cursor/prompts/doc.md', '.contextkit/commands/docs/add-documentation.md'],
       ['.cursor/prompts/spec.md', '.contextkit/commands/spec/spec.md'],
       ['.cursor/prompts/spec-component.md', '.contextkit/commands/dev/spec-component.md'],
       ['.cursor/prompts/squad.md', '.contextkit/commands/squad/squad.md'],

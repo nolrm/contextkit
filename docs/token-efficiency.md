@@ -10,7 +10,7 @@ Use a thin always-loaded context layer plus on-demand standards, delivered entir
 ### Why
 Current MD-first loading sends too much context into every session. This repo's own `@import` set is ~6x Anthropic's documented 200-line `CLAUDE.md` guidance (see Evidence below).
 
-CLI-command mechanisms (`ck compress`, `ck check --tokens`, `/analyze --compact`) were considered and rejected: work happens inside Claude/Codex sessions, not a terminal — a command that has to be remembered and typed separately doesn't get run. The mechanism has to trigger automatically as part of normal in-session work, the same way existing skills (`analyze`, `review`, `squad-auto`) already do.
+CLI-command mechanisms (`ck compress`, `ck check --tokens`, `/analyze --compact`) were considered and rejected: work happens inside Claude/Codex sessions, not a terminal — a command that has to be remembered and typed separately doesn't get run. The mechanism has to trigger automatically as part of normal in-session work, the same way existing skills (`analyze`, `squad-dev`, `squad-auto`) already do.
 
 ### Principle
 Optimize for information density, not documentation density — and optimize for zero-friction, automatic invocation over anything the user has to remember to run.

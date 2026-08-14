@@ -189,4 +189,49 @@ describe('DownloadManager', () => {
       );
     });
   });
+
+  describe('downloadText', () => {
+    test('should return the response body as a string', async () => {
+      axios.mockResolvedValue({ data: '# Some Markdown\n' });
+
+      await expect(downloadManager.downloadText('https://example.com/file.md')).resolves.toBe(
+        '# Some Markdown\n'
+      );
+
+      expect(axios).toHaveBeenCalledWith({
+        method: 'GET',
+        url: 'https://example.com/file.md',
+        responseType: 'text',
+        transformResponse: [expect.any(Function)],
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'contextkit-cli/1.0.0',
+        },
+      });
+    });
+
+    test('should retry on failure then succeed', async () => {
+      axios.mockRejectedValueOnce(new Error('Network error'));
+      axios.mockResolvedValueOnce({ data: '# Recovered\n' });
+
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      await expect(downloadManager.downloadText('https://example.com/file.md')).resolves.toBe(
+        '# Recovered\n'
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    test('should throw after exhausting retries', async () => {
+      axios.mockRejectedValue(new Error('Network error'));
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      await expect(downloadManager.downloadText('https://example.com/file.md')).rejects.toThrow(
+        'Failed to download https://example.com/file.md: Network error'
+      );
+
+      consoleSpy.mockRestore();
+    });
+  });
 });
