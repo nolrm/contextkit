@@ -11,7 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     steps:
@@ -55,8 +55,14 @@ jobs:
             echo "✅ Successfully published @nolrm/contextkit@$CURRENT_VERSION"
             echo "📦 Package: https://www.npmjs.com/package/@nolrm/contextkit"
             echo "🚀 ContextKit is now available for installation!"
-            echo ""
-            echo "💡 To create a git tag manually:"
-            echo "   git tag v$CURRENT_VERSION"
-            echo "   git push origin v$CURRENT_VERSION"
+
+            # install/update/global-skills download command files from the
+            # v$CURRENT_VERSION tag (not `main`), so older published CLI
+            # versions keep working even after main's file layout changes.
+            # The tag must exist for this exact version's downloads to resolve.
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "v$CURRENT_VERSION"
+            git push origin "v$CURRENT_VERSION"
+            echo "🏷️  Tagged and pushed v$CURRENT_VERSION"
           fi
