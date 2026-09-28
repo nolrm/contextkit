@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0] - 2026-09-28
+
+### Added
+- **`/spec` lite mode** — on init, `/spec` classifies the overview as either a greenfield product idea (**full** mode: Data Model, API Contracts, UX Flows, Stories) or an implementation plan against an existing system (**lite** mode: Stories + EARS Acceptance Criteria + squad commands only, deferring to the source doc for schema/API/UX instead of restating or reinventing them). The mode is recorded as `mode:` in `PROGRESS.md` and fixed for the whole spec run; `--full` / `--lite` override the detection when starting a new spec. `/squad-spec` carries the mode into each handoff (`spec-mode:`) and, in lite mode, points Architect at the source doc as the hard constraint.
+- **`/squad <plan.md>`** — passing a single bare `.md` file extracts distinct, independently shippable tasks from it (one per phase for phase-structured plans), confirms the list, then continues as single-task or batch mode. Also works through `/squad-go`.
+
+### Fixed
+- **`/squad-auto` now runs each phase's full instructions** — it previously carried its own abbreviated copy of Architect/Dev/Test/Review/Doc, silently skipping PO-spec validation, task-split detection, context-file discovery, the test-level decision table, and Review escalation for anything run through `/squad-auto`. Each phase now follows the numbered steps of its own command file, and `*-clarify` results pause just that task and move on to the next instead of being assumed to advance.
+- **`/squad-auto` model-routed sub-agents pointed at non-existent paths** (`commands/squad-dev.md` / `squad-test.md` instead of `commands/squad/…`), and the Tester range stopped one step short of the handoff update.
+- **`/squad-review`** referenced the Review section as "5. Review" instead of "6. Review".
+- **Claude `/spec` skill description** still described the retired multi-round domain-expert pipeline instead of the single inline CTO pass.
+
 ## [1.7.0] - 2026-08-14
 
 ### Added

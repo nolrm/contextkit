@@ -27,26 +27,19 @@ You are the **Pipeline Runner** for a squad batch workflow. Your job is to read 
 
 4. Determine which phase to run based on task statuses in the manifest:
 
+Every phase below says "follow all of `[file]` steps N–M" — this means literally that: read the referenced command file and execute its numbered steps in full, not a paraphrased or abbreviated version. This pipeline's safety nets (PO-spec validation, task-too-large split detection, context-file discovery, the test-level decision table, review escalation) live in those step-by-step instructions — running an abbreviated version here would silently skip them for every task that goes through `/squad-auto` instead of the manual per-phase commands, which defeats the point of having them at all. The excluded steps at the start of each range are "read the handoff" (already done) and a `*-clarify` resume-branch that only applies when re-entering a phase already in that clarify state (not applicable the first time a task reaches a phase); the excluded step at the end is always "tell the user what to run next" — not applicable here since the pipeline continues on its own.
+
 ### Phase: Architect (tasks with status `po`)
 
 If any tasks have status `po`:
 
 - Take the **first** task with status `po`. Do not read other handoff files yet.
-  - Read its handoff file (e.g., `handoff-1.md`)
-  - **Verify** the top-level `status:` is `architect`
-  - Read the **PO Spec** section
-  - Explore the codebase to understand the architecture
-  - Fill in the **"2. Architect Plan"** section:
-    - **Approach**: High-level technical approach
-    - **Files to Change**: Every file to create/modify with a summary
-    - **Trade-offs**: Alternatives considered and rationale
-    - **Implementation Steps**: Numbered, ordered steps for the dev
-  - Set `## 2. Architect Plan` status to `status: done`
-  - Set the top-level `status:` to `dev`
-  - **Write the handoff file to disk now.**
-  - Update the manifest: change this task's status to `architect`
-  - Announce: `✓ Task #N architected.`
-- Repeat for the next task with status `po`. Complete each task fully before starting the next.
+- Read its handoff file (e.g., `handoff-1.md`). Verify the top-level `status:` is `architect`.
+- Follow all of `.contextkit/commands/squad/squad-architect.md` steps 3–8 (including 5.5 and 5.7) for this task. Write the handoff file yourself.
+- Check the resulting top-level `status:`:
+  - **`po-clarify`** (the PO Spec was ambiguous, or the Architect recommended splitting the task) → do not advance this task further this run. Update the manifest: change this task's status to `po-clarify`. Announce: `⏸ Task #N needs PO input before the Architect can plan it — see handoff-N.md (or handoff.md).` Move on to the next task with status `po`, if any.
+  - **`dev`** → Update the manifest: change this task's status to `architect`. Announce: `✓ Task #N architected.`
+- Repeat for the next task with status `po`. Complete each task's Architect pass fully before starting the next.
 
 - **If `checkpoint: architect`**: Stop here and tell the user:
   "All architect plans ready. Review the handoff files, then run `/squad-auto` again to continue."
@@ -59,69 +52,54 @@ Take the **first** task with status `architect`. Run all phases to completion fo
 
 **Dev:**
 
-- **If `model_routing: false`** (default): run inline —
-  - Read the handoff file
-  - Read the **PO Spec** and **Architect Plan**
-  - Implement the code following the architect's steps
-  - Fill in **"3. Dev Implementation"**: Changes Made, Decisions & Deviations
-  - Set `## 3. Dev Implementation` status to `status: done`
-  - Set the top-level `status:` to `test`
+Follow all of `.contextkit/commands/squad/squad-dev.md` steps 3–9 for this task.
 
+- **If `model_routing: false`** (default): run those steps inline, in this context.
 - **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
   ```
   You are the Developer in a squad workflow.
   Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
-  Follow all instructions in `.contextkit/commands/squad-dev.md` steps 3–9.
+  Follow all instructions in `.contextkit/commands/squad/squad-dev.md` steps 3–9.
   Do not tell the user to run any command at the end.
   After updating the handoff file, return "done" or "error: [description]".
   ```
+  If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
-  - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
-  - If `"done"`: continue to Test phase.
+Check the resulting top-level `status:`:
+- **`arch-clarify`** (Dev has questions for the Architect) → do not advance this task further this run. Update the manifest: change this task's status to `arch-clarify`. Announce: `⏸ Task #N needs Architect clarification — see handoff-N.md.` Move on to the next eligible task, if any.
+- **`test`** → continue to Test below.
 
 **Test:**
 
-- **If `model_routing: false`** (default): run inline —
-  - Read the handoff file
-  - Write tests against the PO's acceptance criteria
-  - Run the tests
-  - Fill in **"4. Test Report"**: Tests Written, Results, Coverage Notes
-  - Set `## 4. Test Report` status to `status: done`
-  - Set the top-level `status:` to `review`
+Follow all of `.contextkit/commands/squad/squad-test.md` steps 3–10 for this task — this includes the change-driven test-level decision table (step 6); don't skip straight to writing tests without classifying the required level(s) first.
 
+- **If `model_routing: false`** (default): run those steps inline, in this context.
 - **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
   ```
   You are the Tester in a squad workflow.
   Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
-  Follow all instructions in `.contextkit/commands/squad-test.md` steps 3–9.
+  Follow all instructions in `.contextkit/commands/squad/squad-test.md` steps 3–10.
   Do not tell the user to run any command at the end.
   After updating the handoff file, return "done" or "error: [description]".
   ```
+  If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
-  - If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
-  - If `"done"`: continue to Review phase.
+Check the resulting top-level `status:`:
+- **`dev-clarify`** (Tester has questions for Dev) → do not advance this task further this run. Update the manifest: change this task's status to `dev-clarify`. Announce: `⏸ Task #N needs Dev clarification — see handoff-N.md.` Move on to the next eligible task, if any.
+- **`review`** → continue to Review below.
 
 **Review:**
 
-- Read the full handoff file (spec, plan, implementation, tests)
-- Fill in **"6. Review"**:
-  - **Checklist**: Verify acceptance criteria, code quality, test coverage
-  - **Issues Found**: List any issues (or "None")
-  - **Verdict**: `pass` or `needs-work` with explanation
-- Set `## 6. Review` status to `status: done`
-- If verdict is `needs-work`: set top-level `status:` to `review` — **do not continue to Doc**. Surface the issues to the user and stop this task.
-- If verdict is `pass`: set top-level `status:` to `doc` and continue to Doc phase below.
+Follow all of `.contextkit/commands/squad/squad-review.md` steps 3–7 for this task, run inline in this context (Review is never Haiku-routed regardless of `model_routing`). This includes its escalation paths — the Reviewer may raise questions for the Tester, Dev, Architect, or PO instead of only ever passing or failing; don't reduce Review to a checklist-and-verdict-only pass.
+
+Check the resulting top-level `status:`:
+- **`test-clarify` / `dev-clarify` / `arch-clarify` / `po-clarify`** (Reviewer escalated a question to that role) → do not advance this task further this run. Update the manifest to match. Announce which role needs to respond and which command surfaces it (per squad-review.md's own messaging for each case). Move on to the next eligible task, if any.
+- **`review`** (verdict was `needs-work`, no escalation) → do not continue to Doc. Surface the issues to the user and stop this task.
+- **`doc`** (verdict was `pass`) → continue to Doc below.
 
 **Doc:**
 
-- Read the **Dev Implementation** (Changes Made) and **Architect Plan** (Files to Change)
-- For each **new file**: create a companion `<filename>.md` colocated with it (Purpose, Exports/Public API, Usage Example, Edge Cases & Notes) — unless one already exists and is accurate
-- For each **modified file**: update the companion `.md` if the change was significant; skip trivial changes
-- Check if `README.md` or `.contextkit/` docs reference changed files/commands — update if stale
-- Fill in **"7. Doc"**: Files Documented, Doc Notes
-- Set `## 7. Doc` status to `status: done`
-- Set the top-level `status:` to `done`
-- **Write the handoff file to disk now.**
+Follow all of `.contextkit/commands/squad/squad-doc.md` steps 3–9 for this task, run inline in this context. Write the handoff file yourself.
 
 **Commit** (runs after the handoff write above, before touching the manifest):
 

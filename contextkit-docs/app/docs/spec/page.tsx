@@ -8,6 +8,7 @@ export default function SpecPage() {
   const headings = [
     { id: 'overview', text: 'Overview' },
     { id: 'usage', text: 'Usage' },
+    { id: 'modes', text: 'Full vs. Lite Mode' },
     { id: 'sessions', text: 'Sessions & Archiving' },
     { id: 'output', text: 'Output Structure' },
     { id: 'spec-format', text: 'What SPEC.md Contains' },
@@ -60,14 +61,14 @@ export default function SpecPage() {
           The spec pipeline sits upstream of the <Link href="/docs/squad" className="text-primary hover:underline">Squad Workflow</Link>. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> to break your product overview into scopes, then spec each scope into a <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> that the squad pipeline can build from directly.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Each run is a single inline CTO pass — no sub-agents, no revision rounds. The CTO reads the overview and any prior scope specs (for consistency), then writes the full spec for that scope in one pass. Fast, low token cost, and the output includes copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story.
+          Each run is a single inline CTO pass — no sub-agents, no revision rounds. The CTO reads the overview and any prior scope specs (for consistency), then writes the spec for that scope in one pass. Fast, low token cost, and the output includes copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for every story.
         </p>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
           <p className="text-sm font-medium mb-2">How it works</p>
           <div className="space-y-1 text-sm text-muted-foreground">
-            <p>1. On first run, the CTO reads your product overview and identifies all logical scopes</p>
-            <p>2. Each run specs one scope — data model, API contracts, UX flows, story list with squad commands</p>
+            <p>1. On first run, the CTO reads your product overview, identifies all logical scopes, and detects <a href="#modes" className="text-primary hover:underline">full or lite mode</a></p>
+            <p>2. Each run specs one scope — full mode covers data model, API contracts, UX flows, and stories; lite mode covers stories only</p>
             <p>3. Run <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> again to continue with the next scope — progress is tracked automatically</p>
           </div>
         </div>
@@ -142,6 +143,27 @@ export default function SpecPage() {
         </div>
       </div>
 
+      {/* Full vs. Lite Mode */}
+      <div id="modes" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Full vs. Lite Mode</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          On the first run, <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> reads the overview and automatically decides which mode to run in for the whole session — no prompt. To override the detection, start the spec with <code className="rounded bg-muted px-1 font-mono text-xs">--full</code> or <code className="rounded bg-muted px-1 font-mono text-xs">--lite</code> (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">/spec PLAN.md --lite</code>). The decision is saved to <code className="rounded bg-muted px-1 font-mono text-xs">PROGRESS.md</code> and applies to every scope in that session.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm font-medium mb-1">Full mode</p>
+            <p className="text-sm text-muted-foreground">Default. Used when the overview reads as a product idea — features described in terms of user value, data model / API / UX still open decisions. <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> gets the full treatment: Data Model, API Contracts, UX Flows, Stories.</p>
+          </div>
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm font-medium mb-1">Lite mode</p>
+            <p className="text-sm text-muted-foreground">Used when the overview reads as an implementation plan against a system that already exists — it names specific files/functions to change, documents current state, or describes closing gaps rather than designing new schema/API/UX. <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> skips straight to Stories + Acceptance Criteria, referencing the source doc for everything else.</p>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Lite mode exists so re-running an already-detailed implementation plan through <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> doesn&apos;t regenerate sections that would just restate what the plan already decided. <code className="rounded bg-muted px-1 font-mono text-xs">/squad-spec</code> reads either mode automatically — in lite mode it follows the Spec Reference back to the source doc instead of <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>&apos;s Data Model/API Contracts sections.
+        </p>
+      </div>
+
       {/* Sessions & Archiving */}
       <div id="sessions" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Sessions &amp; Archiving</h2>
@@ -191,7 +213,7 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
       <div id="spec-format" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">What SPEC.md Contains</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Every <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> is a self-contained reference document. It covers all domains needed to implement the scope — no separate files, no switching between documents.
+          Every <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code> is a self-contained reference document — no separate files, no switching between documents. Which sections it has depends on <a href="#modes" className="text-primary hover:underline">full vs. lite mode</a>, detected once per session.
         </p>
 
         <div className="overflow-x-auto">
@@ -199,45 +221,57 @@ Archive it and start fresh with NEW_FEATURE.md? (yes/no)`}</pre>
             <thead>
               <tr className="border-b">
                 <th scope="col" className="text-left py-2 pr-4 font-semibold">Section</th>
+                <th scope="col" className="text-left py-2 pr-4 font-semibold">Mode</th>
                 <th scope="col" className="text-left py-2 font-semibold">What it contains</th>
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Summary</td>
+                <td className="py-2 pr-4 text-xs">both</td>
                 <td className="py-2">2–3 sentences on what this scope covers and what the team will ship</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Personas</td>
+                <td className="py-2 pr-4 text-xs">full only</td>
                 <td className="py-2">Who uses this scope and what they need from it</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Data Model</td>
+                <td className="py-2 pr-4 text-xs">full only</td>
                 <td className="py-2">Full schema — columns, types, indexes, constraints, ERD, multi-tenancy enforcement, data lifecycle</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">API Contracts</td>
+                <td className="py-2 pr-4 text-xs">full only</td>
                 <td className="py-2">Every endpoint with request/response shapes, auth role, and error codes</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">UX Flows</td>
+                <td className="py-2 pr-4 text-xs">full only</td>
                 <td className="py-2">Key user journeys — goal, steps, success state, and edge cases that affect implementation</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Stories</td>
+                <td className="py-2 pr-4 text-xs">both</td>
                 <td className="py-2">Story table with size and dependencies, an EARS-format <code className="rounded bg-muted px-1 font-mono text-xs">### Acceptance Criteria</code> block per story, plus copy-paste <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> commands for each story</td>
               </tr>
               <tr className="border-b">
                 <td className="py-2 pr-4 font-mono text-xs">Open Questions</td>
+                <td className="py-2 pr-4 text-xs">both</td>
                 <td className="py-2">Unresolved items — what they block and who needs to decide</td>
               </tr>
               <tr>
                 <td className="py-2 pr-4 font-mono text-xs">Out of Scope</td>
+                <td className="py-2 pr-4 text-xs">full only</td>
                 <td className="py-2">Features explicitly deferred, with the scope they belong to</td>
               </tr>
             </tbody>
           </table>
         </div>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          In lite mode, everything marked <span className="font-mono text-xs">full only</span> lives in the source doc instead — <code className="rounded bg-muted px-1 font-mono text-xs">SPEC.md</code>&apos;s header links back to it rather than restating it.
+        </p>
 
         <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
           <p className="text-sm font-medium mb-1">ASSUMPTION: markers</p>

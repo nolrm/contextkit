@@ -30,13 +30,15 @@ Wait for the user's reply:
 
 ## Step 1 — Parse Input
 
-Count the explicit task descriptions the user provided. Tasks may be quoted strings, a numbered list, or comma-separated items.
+- **A single bare argument ending in `.md`, not inside quotes** (e.g. `/squad auth-plan.md`) → the user is pointing at a plan/overview file rather than typing tasks directly. Go to [File Extraction](#file-extraction). (A quoted task string that happens to end in `.md`, e.g. `/squad "Fix typo in README.md"`, is still a task — this only fires for a bare, unquoted filename argument.)
 
-**Distinguish tasks from directives:** Phrases like "let's do it", "split into tasks", "let's go", "go ahead", "run it", "proceed" are directives — not task descriptions. Do not count them as tasks.
+- Otherwise, count the explicit task descriptions the user provided. Tasks may be quoted strings, a numbered list, or comma-separated items.
 
-- **0 tasks provided** → Go to [Conversation Extraction](#conversation-extraction).
-- **1 task provided** → Single-task mode. Continue to Step 2.
-- **2+ tasks provided** → Batch mode. Continue to Step 2.
+  **Distinguish tasks from directives:** Phrases like "let's do it", "split into tasks", "let's go", "go ahead", "run it", "proceed" are directives — not task descriptions. Do not count them as tasks.
+
+  - **0 tasks provided** → Go to [Conversation Extraction](#conversation-extraction).
+  - **1 task provided** → Single-task mode. Continue to Step 2.
+  - **2+ tasks provided** → Batch mode. Continue to Step 2.
 
 ---
 
@@ -201,6 +203,52 @@ _Triggered when: batch in progress and user provides new tasks._
 5. Create new `handoff-[N].md` files using the [Handoff Template](#handoff-template).
 6. Write PO specs for new tasks only — one at a time. Write each handoff file to disk and update the manifest before moving to the next. Do not touch existing handoff files.
 7. Tell the user: "Added [N] new task(s) to the batch (now [NEW_TOTAL] total). Run `/squad-auto` to continue."
+
+---
+
+## File Extraction
+
+_Triggered when: the argument is a bare `.md` file path (e.g. `/squad auth-plan.md`)._
+
+**First, check for in-progress work** — same check as Conversation Extraction below: if any handoff has `status: po-clarify` → jump to [Clarification Mode](#clarification-mode). If any handoff has a non-`done`, non-`po-clarify` status → stop. Tell the user: "There's an in-progress squad session. Run `/squad-auto` to resume it, or `/squad-reset` to clear and start fresh." If all handoffs are `done` or none exist → continue below.
+
+If the file doesn't exist: stop and tell the user: "Couldn't find `[filename]`."
+
+Read the file in full. Extract distinct tasks using the same criteria as Conversation Extraction:
+
+**A "distinct task" means:**
+- It could be implemented independently
+- It has a clear outcome
+- It maps to a concrete code change
+
+**Do NOT extract:**
+- Background context, current-state notes, or rationale sections
+- Open questions left unresolved in the doc
+- Items the doc explicitly marks as out of scope or deferred
+
+A file organized into phases or numbered sections (each with its own concrete deliverable) usually maps one task per phase — don't explode a phase's internal sub-steps into separate tasks unless they're independently shippable on their own. Preserve the file's own ordering; it's usually already dependency-ordered.
+
+**After extraction:**
+
+Present the list and wait for one reply:
+
+> I found [N] task(s) in `[filename]`:
+>
+> 1. [one-line task description]
+> 2. [one-line task description]
+>
+> Shall I proceed?
+> - **yes** — continue
+> - **edit** — give me a revised list and I'll use that instead
+> - **cancel** — stop here
+
+- `yes` → Use extracted list. If 1 task → Single-task mode. If 2+ → Batch mode. Continue to Step 2.
+- `edit` → Use the user's revised list. Continue to Step 2.
+- `cancel` → Stop here.
+
+If no distinct tasks were found (the file is prose/context without concrete, scoped items):
+
+> Couldn't extract distinct, independently-implementable tasks from `[filename]` — it may need more structure (e.g. a numbered phase/step breakdown), or you can describe tasks directly: `/squad "task 1" "task 2"`.
 
 ---
 

@@ -20,6 +20,8 @@ Read the user's message to detect flags and arguments:
 - `/spec --extend [scope-slug]` → extend an existing scope with new stories → **Step 3D**
 - `/spec --extend` (no slug) → stop: "Provide a scope slug: `/spec --extend [scope-slug]`"
 
+**Mode override:** `--full` or `--lite` may accompany `/spec` or `/spec [file.md]` (e.g. `/spec PLAN.md --lite`) to force the spec mode instead of auto-detecting it. Strip the flag before routing with the rules above. Both flags together → stop: "Pass only one of `--full` / `--lite`." The override only takes effect when a new spec is initialized (Step 3A); if the run resumes an existing spec instead, ignore it and tell the user: "Mode is fixed per spec run — this spec is already in `[mode]` mode. Use `/spec --reset` and re-run with `--[mode]` to change it."
+
 ## Step 2 — State Detection
 
 _(Reached only from `/spec` alone)_
@@ -64,6 +66,22 @@ _(Reached from Step 2 when no `.contextkit/spec/PROGRESS.md` exists, or from Ste
   - If **multiple** are found → list them and ask: "Which file is your product overview?"
   - If **none** are found → list all `.md` files in the current directory and ask: "Which file is your product overview?"
 
+### Classify the input (automatic — do not ask the user)
+
+If `--full` or `--lite` was passed (Step 1), use that mode, skip the classification below, and state it in the scopes announcement as e.g. `Running in lite mode (--lite override).`
+
+Otherwise, read the overview file in full, then decide **full** or **lite** mode:
+
+- **full** — the default. Use when the overview reads as a product idea: features described in terms of user value, no assumption the reader can see the codebase, data model / API / UX still open decisions.
+- **lite** — use when the overview reads as an implementation plan against a system that already exists: it names specific files, functions, or components to modify; includes a "current state" / "what's already built" section; describes closing gaps or wiring together existing pieces rather than designing new ones; or states that schema/API/UX for the area are already decided and unchanged.
+
+Weigh the signals — a few incidental file references in an otherwise idea-level doc don't tip it to lite; a doc that is *structured around* existing code (per-phase changes with named files, "verified current state" framing, no new entities/endpoints) does.
+
+Set the mode and move on without asking. State the decision to the user in one line as part of the scopes announcement in the next section, e.g.:
+`Detected an existing-system implementation plan — running in lite mode (Stories + Acceptance Criteria per scope, no Data Model/API/UX regeneration). Re-run with --full to override.`
+
+If a later scope in this same spec turns out to need the other mode (rare — e.g. a lite-mode spec whose overview is later edited to include real greenfield feature work), don't switch mid-spec. Flag it to the user as an observation instead: mode is fixed per spec run, decided once at init, so a genuine mismatch means starting a new spec (`/spec --reset`, then re-run with `--full` or `--lite`) rather than mixing modes across scopes.
+
 ### Define scopes (inline)
 
 Read the overview file in full. Act as CTO and identify the logical spec scopes.
@@ -89,6 +107,7 @@ Typical project: 5–12 scopes. Good slug examples: `01-identity-auth`, `02-work
 
 source: [PATH_TO_OVERVIEW]
 created: [TODAY'S DATE]
+mode: [full|lite]
 
 ## Scopes
 
@@ -104,7 +123,7 @@ created: [TODAY'S DATE]
 
 Slug format: kebab-case, max 30 characters, zero-padded number prefix (01, 02, ... 09, 10, 11...).
 
-Tell the user the scopes identified. Then proceed to Step 4 with the first unchecked scope.
+Tell the user the scopes identified, including the mode line from the classification step above. Then proceed to Step 4 with the first unchecked scope.
 
 ## Step 3B — Continuation Mode
 
@@ -113,7 +132,7 @@ Read `.contextkit/spec/PROGRESS.md`:
 - Otherwise find the first line starting with `- [ ]` — that is the next unchecked scope.
 - If all scopes show `- [x]`, tell the user: "All scopes complete. Read `.contextkit/spec/INDEX.md` for the full spec." Stop.
 
-Identify the overview file path from the `source:` field in PROGRESS.md.
+Identify the overview file path from the `source:` field in PROGRESS.md, and the mode from the `mode:` field (spec runs created before this field existed have no `mode:` line — treat those as `full`).
 
 ## Step 3C — Add Scope (`--add`)
 
@@ -133,7 +152,7 @@ Identify the overview file path from the `source:` field in PROGRESS.md.
 6. Append a new EARS-format block for each new story to `### Acceptance Criteria`, matching the format already used there.
 7. Append new `/squad "..."` lines to the `### Squad Commands` block.
 8. Add a note immediately after the `## Stories` heading (or at the end of the section): `Extended: [TODAY'S DATE] — [N] stories added`
-9. **Do not** modify the Data Model, API Contracts, or UX Flows sections unless the new stories strictly require new fields or endpoints — if they do, append the additions rather than rewriting.
+9. In full-mode scopes: **do not** modify the Data Model, API Contracts, or UX Flows sections unless the new stories strictly require new fields or endpoints — if they do, append the additions rather than rewriting. Lite-mode scopes have no such sections — skip this step.
 10. Tell the user: "Extended `[scope-slug]`: [N] new stories added."
 
 ## Step 4 — Scope Run
@@ -144,15 +163,21 @@ Create `.contextkit/spec/[scope]/` if it doesn't exist.
 
 Read:
 - The product overview
-- `.contextkit/spec/PROGRESS.md` — to understand where this scope sits and what ordering notes apply
-- Any already-completed `SPEC.md` files from prior scopes — their data models and API conventions are constraints you must respect in this scope
+- `.contextkit/spec/PROGRESS.md` — to understand where this scope sits, what ordering notes apply, and the `mode:` for this spec run
+- Any already-completed `SPEC.md` files from prior scopes — in full mode, their data models and API conventions are constraints you must respect in this scope; in lite mode, prior scopes have no such sections to check against
 
 ### Write SPEC.md (single CTO pass)
 
-Act as CTO and write `.contextkit/spec/[scope]/SPEC.md` directly. Cover all domains in sequence. This is a reference document developers build from — be specific, not exhaustive.
+Act as CTO and write `.contextkit/spec/[scope]/SPEC.md` directly. This is a reference document developers build from — be specific, not exhaustive.
 
 Where you fill in detail not explicit in the overview, mark it inline:
 `ASSUMPTION: [what you're assuming] — [brief reasoning]`
+
+Use the template matching this spec's `mode` (from PROGRESS.md, Step 3B / set in Step 3A).
+
+#### Full mode
+
+Cover all domains in sequence:
 
 ```markdown
 # Spec — [Scope Human Name]
@@ -288,6 +313,64 @@ Features explicitly not built in this scope.
 |---------|------------|
 | [feature] | [scope slug] |
 ```
+
+#### Lite mode
+
+The overview already carries the data model, API contracts, and UX decisions for this scope (they live in the source doc, not here) — don't regenerate them. Extract only the build plan:
+
+```markdown
+# Spec — [Scope Human Name]
+
+> Source: [OVERVIEW_PATH] · Scope: [SCOPE_SLUG] · Date: [TODAY'S DATE]
+> Lite mode — data model, API, and UX are defined in the source doc and are unchanged for this scope; not restated here.
+
+## Summary
+
+[2-3 sentences: what this scope covers and what a team can build after reading this document]
+
+---
+
+## Stories
+
+Stories are ordered by dependency. Run them in sequence with `/squad`.
+
+| # | Story | Size | Depends on |
+|---|-------|------|-----------|
+| S1 | [one-line description of what gets built] | S/M/L | — |
+| S2 | [one-line description] | S/M/L | S1 |
+
+### Acceptance Criteria
+
+One block per story, written in EARS format (Easy Approach to Requirements Syntax) — each line names a trigger and the system's required response, so Review can check it against the diff line by line instead of judging it holistically. Use `WHEN [event], the system SHALL [response]` for behavior triggered by an action, and `IF [precondition], THEN the system SHALL [response]` for state-based rules. Keep each line testable by a single assertion — split compound criteria ("and"/"or") into separate lines.
+
+**S1 — [Story Title]**
+- WHEN [user/system action], the system SHALL [observable response]
+- IF [precondition], THEN the system SHALL [observable response]
+
+**S2 — [Story Title]**
+- WHEN [user/system action], the system SHALL [observable response]
+
+### Squad Commands
+
+```
+/squad "S1 — [Story Title]: [what to build]. AC: [criterion 1]; [criterion 2]."
+/squad "S2 — [Story Title]: [what to build]. AC: [criterion 1]."
+```
+
+Each command is self-contained — squad can run it without reading this spec. `/squad-spec` reads the `### Acceptance Criteria` block above directly instead of parsing the command string.
+
+---
+
+## Open Questions
+
+Resolve these before building the relevant story. Do not assume — escalate.
+
+| Question | Blocks | Owner |
+|----------|--------|-------|
+| [question] | S# or "scope" | product / tech / stakeholder |
+```
+
+If, while extracting stories, you find the overview *does* imply a genuinely new entity, endpoint, or flow for this scope (not just wiring existing pieces together), don't silently add Data Model/API/UX sections to a lite-mode doc — note it under Open Questions instead, flagged for the user to confirm whether this scope was misclassified.
 
 ### Update progress files
 

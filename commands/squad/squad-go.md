@@ -32,6 +32,6 @@ Then immediately follow all instructions in `.contextkit/commands/squad/squad-au
 
 ---
 
-All other behavior is identical to `/squad`: Step 0 guard, conversation extraction, clarification gate, single-task vs batch mode, handoff writing, and clarification flows all work the same way.
+All other behavior is identical to `/squad`: Step 0 guard, file extraction, conversation extraction, clarification gate, single-task vs batch mode, handoff writing, and clarification flows all work the same way.
 
 Use `/squad` instead if you want to review PO specs before the pipeline starts.

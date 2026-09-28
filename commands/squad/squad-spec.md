@@ -41,6 +41,8 @@ Parse input for a scope slug (e.g. `01-identity-auth`).
 
 Read the full SPEC.md. Extract every story from the `## Stories` table, its EARS-format block in `### Acceptance Criteria`, and the `### Squad Commands` section.
 
+Detect spec mode from the header block right under the title: a line reading `> Lite mode — ...` marks this a **lite** spec (data model/API/UX for this scope live in the original source doc named on the `> Source:` line, not in SPEC.md). No such line means **full** mode (SPEC.md's own `## Data Model`/`## API Contracts`/`## UX Flows` sections are authoritative). Carry this mode into every handoff file created below.
+
 Create `.contextkit/squad/manifest.md`:
 
 ```markdown
@@ -69,6 +71,7 @@ status: architect
 attempts: 0
 created: [TIMESTAMP]
 spec: .contextkit/spec/[scope-slug]/SPEC.md
+spec-mode: [full|lite]
 
 ---
 
@@ -88,17 +91,19 @@ Copy this story's EARS-format block from SPEC.md's `## Stories` → `### Accepta
 
 ### Edge Cases
 
-[From the spec UX Flows section — edge cases relevant to this story]
+Full mode: [from the spec's `## UX Flows` section — edge cases relevant to this story].
+Lite mode (no `## UX Flows` in SPEC.md): read the source doc named on SPEC.md's `> Source:` line instead — pull edge cases from whatever it documents about this story's current/target behavior. If it documents none, write "none documented — verify during implementation."
 
 ### Out of Scope
 
-[From the spec Out of Scope section — filtered to this story]
+Full mode: [from the spec's `## Out of Scope` section — filtered to this story].
+Lite mode (no `## Out of Scope` in SPEC.md): leave as "not tracked separately in lite mode" unless the source doc explicitly calls something out as deferred.
 
 ### Spec Reference
 
 Read before planning: `.contextkit/spec/[scope-slug]/SPEC.md`
-- Data model constraints: `## Data Model`
-- API conventions: `## API Contracts`
+- Full mode — data model constraints: `## Data Model`. API conventions: `## API Contracts`.
+- Lite mode — SPEC.md has no Data Model/API Contracts sections; read the source doc named on SPEC.md's `> Source:` line instead. Its description of the existing system (files, functions, schema, endpoints already in place) is the hard constraint — do not invent alternatives.
 - Story dependencies: [S# depends on S# / none]
 - Open questions blocking this story: [list or "none"]
 
@@ -234,8 +239,8 @@ Every dispatched prompt ends with: `Write the handoff file yourself. Return "don
 ```
 You are the Architect for one story in a squad-spec run. You have not seen any other phase's reasoning — work only from what's written below and in the files you read.
 
-Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec`.
-Spec: .contextkit/spec/[scope-slug]/SPEC.md — data model and API contracts are hard constraints.
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec`, including the `spec-mode:` field.
+Spec: .contextkit/spec/[scope-slug]/SPEC.md — in full mode, its `## Data Model` and `## API Contracts` sections are hard constraints. In lite mode, SPEC.md has no such sections — follow `### Spec Reference` in the handoff to the original source doc instead; what it describes as already existing (files, functions, schema, endpoints) is the hard constraint. Do not design a new data model or API for a lite-mode story.
 
 Fill in `## 2. Architect Plan`: Approach, Files to Change, Trade-offs, Implementation Steps.
 

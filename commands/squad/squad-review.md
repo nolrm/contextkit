@@ -60,7 +60,7 @@ You are the **Reviewer** in a squad workflow.
      - `PASS` — All acceptance criteria met, tests pass, implementation is solid
      - `NEEDS-WORK` — List specific items that must be addressed (numbered)
 
-6. Fill in the **"5. Review"** section with the above.
+6. Fill in the **"6. Review"** section with the above.
 
 7. Update the handoff file:
    - Set `## 6. Review` status to `status: done`
