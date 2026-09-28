@@ -41,7 +41,9 @@ Parse input for a scope slug (e.g. `01-identity-auth`).
 
 Read the full SPEC.md. Extract every story from the `## Stories` table, its EARS-format block in `### Acceptance Criteria`, and the `### Squad Commands` section.
 
-Detect spec mode from the header block right under the title: a line reading `> Lite mode — ...` marks this a **lite** spec (data model/API/UX for this scope live in the original source doc named on the `> Source:` line, not in SPEC.md). No such line means **full** mode (SPEC.md's own `## Data Model`/`## API Contracts`/`## UX Flows` sections are authoritative). Carry this mode into every handoff file created below.
+**Validate before creating any handoff:** every story number in the `## Stories` table must have a matching `### Acceptance Criteria` block, every AC bullet must match EARS shape (`WHEN [event], the system SHALL [response]` or `IF [precondition], THEN the system SHALL [response]`), and every story must have a `/squad "..."` line in `### Squad Commands`. If anything fails this check, stop — do not create handoffs against a malformed spec. Tell the user which story/line failed and that `/spec --redo [scope-slug]` (or a manual edit) is needed first. This is a mechanical, non-optional check — a bad spec wastes an entire pipeline run before anyone notices otherwise.
+
+Detect spec mode: read the `> Mode: full` or `> Mode: lite` field from the header block right under the title. Specs written before this field existed have no `Mode:` field — fall back to the old signal instead: a line reading `> Lite mode — ...` marks **lite**, its absence marks **full**. Lite mode means data model/API/UX for this scope live in the original source doc named on the `> Source:` line, not in SPEC.md; full mode means SPEC.md's own `## Data Model`/`## API Contracts`/`## UX Flows` sections are authoritative. Carry this mode into every handoff file created below.
 
 Create `.contextkit/squad/manifest.md`:
 
@@ -349,6 +351,7 @@ Commit this story's changes now, before moving to the next story, so history sta
   ```
   Pick `<type>(<scope>)` per the same Conventional Commits rules `agent-push-checklist` enforces (`feat`/`fix`/`improve`/`docs`/`chore`/`refactor`/`test`).
 - If `git commit` fails (e.g. a pre-commit hook rejects it): do not retry with `--no-verify`. Fix the underlying issue if it's something this pass caused (e.g. a lint failure), or if it can't be resolved here, set the story's top-level `status:` to `needs-work` with the failure recorded under `## 6. Review` → Issues Found, and stop this story — do not continue to the next story with this one uncommitted.
+- After a successful commit (or "no changes to commit"), run `git rev-parse --short HEAD` and update this story's row in `.contextkit/spec/[scope-slug]/SPEC.md` → `## Stories` table: change its `Status` cell from `pending` to `done @ [sha]` (or `done @ [sha] (no-op)` if nothing was staged). This is the only place SPEC.md gets touched after `/spec` wrote it — a lightweight build record, not a spec edit; don't touch anything else in the file.
 
 Update manifest task status to `done`.
 

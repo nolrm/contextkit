@@ -208,4 +208,25 @@ describe('squad-spec.md — per-phase subagent dispatch', () => {
     expect(step5).not.toContain('whatever parallel/worker flags');
     expect(step5).toContain('the next scope does not start until this one is verified clean');
   });
+
+  it('21. reads the structured Mode field first, falls back to the old Lite-mode prose sniff for older specs', () => {
+    expect(content).toContain('read the `> Mode: full` or `> Mode: lite` field');
+    expect(content).toContain('have no `Mode:` field — fall back to the old signal instead');
+  });
+
+  it('22. validates AC blocks against every story before creating any handoff', () => {
+    const setupIndex = content.indexOf('### Create handoff files');
+    const manifestIndex = content.indexOf('Create `.contextkit/squad/manifest.md`');
+    expect(setupIndex).toBeGreaterThan(-1);
+    expect(manifestIndex).toBeGreaterThan(setupIndex);
+    const setupSection = content.slice(setupIndex, manifestIndex);
+    expect(setupSection).toContain('Validate before creating any handoff');
+    expect(setupSection).toContain('WHEN [event], the system SHALL [response]');
+    expect(setupSection).toContain('do not create handoffs against a malformed spec');
+  });
+
+  it('23. Commit step records the build SHA in SPEC.md Stories table Status column', () => {
+    expect(content).toContain('git rev-parse --short HEAD');
+    expect(content).toContain('change its `Status` cell from `pending` to `done @ [sha]`');
+  });
 });

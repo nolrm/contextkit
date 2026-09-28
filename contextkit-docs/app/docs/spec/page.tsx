@@ -137,6 +137,13 @@ export default function SpecPage() {
         </div>
 
         <div className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Check a built scope against its spec</p>
+          <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --verify 01-identity-auth
+# Reads the current code and marks each Acceptance Criteria line
+# verified / drifted / unknown in a new ## Verification section — reports only, never edits code or the spec`}</pre>
+        </div>
+
+        <div className="space-y-3">
           <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Reset everything</p>
           <pre className="rounded bg-muted px-4 py-3 font-mono text-sm overflow-x-auto">{`/spec --reset
 # Confirms with you first, then deletes the entire .contextkit/spec/ folder`}</pre>

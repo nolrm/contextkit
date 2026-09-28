@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.0] - 2026-09-28
+
+### Added
+- **`SPEC.md` gets a structured `Mode:` header field** (`> Source: ... · Scope: ... · Mode: full|lite · Date: ...`) instead of `/squad-spec` inferring mode by string-matching a prose line. Specs written before this field existed fall back to the old prose sniff, so nothing already generated breaks.
+- **`/spec` mechanically validates SPEC.md before updating progress files** — every story has a matching Acceptance Criteria block, every AC bullet matches EARS shape, no compound criteria, every story has a squad command. Fixes format issues itself rather than asking, since these are mechanical, not design decisions.
+- **`/squad-spec` validates the same way before creating any handoff** — refuses to start a pipeline run against a malformed spec instead of discovering it partway through.
+- **Stories table gets a `Status` column** (`pending` at spec time). `/squad-spec`'s Commit step updates it to `done @ <short-sha>` after each story's commit — lightweight build traceability without a separate tracking file.
+- **`/spec --verify [scope-slug]`** — re-reads a built scope's code against its Acceptance Criteria and classifies every AC line as verified / drifted / unknown in a new `## Verification` section. Addresses the standard criticism of static specs (nothing re-checks them once code ships) without inventing a new subsystem — it's a judgment task the existing CTO-pass skill is already positioned to do. Reports only; never edits code or the spec.
+
 ## [1.10.0] - 2026-09-28
 
 ### Added

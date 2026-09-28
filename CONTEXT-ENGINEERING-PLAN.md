@@ -275,7 +275,7 @@ this natively, including updates.
 | — | 0 (spikes) | Cheap; decides Phase 1 urgency and Phase 2 scope | **Done** — see §9 |
 | 1.9.0 | 1, 2, 5 | 1 & 2 fix real bugs (stale bridge paths, AGENTS.md overwrite) and 2 reuses 1's registry pattern; 5 is prompt-only and independent | **Shipped 2026-09-28** — see §9.1 |
 | 1.10.0 | 3 (4 deferred) | The core positioning change | **Phase 3 shipped 2026-09-28** — see §9.2. Phase 4 (corrections→rules loop) not started; re-added to `docs/token-efficiency.md` Next Steps instead of duplicating tracking here. |
-| 1.11.0 | 6 | Builds on 1.8.0 lite mode | Not started |
+| 1.11.0 | 6 | Builds on 1.8.0 lite mode | **Shipped 2026-09-28** — see §9.3 |
 | 1.12.0 | 7 | Needs the registry (1); largest distribution change | Not started |
 
 ### 9.1 What shipped in 1.9.0 vs. what the plan originally scoped
@@ -290,6 +290,12 @@ this natively, including updates.
 - `docs/token-efficiency.md` already existed and had independently anticipated most of Phase 3's ambition (the compress skill, the on-demand-skills split, compact-output guidance) before this plan was written — 1.10.0's actual net-new work was narrower: the explicit non-inferable-only filter with a citation requirement, the 150-line budget check, and the `ck:unreviewed` review-marker mechanism. The plan's "replace Directory Layout with Pointers in the install.js skeleton" turned out not to apply — the shipped skeleton template has no directory-layout content to remove; that only exists in this repo's own *generated* (gitignored, non-shipped) `.contextkit/standards/architecture.md`.
 - Found and fixed a real, previously-invisible bug while in this area: `ck analyze` (the standalone CLI command, separate from the `/analyze` skill) has been non-functional against every real install since the source file moved to `commands/dev/analyze.md` — its guard check, read, and both printed AI-chat suggestions all still referenced the old flat path. Its own test suite didn't catch this because the fixture matched the bug.
 - Phase 4 (corrections → rules loop / a `promote` skill) wasn't built — re-added as an open item in `docs/token-efficiency.md` Next Steps rather than tracked twice.
+
+### 9.3 What shipped in 1.11.0 (Phase 6) vs. what the plan originally scoped
+
+- **Dropped the `lib/utils/spec-validator.js` + `ck spec validate` CLI command idea entirely** — checking the actual distribution model first: `lib/` is ContextKit's own package code (used by the globally-installed `ck` CLI), never copied into a user's project. Only `commands/` (→ `.contextkit/commands/`) and `templates/` land in target repos. A Node-script validator invoked from inside a `/spec`-generated session would have no `node_modules/@nolrm/contextkit` to find unless the user's project happened to depend on it — which `ck install` doesn't set up. A CLI command also cuts against this repo's own roadmap principle ("keep the CLI surface minimal — install, update, analyze, check; don't add commands that duplicate what editing a file directly achieves").
+- **What shipped instead**: the validation logic as explicit, mechanical AI-instructions inside `/spec` (after writing SPEC.md) and `/squad-spec` (before creating handoffs) — the same pattern `commands/dev/compress.md`'s existing "Compliance check" step already uses. No new code, no new CLI surface.
+- Mode field, Status column, and `/spec --verify` shipped as scoped.
 
 Every release: CHANGELOG entry, docs site page updates (`contextkit-docs/`), README, numbered test
 descriptions, `ck update` migrations that are non-destructive and marker-gated.

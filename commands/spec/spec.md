@@ -19,6 +19,8 @@ Read the user's message to detect flags and arguments:
 - `/spec --add` (no slug) → stop: "Provide a scope slug: `/spec --add [scope-slug]`"
 - `/spec --extend [scope-slug]` → extend an existing scope with new stories → **Step 3D**
 - `/spec --extend` (no slug) → stop: "Provide a scope slug: `/spec --extend [scope-slug]`"
+- `/spec --verify [scope-slug]` → re-check a built scope's Acceptance Criteria against the current code → **Step 3E**
+- `/spec --verify` (no slug) → stop: "Provide a scope slug: `/spec --verify [scope-slug]`"
 
 **Mode override:** `--full` or `--lite` may accompany `/spec` or `/spec [file.md]` (e.g. `/spec PLAN.md --lite`) to force the spec mode instead of auto-detecting it. Strip the flag before routing with the rules above. Both flags together → stop: "Pass only one of `--full` / `--lite`." The override only takes effect when a new spec is initialized (Step 3A); if the run resumes an existing spec instead, ignore it and tell the user: "Mode is fixed per spec run — this spec is already in `[mode]` mode. Use `/spec --reset` and re-run with `--[mode]` to change it."
 
@@ -155,6 +157,36 @@ Identify the overview file path from the `source:` field in PROGRESS.md, and the
 9. In full-mode scopes: **do not** modify the Data Model, API Contracts, or UX Flows sections unless the new stories strictly require new fields or endpoints — if they do, append the additions rather than rewriting. Lite-mode scopes have no such sections — skip this step.
 10. Tell the user: "Extended `[scope-slug]`: [N] new stories added."
 
+## Step 3E — Verify Scope (`--verify`)
+
+_(Reached from Step 1 when `--verify [scope-slug]` is passed. Independent of the scope-run loop — doesn't touch `PROGRESS.md` or advance anything.)_
+
+Checks whether the code actually satisfies what a spec promised, since a spec built weeks ago can drift from the code that shipped for it (the standard failure mode of static specs: nothing re-checks them after the build). This is a judgment task, not a mechanical one — reading a Go handler and deciding whether it satisfies "the system SHALL return 403" takes understanding the code, not just grepping for a string.
+
+1. Check `.contextkit/spec/[scope-slug]/SPEC.md` exists. If not: stop — "Scope `[scope-slug]` not found."
+2. Read the full SPEC.md — every story's Acceptance Criteria block — and the current codebase relevant to this scope (use the Story titles and, in full mode, the Data Model/API Contracts sections, as your map of where to look; in lite mode, follow `### Spec Reference` to the original source doc's description of the affected files).
+3. For each AC bullet, decide one of:
+   - **verified** — the current code satisfies this line. Cite the file/function that does it.
+   - **drifted** — code exists for the general area but no longer satisfies this specific line (changed behavior, removed handling, a renamed field this line still references). Cite what you found instead and where (`file:line`).
+   - **unknown** — you can't find code that clearly addresses this line either way (possibly never built, or built somewhere this scan didn't cover). Say what you looked for and where.
+4. Append (or replace, if re-running) a `## Verification` section at the end of SPEC.md:
+
+```markdown
+## Verification
+
+Last checked: [TODAY'S DATE]
+
+**S1 — [Story Title]**
+- ✅ verified — WHEN [event]... (src/foo.ts:42)
+- ⚠️ drifted — IF [precondition]... — code now does [X] instead, see src/bar.ts:10
+- ❓ unknown — WHEN [event]... — no matching handler found under src/api/
+
+**S2 — [Story Title]**
+- ✅ verified — ...
+```
+
+5. Report a one-line summary: `Verified [scope-slug]: [N] verified, [N] drifted, [N] unknown out of [N] total AC lines.` If anything drifted or is unknown, list which stories need attention — don't silently fix the code or the spec; this step only reports.
+
 ## Step 4 — Scope Run
 
 Create `.contextkit/spec/[scope]/` if it doesn't exist.
@@ -182,7 +214,7 @@ Cover all domains in sequence:
 ```markdown
 # Spec — [Scope Human Name]
 
-> Source: [OVERVIEW_PATH] · Scope: [SCOPE_SLUG] · Date: [TODAY'S DATE]
+> Source: [OVERVIEW_PATH] · Scope: [SCOPE_SLUG] · Mode: full · Date: [TODAY'S DATE]
 
 ## Summary
 
@@ -268,10 +300,10 @@ erDiagram
 
 Stories are ordered by dependency. Run them in sequence with `/squad`.
 
-| # | Story | Size | Depends on |
-|---|-------|------|-----------|
-| S1 | [one-line description of what gets built] | S/M/L | — |
-| S2 | [one-line description] | S/M/L | S1 |
+| # | Story | Size | Depends on | Status |
+|---|-------|------|-----------|--------|
+| S1 | [one-line description of what gets built] | S/M/L | — | pending |
+| S2 | [one-line description] | S/M/L | S1 | pending |
 
 ### Acceptance Criteria
 
@@ -321,7 +353,7 @@ The overview already carries the data model, API contracts, and UX decisions for
 ```markdown
 # Spec — [Scope Human Name]
 
-> Source: [OVERVIEW_PATH] · Scope: [SCOPE_SLUG] · Date: [TODAY'S DATE]
+> Source: [OVERVIEW_PATH] · Scope: [SCOPE_SLUG] · Mode: lite · Date: [TODAY'S DATE]
 > Lite mode — data model, API, and UX are defined in the source doc and are unchanged for this scope; not restated here.
 
 ## Summary
@@ -334,10 +366,10 @@ The overview already carries the data model, API contracts, and UX decisions for
 
 Stories are ordered by dependency. Run them in sequence with `/squad`.
 
-| # | Story | Size | Depends on |
-|---|-------|------|-----------|
-| S1 | [one-line description of what gets built] | S/M/L | — |
-| S2 | [one-line description] | S/M/L | S1 |
+| # | Story | Size | Depends on | Status |
+|---|-------|------|-----------|--------|
+| S1 | [one-line description of what gets built] | S/M/L | — | pending |
+| S2 | [one-line description] | S/M/L | S1 | pending |
 
 ### Acceptance Criteria
 
@@ -371,6 +403,17 @@ Resolve these before building the relevant story. Do not assume — escalate.
 ```
 
 If, while extracting stories, you find the overview *does* imply a genuinely new entity, endpoint, or flow for this scope (not just wiring existing pieces together), don't silently add Data Model/API/UX sections to a lite-mode doc — note it under Open Questions instead, flagged for the user to confirm whether this scope was misclassified.
+
+### Validate SPEC.md
+
+Before updating progress files, mechanically check what you just wrote — this catches the kind of format error that would otherwise waste an entire `/squad-spec` run before anyone notices:
+
+1. **Every story in the `## Stories` table has an EARS-format Acceptance Criteria block.** Cross-check story numbers between the two.
+2. **Every AC bullet matches EARS shape**: `WHEN [event], the system SHALL [response]` or `IF [precondition], THEN the system SHALL [response]`. A quick sanity pass: `grep -nE '^\- (WHEN|IF) ' SPEC.md` should return one line per bullet under `### Acceptance Criteria` — anything under that heading NOT matched is a format violation.
+3. **No compound criteria** — a bullet with "and"/"or" after "SHALL" joining two independent, separately-testable outcomes should be split into two bullets instead. (Not every "and" is compound — "SHALL return the created record and a 201 status" is one observable outcome; "SHALL send an email and SHALL log the event" is two.)
+4. **Every story has a corresponding `/squad "..."` line** in `### Squad Commands`.
+
+If anything fails: fix it directly in the SPEC.md you just wrote — don't ask the user, this is a mechanical formatting issue, not a design decision. Re-check after fixing.
 
 ### Update progress files
 
