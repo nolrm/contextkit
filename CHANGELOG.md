@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.12.1] - 2026-09-28
+
+### Changed
+- **`/squad-spec`'s Review gate now runs on the primary model, not Haiku.** `/squad-spec` runs unattended, so Review is the only thing between a flawed story and a commit. Routing it to the smallest model meant the strongest model wrote the code and the weakest one judged it, and checking whether code satisfies an EARS criterion takes the same capability as writing it. Review is a small share of a story's tokens next to Dev, so the saving was small for the most risk-bearing phase. This also resolves a contradiction: `/squad-auto` already kept Review on the primary model.
+- **Peer Review removed from `/squad-spec`'s retry loop; Review absorbs its job.** Review was told to read Peer Review's verdict before judging, so every retry anchored the gate on another agent's conclusion — the exact problem per-phase isolation exists to prevent. The orchestrator never acted on Peer Review's verdict either. On a retry, Review now lists each prior issue under `### Prior Issues` as resolved or still open, citing the diff, and treats any open one as needs-work. One fewer dispatch per retry.
+- **`/squad-auto`'s opt-in `model_routing` uses the `haiku` tier alias** instead of the pinned `claude-haiku-4-5-20251001`, so it tracks the current Haiku model rather than staying on an October 2025 one indefinitely.
+
+### Fixed
+- **`/squad-spec` still told Codex there was no isolated-subagent primitive** — 1.9.0 corrected this in `/squad-auto` but missed `/squad-spec`. Both now use Codex's stable `multi_agent` capability where available, with the inline fallback otherwise.
+
+### Removed
+- **The unused optional `## 5. Peer Review` section** from `/squad`'s handoff template and the GitHub Actions squad template — nothing has filled it since the `squad-peer-review` command was removed. Sections 6 and 7 keep their numbers, since every command references them by number.
+
 ## [1.12.0] - 2026-09-28
 
 ### Added

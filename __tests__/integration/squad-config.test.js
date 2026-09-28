@@ -66,12 +66,13 @@ describe('squad config.md — content validation', () => {
     expect(autoContent).toContain('model_routing: false` (default)');
   });
 
-  it('6. squad-auto.md uses correct haiku model ID in both dev and test sub-agent prompts', () => {
+  it('6. squad-auto.md routes dev and test to the haiku tier alias, never a pinned model ID', () => {
     const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
-    const haiku = 'claude-haiku-4-5-20251001';
-    // Should appear twice — once for dev, once for test
-    const occurrences = (autoContent.match(new RegExp(haiku, 'g')) || []).length;
+    // Twice — once for dev, once for test. An alias tracks the current Haiku
+    // model; a pinned dated ID silently stays on an old one forever.
+    const occurrences = (autoContent.match(/`model: haiku`/g) || []).length;
     expect(occurrences).toBe(2);
+    expect(autoContent).not.toMatch(/claude-haiku-\d/);
   });
 
   it('7. squad-auto.md sub-agent prompts reference correct command files', () => {
@@ -137,11 +138,11 @@ describe('squad-spec.md — per-phase subagent dispatch', () => {
     expect(step4).toContain('isolated context');
   });
 
-  it('13. Step 4 documents the Codex inline fallback since no subagent primitive is confirmed', () => {
+  it('13. Step 4 uses Codex multi-agent isolation where available, with an inline fallback', () => {
     const step4 = content.slice(content.indexOf('## Step 4'));
     expect(step4).toContain('Codex:**');
-    expect(step4).toContain('no equivalent isolated-subagent primitive');
-    expect(step4).toContain('run each phase');
+    expect(step4).toContain('`multi_agent`');
+    expect(step4).toContain('fall back to running each phase');
   });
 
   it("14. every dispatched phase prompt is self-contained — no phase reads another phase's reasoning", () => {
@@ -150,7 +151,6 @@ describe('squad-spec.md — per-phase subagent dispatch', () => {
       'You are the Architect for one story in a squad-spec run',
       'You are the Dev for one story in a squad-spec run',
       'You are the Tester for one story in a squad-spec run',
-      'You are an independent Peer Reviewer for one story in a squad-spec run',
       'You are the Reviewer for one story in a squad-spec run',
       'You are the Doc writer for one story in a squad-spec run',
     ];
@@ -159,24 +159,25 @@ describe('squad-spec.md — per-phase subagent dispatch', () => {
     }
   });
 
-  it('15. Review and Peer Review run on claude-haiku-4-5-20251001, Architect/Dev/Test/Doc stay on the default model', () => {
+  it('15. every phase — including the Review gate — runs on the primary model, and there is no Peer Review phase', () => {
     const step4 = content.slice(content.indexOf('## Step 4'), content.indexOf('## Step 5'));
-    const haiku = 'claude-haiku-4-5-20251001';
-    const occurrences = (step4.match(new RegExp(haiku, 'g')) || []).length;
-    expect(occurrences).toBe(2);
-    expect(step4).toContain(
-      'Peer Review** (retry only — skip entirely when `attempts: 0`; Claude Code, dispatch with `model: claude-haiku-4-5-20251001`)'
-    );
-    expect(step4).toContain(
-      '**Review** (Claude Code, dispatch with `model: claude-haiku-4-5-20251001`)'
-    );
+    expect(step4).not.toMatch(/haiku/i);
+    expect(step4).not.toContain('Peer Review');
+    expect(step4).toContain('**Review** (Claude Code: dispatch on the primary model');
+  });
+
+  it('15a. on retry, Review itself confirms each prior issue is fixed in the diff', () => {
+    const step4 = content.slice(content.indexOf('## Step 4'), content.indexOf('## Step 5'));
+    expect(step4).toContain('### Prior Issues');
+    expect(step4).toContain('still open until the diff shows it');
+    expect(step4).toContain('Any prior issue still open is a needs-work finding');
   });
 
   it('16. every dispatched phase prompt ends by writing the handoff itself and returning a status string', () => {
     const step4 = content.slice(content.indexOf('## Step 4'), content.indexOf('## Step 5'));
     const occurrences = (step4.match(/Write the handoff file yourself\. Return/g) || []).length;
-    // 6 phase blocks (Architect, Dev, Test, Peer Review, Review, Doc) + 1 mention in the Step 4 intro
-    expect(occurrences).toBe(7);
+    // 5 phase blocks (Architect, Dev, Test, Review, Doc) + 1 mention in the Step 4 intro
+    expect(occurrences).toBe(6);
   });
 
   it('17. the retry loop (attempts cap) still lives with the orchestrator, not a phase prompt', () => {

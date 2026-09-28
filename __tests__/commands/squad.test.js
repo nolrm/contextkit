@@ -96,14 +96,14 @@ describe('squad-auto.md — source command file', () => {
   it('6. dev phase spawns haiku sub-agent when model_routing: true', () => {
     const devSection = content.slice(content.indexOf('**Dev:**'), content.indexOf('**Test:**'));
     expect(devSection).toContain('model_routing: true');
-    expect(devSection).toContain('claude-haiku-4-5-20251001');
+    expect(devSection).toContain('`model: haiku`');
     expect(devSection).toContain('squad-dev.md');
   });
 
   it('7. test phase spawns haiku sub-agent when model_routing: true', () => {
     const testSection = content.slice(content.indexOf('**Test:**'), content.indexOf('**Review:**'));
     expect(testSection).toContain('model_routing: true');
-    expect(testSection).toContain('claude-haiku-4-5-20251001');
+    expect(testSection).toContain('`model: haiku`');
     expect(testSection).toContain('squad-test.md');
   });
 

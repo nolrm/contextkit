@@ -58,7 +58,7 @@ Take the **first** task with status `architect`. Run all phases to completion fo
 
 **Dev:**
 
-Dispatch a sub-agent using the Agent tool. Pass `model: claude-haiku-4-5-20251001` if `model_routing: true`; omit `model` (inherit the primary model) if `model_routing: false` (default):
+Dispatch a sub-agent using the Agent tool. Pass `model: haiku` (the tier alias, so it tracks the current Haiku model instead of pinning one) if `model_routing: true`; omit `model` (inherit the primary model) if `model_routing: false` (default):
 ```
 You are the Developer in a squad workflow.
 Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
@@ -74,7 +74,7 @@ Check the resulting top-level `status:`:
 
 **Test:**
 
-Dispatch a sub-agent using the Agent tool. Pass `model: claude-haiku-4-5-20251001` if `model_routing: true`; omit `model` if `model_routing: false` (default):
+Dispatch a sub-agent using the Agent tool. Pass `model: haiku` (the tier alias, so it tracks the current Haiku model instead of pinning one) if `model_routing: true`; omit `model` if `model_routing: false` (default):
 ```
 You are the Tester in a squad workflow.
 Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
@@ -90,7 +90,7 @@ Check the resulting top-level `status:`:
 
 **Review:**
 
-Dispatch a sub-agent using the Agent tool, always on the primary model (Review is never Haiku-routed regardless of `model_routing`, matching `/squad-spec`):
+Dispatch a sub-agent using the Agent tool, always on the primary model (Review is never Haiku-routed regardless of `model_routing` — it is the gate, so it runs on the same tier that wrote the code; `/squad-spec` does the same):
 ```
 You are the Reviewer in a squad workflow.
 Handoff file: `.contextkit/squad/[HANDOFF_FILE]`

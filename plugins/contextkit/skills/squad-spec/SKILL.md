@@ -163,27 +163,13 @@ completed:
 
 ---
 
-## 5. Peer Review
-
-status: pending
-started:
-completed:
-
-Runs on any retry pass — skipped entirely on the first attempt (`attempts: 0`). An independent second opinion on the Dev fix: actively look for reasons it might not hold, don't rubber-stamp it.
-
-### Valid Findings
-
-### Dismissed Findings
-
-### Verdict
-
----
-
 ## 6. Review
 
 status: pending
 started:
 completed:
+
+### Prior Issues
 
 ### Checklist
 
@@ -240,7 +226,7 @@ Process the selected story through its phases, dispatching a fresh subagent per 
 
 **Claude Code:** dispatch each phase below using the Task tool (`run_in_background: false` — phases are sequential, the orchestrator waits for each result before moving on). Pass exactly the prompt shown for that phase. The subagent reads the handoff file itself and writes its own section directly; it does not tell the user to run any command.
 
-**Codex:** no equivalent isolated-subagent primitive is available to a `/goal`-driven skill today — run each phase's prompt inline in the current context instead, exactly as written, skipping the "dispatch a subagent" framing. This is a known gap versus Claude Code's version of this pipeline, not a design choice — Codex stories don't get phase-level context isolation yet.
+**Codex:** CLI 0.155.1+ ships a stable multi-agent capability (`multi_agent` feature flag) that can spawn an isolated subagent with its own context. Use it to dispatch each phase below the same way, if available in your installed version. If it isn't (older Codex, or the capability is disabled), fall back to running each phase's prompt inline in the current context, exactly as written, skipping the "dispatch a subagent" framing — the fallback is a capability gap, not a design choice.
 
 Every dispatched prompt ends with: `Write the handoff file yourself. Return "done" or "error: <description>".` If a phase returns anything other than `"done"` (or `"done: pass"` / `"done: needs-work"` for Review): surface the error to the user and stop this story. After every phase completes, verify the handoff file actually changed (`started:`/`completed:` stamped, section `status:` set) before trusting a `"done"` — if it didn't, treat it as `error: subagent did not persist the handoff`.
 
@@ -262,7 +248,7 @@ Write the handoff file yourself. Return "done" or "error: <description>".
 
 Update manifest task status to `architect`.
 
-### Dev → Test → (Peer Review) → Review loop
+### Dev → Test → Review loop
 
 Repeat this block until Review passes or `attempts` hits the cap (2). `attempts` starts at 0 and is incremented each time Review sends the story back — this bookkeeping stays with the orchestrator, it isn't the Dev subagent's job to decide whether to loop.
 
@@ -293,26 +279,16 @@ Stamp `started:`/`completed:`. Set `## 4. Test Report` → `status: done`, top-l
 Write the handoff file yourself. Return "done" or "error: <description>".
 ```
 
-**Peer Review** (retry only — skip entirely when `attempts: 0`; Claude Code, dispatch with `model: claude-haiku-4-5-20251001`):
+**Review** (Claude Code: dispatch on the primary model — omit `model`. This is the only gate between an unattended story and a commit, so it runs on the same model tier that wrote the code, never a smaller one):
 
 ```
-You are an independent Peer Reviewer for one story in a squad-spec run — a verification pass against a checklist that's already written down, not a design task. You have not seen the Dev's fix reasoning, only the diff on disk and the two sections named below. Do not assume the Dev fix worked.
+You are the Reviewer for one story in a squad-spec run. You have not seen the Dev's or Tester's reasoning, only what they recorded in the handoff and the diff/test results on disk. Do not assume the code works because the handoff says it does — verify against the diff.
 
-Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` and the existing `## 6. Review` → Issues Found (the failed pass this retry is addressing).
+Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` (acceptance criteria), `## 3. Dev Implementation`, and `## 4. Test Report`.
 
-Independently re-read the diff on disk against those Issues Found. Fill in `## 5. Peer Review`: Valid Findings, Dismissed Findings, Verdict.
-Stamp `started:`/`completed:`. Set `## 5. Peer Review` → `status: done`.
-Write the handoff file yourself. Return "done" or "error: <description>".
-```
+[On retry only (attempts >= 1): before overwriting `## 6. Review`, read its existing Issues Found from the previous pass. Under `### Prior Issues`, list each one as resolved or still open, citing the part of the diff that fixed it (or didn't). An issue the Dev only claims to have fixed is still open until the diff shows it.]
 
-**Review** (Claude Code, dispatch with `model: claude-haiku-4-5-20251001`):
-
-```
-You are the Reviewer for one story in a squad-spec run — a verification gate against a checklist that's already written down, not a design task. You have not seen the Dev's or Tester's reasoning, only what they recorded in the handoff and the diff/test results on disk.
-
-Handoff file: .contextkit/squad/handoff-[N].md — read `## 1. PO Spec` (acceptance criteria), `## 3. Dev Implementation`, `## 4. Test Report`, and `## 5. Peer Review` if present.
-
-Fill in `## 6. Review`: check each acceptance criterion individually against the diff — they're EARS-format WHEN/IF…SHALL statements, so verify trigger and required response separately rather than judging the story holistically — plus code quality and test coverage against what's on disk.
+Fill in `## 6. Review`: check each acceptance criterion individually against the diff — they're EARS-format WHEN/IF…SHALL statements, so verify trigger and required response separately rather than judging the story holistically — plus code quality and test coverage against what's on disk. Any prior issue still open is a needs-work finding.
 Stamp `started:`/`completed:`.
 - Pass → set top-level `status:` → `doc`.
 - Needs-work → leave top-level `status:` as `review`, list issues under Issues Found.

@@ -431,18 +431,6 @@ status: pending
 
 ---
 
-## 5. Peer Review (Optional)
-
-status: pending
-
-### Valid Findings
-
-### Dismissed Findings
-
-### Verdict
-
----
-
 ## 6. Review
 
 status: pending
