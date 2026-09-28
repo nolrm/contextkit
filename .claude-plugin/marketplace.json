@@ -1,0 +1,13 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "contextkit-marketplace",
+  "owner": { "name": "nolrm", "url": "https://github.com/nolrm/contextkit" },
+  "description": "ContextKit's squad + spec pipelines, packaged as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "contextkit",
+      "source": "./plugins/contextkit",
+      "description": "Multi-role dev pipeline (PO → Architect → Dev → Test → Review → Doc) and product-overview-to-spec generation."
+    }
+  ]
+}

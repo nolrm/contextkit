@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "contextkit",
+  "version": "1.12.0",
+  "description": "ContextKit squad + spec pipelines — multi-role dev pipeline (PO → Architect → Dev → Test → Review → Doc) and product-overview-to-spec generation, grounded in your project standards.",
+  "author": {
+    "name": "nolrm",
+    "url": "https://github.com/nolrm/contextkit"
+  },
+  "homepage": "https://github.com/nolrm/contextkit",
+  "license": "MIT"
+}

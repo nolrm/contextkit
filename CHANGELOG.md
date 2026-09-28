@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.0] - 2026-09-28
+
+### Added
+- **ContextKit is now installable as a native Claude Code plugin** — `claude plugin marketplace add nolrm/contextkit` then `claude plugin install contextkit@contextkit-marketplace` gets all 22 squad/spec/dev/docs/agents skills, self-contained (no `.contextkit/` needed for `/spec` or `/squad` — same guard-removal transform the existing global-install path already used). Claude Code handles versioning/updates itself instead of `ck` managing a `~/.claude/skills/` folder by hand. Verified end-to-end against a real Claude Code install (2.1.283): marketplace add, install, and `claude plugin details` all confirmed the expected 22-skill inventory and a clean `claude plugin validate` pass on both the plugin and the marketplace manifest.
+- **`scripts/build-plugin.js`** (`npm run build:plugin`) — regenerates the committed `plugins/contextkit/` directory from `lib/skills/registry.js` + `commands/`, reusing the same per-skill `transform`/`extraSource` logic the global-install path already had (e.g. `spec`'s `.contextkit/`-guard removal, `spec-component`'s inlined template). `__tests__/plugin/plugin-sync.test.js` fails CI if the committed output drifts from what the generator would currently produce, so a maintainer never forgets to run it after touching `commands/` or the registry.
+
 ## [1.11.0] - 2026-09-28
 
 ### Added

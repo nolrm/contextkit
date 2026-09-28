@@ -486,6 +486,12 @@ ck update --global            # regenerate/overwrite currently installed global 
 ck check --global             # list installed global skills + flag version drift
 ck uninstall --global squad   # remove them (--all for everything; no name/--all lists instead of deleting)
 
+# Claude Code Plugin — same squad/spec skills, installed and updated the native Claude Code way
+claude plugin marketplace add nolrm/contextkit
+claude plugin install contextkit@contextkit-marketplace
+# All 22 skills, self-contained (no .contextkit/ required for /spec or /squad) — Claude Code
+# tracks version/updates itself instead of ck managing a ~/.claude/skills/ folder by hand.
+
 # Validation & Compliance
 ck check       # validate installation & policy compliance
 ck check --strict  # treat warnings as errors

@@ -276,7 +276,7 @@ this natively, including updates.
 | 1.9.0 | 1, 2, 5 | 1 & 2 fix real bugs (stale bridge paths, AGENTS.md overwrite) and 2 reuses 1's registry pattern; 5 is prompt-only and independent | **Shipped 2026-09-28** — see §9.1 |
 | 1.10.0 | 3 (4 deferred) | The core positioning change | **Phase 3 shipped 2026-09-28** — see §9.2. Phase 4 (corrections→rules loop) not started; re-added to `docs/token-efficiency.md` Next Steps instead of duplicating tracking here. |
 | 1.11.0 | 6 | Builds on 1.8.0 lite mode | **Shipped 2026-09-28** — see §9.3 |
-| 1.12.0 | 7 | Needs the registry (1); largest distribution change | Not started |
+| 1.12.0 | 7 | Needs the registry (1); largest distribution change | **Shipped 2026-09-28** — see §9.4 |
 
 ### 9.1 What shipped in 1.9.0 vs. what the plan originally scoped
 
@@ -296,6 +296,13 @@ this natively, including updates.
 - **Dropped the `lib/utils/spec-validator.js` + `ck spec validate` CLI command idea entirely** — checking the actual distribution model first: `lib/` is ContextKit's own package code (used by the globally-installed `ck` CLI), never copied into a user's project. Only `commands/` (→ `.contextkit/commands/`) and `templates/` land in target repos. A Node-script validator invoked from inside a `/spec`-generated session would have no `node_modules/@nolrm/contextkit` to find unless the user's project happened to depend on it — which `ck install` doesn't set up. A CLI command also cuts against this repo's own roadmap principle ("keep the CLI surface minimal — install, update, analyze, check; don't add commands that duplicate what editing a file directly achieves").
 - **What shipped instead**: the validation logic as explicit, mechanical AI-instructions inside `/spec` (after writing SPEC.md) and `/squad-spec` (before creating handoffs) — the same pattern `commands/dev/compress.md`'s existing "Compliance check" step already uses. No new code, no new CLI surface.
 - Mode field, Status column, and `/spec --verify` shipped as scoped.
+
+### 9.4 What shipped in 1.12.0 (Phase 7) vs. what the plan originally scoped
+
+- **Verified the actual plugin mechanics hands-on before building anything**, using the real Claude Code CLI (2.1.283) available locally: `claude plugin init` to learn the manifest shape, then `claude plugin validate` iteratively (its error messages taught the marketplace-source path rule — no `..`, must resolve under the marketplace root — faster than guessing from docs), then a full `marketplace add` → `install` → `details` cycle in an isolated scratch `HOME`, confirming all 22 skills register with a real, working install. This is the same "check before building" correction Phase 6 already forced (`lib/` vs. `commands/` distribution).
+- **Chose option (a) from the plan** (commit the generated `plugins/contextkit/` dir, test-gated against drift) over generating it in a publish workflow — keeps `ck install`'s "no build step for end users" property intact while still needing a maintainer step (`npm run build:plugin`) for this one committed artifact.
+- Did **not** wire `ck install`'s Claude integration to auto-detect and print the plugin-install line, per the plan's step 3 — scoped down to documenting the two install paths side by side in the README instead. Worth doing later but isn't blocking.
+- Did **not** bundle the pre-push/PostToolUse hooks into the plugin (plugin schema supports `hooks/hooks.json`) — the plugin ships skills only for now. Hooks are per-project (git-repo-specific), unlike skills, so it's a separate design question rather than an oversight.
 
 Every release: CHANGELOG entry, docs site page updates (`contextkit-docs/`), README, numbered test
 descriptions, `ck update` migrations that are non-destructive and marker-gated.
