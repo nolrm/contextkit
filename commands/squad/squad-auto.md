@@ -29,6 +29,12 @@ You are the **Pipeline Runner** for a squad batch workflow. Your job is to read 
 
 Every phase below says "follow all of `[file]` steps N–M" — this means literally that: read the referenced command file and execute its numbered steps in full, not a paraphrased or abbreviated version. This pipeline's safety nets (PO-spec validation, task-too-large split detection, context-file discovery, the test-level decision table, review escalation) live in those step-by-step instructions — running an abbreviated version here would silently skip them for every task that goes through `/squad-auto` instead of the manual per-phase commands, which defeats the point of having them at all. The excluded steps at the start of each range are "read the handoff" (already done) and a `*-clarify` resume-branch that only applies when re-entering a phase already in that clarify state (not applicable the first time a task reaches a phase); the excluded step at the end is always "tell the user what to run next" — not applicable here since the pipeline continues on its own.
 
+**Dev, Test, Review, and Doc each run in their own isolated subagent context by default** — the same isolation `/squad-spec` uses, and for the same reason: a Tester or Reviewer that shares Dev's context tends to grade Dev's own account of its work instead of verifying the diff independently. Each subagent receives only the handoff file path (plus the spec, for Dev/Test/Review) — never the reasoning trail from earlier phases — reads the handoff itself, and writes its own section directly. `model_routing` no longer controls *whether* a phase is isolated (it always is); it only controls *which model* Dev and Test run on — Haiku when `true`, the primary model when `false`. Review and Doc always run on the primary model regardless of `model_routing`, matching `/squad-spec`.
+
+After every dispatched phase, verify the handoff file actually changed (`status:` advanced, the relevant section filled in) before trusting a `"done"` result — if it didn't change, treat it as `error: subagent did not persist the handoff` and surface that to the user.
+
+**Codex:** CLI 0.155.1+ ships a stable multi-agent capability (`multi_agent` feature flag) that can spawn an isolated subagent with its own context. Use it to dispatch Dev/Test/Review/Doc the same way, if available in your installed version. If it isn't available (older Codex, or the capability is disabled), fall back to running that phase's steps inline in the current context, exactly as written — the fallback is a capability gap, not a design choice.
+
 ### Phase: Architect (tasks with status `po`)
 
 If any tasks have status `po`:
@@ -52,18 +58,15 @@ Take the **first** task with status `architect`. Run all phases to completion fo
 
 **Dev:**
 
-Follow all of `.contextkit/commands/squad/squad-dev.md` steps 3–9 for this task.
-
-- **If `model_routing: false`** (default): run those steps inline, in this context.
-- **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
-  ```
-  You are the Developer in a squad workflow.
-  Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
-  Follow all instructions in `.contextkit/commands/squad/squad-dev.md` steps 3–9.
-  Do not tell the user to run any command at the end.
-  After updating the handoff file, return "done" or "error: [description]".
-  ```
-  If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
+Dispatch a sub-agent using the Agent tool. Pass `model: claude-haiku-4-5-20251001` if `model_routing: true`; omit `model` (inherit the primary model) if `model_routing: false` (default):
+```
+You are the Developer in a squad workflow.
+Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+Follow all instructions in `.contextkit/commands/squad/squad-dev.md` steps 3–9.
+Do not tell the user to run any command at the end.
+After updating the handoff file, return "done" or "error: [description]".
+```
+If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
 Check the resulting top-level `status:`:
 - **`arch-clarify`** (Dev has questions for the Architect) → do not advance this task further this run. Update the manifest: change this task's status to `arch-clarify`. Announce: `⏸ Task #N needs Architect clarification — see handoff-N.md.` Move on to the next eligible task, if any.
@@ -71,18 +74,15 @@ Check the resulting top-level `status:`:
 
 **Test:**
 
-Follow all of `.contextkit/commands/squad/squad-test.md` steps 3–10 for this task — this includes the change-driven test-level decision table (step 6); don't skip straight to writing tests without classifying the required level(s) first.
-
-- **If `model_routing: false`** (default): run those steps inline, in this context.
-- **If `model_routing: true`**: spawn a sub-agent using the Agent tool with `model: claude-haiku-4-5-20251001`:
-  ```
-  You are the Tester in a squad workflow.
-  Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
-  Follow all instructions in `.contextkit/commands/squad/squad-test.md` steps 3–10.
-  Do not tell the user to run any command at the end.
-  After updating the handoff file, return "done" or "error: [description]".
-  ```
-  If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
+Dispatch a sub-agent using the Agent tool. Pass `model: claude-haiku-4-5-20251001` if `model_routing: true`; omit `model` if `model_routing: false` (default):
+```
+You are the Tester in a squad workflow.
+Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+Follow all instructions in `.contextkit/commands/squad/squad-test.md` steps 3–10 — this includes the change-driven test-level decision table (step 6); don't skip straight to writing tests without classifying the required level(s) first.
+Do not tell the user to run any command at the end.
+After updating the handoff file, return "done" or "error: [description]".
+```
+If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
 Check the resulting top-level `status:`:
 - **`dev-clarify`** (Tester has questions for Dev) → do not advance this task further this run. Update the manifest: change this task's status to `dev-clarify`. Announce: `⏸ Task #N needs Dev clarification — see handoff-N.md.` Move on to the next eligible task, if any.
@@ -90,7 +90,15 @@ Check the resulting top-level `status:`:
 
 **Review:**
 
-Follow all of `.contextkit/commands/squad/squad-review.md` steps 3–7 for this task, run inline in this context (Review is never Haiku-routed regardless of `model_routing`). This includes its escalation paths — the Reviewer may raise questions for the Tester, Dev, Architect, or PO instead of only ever passing or failing; don't reduce Review to a checklist-and-verdict-only pass.
+Dispatch a sub-agent using the Agent tool, always on the primary model (Review is never Haiku-routed regardless of `model_routing`, matching `/squad-spec`):
+```
+You are the Reviewer in a squad workflow.
+Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+Follow all instructions in `.contextkit/commands/squad/squad-review.md` steps 3–7 — including its escalation paths. You may raise questions for the Tester, Dev, Architect, or PO instead of only ever passing or failing; don't reduce Review to a checklist-and-verdict-only pass.
+Do not tell the user to run any command at the end.
+After updating the handoff file, return "done" or "error: [description]".
+```
+If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
 Check the resulting top-level `status:`:
 - **`test-clarify` / `dev-clarify` / `arch-clarify` / `po-clarify`** (Reviewer escalated a question to that role) → do not advance this task further this run. Update the manifest to match. Announce which role needs to respond and which command surfaces it (per squad-review.md's own messaging for each case). Move on to the next eligible task, if any.
@@ -99,7 +107,15 @@ Check the resulting top-level `status:`:
 
 **Doc:**
 
-Follow all of `.contextkit/commands/squad/squad-doc.md` steps 3–9 for this task, run inline in this context. Write the handoff file yourself.
+Dispatch a sub-agent using the Agent tool, on the primary model:
+```
+You are the Doc writer in a squad workflow.
+Handoff file: `.contextkit/squad/[HANDOFF_FILE]`
+Follow all instructions in `.contextkit/commands/squad/squad-doc.md` steps 3–9.
+Do not tell the user to run any command at the end.
+After updating the handoff file, return "done" or "error: [description]".
+```
+If the sub-agent returns `"error: ..."`: surface the error to the user and stop the pipeline.
 
 **Commit** (runs after the handoff write above, before touching the manifest):
 

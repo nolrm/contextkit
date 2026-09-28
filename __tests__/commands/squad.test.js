@@ -86,10 +86,11 @@ describe('squad-auto.md — source command file', () => {
     expect(content).toContain('default `model_routing` to `false`');
   });
 
-  it('5. dev phase has model_routing: false inline branch', () => {
+  it('5. dev phase always dispatches a sub-agent, model_routing only picks the model', () => {
     const devSection = content.slice(content.indexOf('**Dev:**'), content.indexOf('**Test:**'));
     expect(devSection).toContain('model_routing: false');
-    expect(devSection).toContain('run inline');
+    expect(devSection).toContain('inherit the primary model');
+    expect(devSection).toContain('Dispatch a sub-agent');
   });
 
   it('6. dev phase spawns haiku sub-agent when model_routing: true', () => {

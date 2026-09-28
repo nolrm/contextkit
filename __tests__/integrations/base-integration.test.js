@@ -191,7 +191,7 @@ describe('BaseIntegration', () => {
     expect(block).toContain('.contextkit/standards/code-style.md');
     expect(block).toContain('.contextkit/standards/testing.md');
     expect(block).toContain('.contextkit/standards/architecture.md');
-    expect(block).toContain('.contextkit/commands/analyze.md');
+    expect(block).toContain('.contextkit/commands/dev/analyze.md');
     expect(block).toContain('.contextkit/product/mission-lite.md');
   });
 

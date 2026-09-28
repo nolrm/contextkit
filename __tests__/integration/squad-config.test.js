@@ -62,8 +62,8 @@ describe('squad config.md — content validation', () => {
     const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
     // The default should be false
     expect(autoContent).toContain('default `model_routing` to `false`');
-    // The inline branch label should say false
-    expect(autoContent).toContain('model_routing: false`** (default)');
+    // Dev/Test sub-agent dispatch should default to the primary model
+    expect(autoContent).toContain('model_routing: false` (default)');
   });
 
   it('6. squad-auto.md uses correct haiku model ID in both dev and test sub-agent prompts', () => {
@@ -77,7 +77,9 @@ describe('squad config.md — content validation', () => {
   it('7. squad-auto.md sub-agent prompts reference correct command files', () => {
     const autoContent = fs.readFileSync(path.join(SOURCE_DIR, 'squad/squad-auto.md'), 'utf8');
     expect(autoContent).toContain('squad-dev.md` steps 3–9');
-    expect(autoContent).toContain('squad-test.md` steps 3–9');
+    // Tester range is 3–10, not 3–9 — includes the final handoff-update step
+    // (see CHANGELOG 1.8.0: "the Tester range stopped one step short").
+    expect(autoContent).toContain('squad-test.md` steps 3–10');
   });
 });
 

@@ -102,7 +102,7 @@ checkpoint: po
 model_routing: false
 ```
 
-> Set `model_routing: true` to have `/squad-auto` use Claude Haiku for Dev and Test phases (saves ~35% tokens). Default is `false` — no change in behavior.
+> `/squad-auto` always runs Dev, Test, Review, and Doc as isolated subagents (so Test/Review verify the diff independently rather than trusting Dev's account of it). Set `model_routing: true` to also route the Dev and Test subagents to Claude Haiku (saves ~35% tokens) instead of the primary model. Default is `false` — isolation still applies, just on the primary model throughout.
 
 3. **Assess idea clarity.** Read the task description:
    - Is the outcome unambiguous?

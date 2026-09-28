@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.9.0] - 2026-09-28
+
+### Added
+- **`.agents/skills/` — portable Agent Skills output** — Codex and Cursor now also write every skill to `.agents/skills/<name>/SKILL.md` (the shared cross-tool convention ~40 tools have adopted), alongside their existing `.codex/skills/`/`.cursor/prompts/` output. Confirmed via a live install against Codex CLI 0.155.1 that it reads both `.codex/skills/` and `.agents/skills/` — this is additive, not a migration. Cursor's own scanning of `.agents/skills/` is per its published docs, not independently verified against a live install (see `CONTEXT-ENGINEERING-PLAN.md` spike S2).
+- **`lib/skills/registry.js` + `lib/skills/render.js`** — every skill's name, description, source command file, and per-target metadata now lives in one registry, rendered per platform instead of hand-written 3–4 times over. `global-skills.js`'s squad/spec skill list is now derived from the same registry.
+- **Cursor gets full skill parity** — `.cursor/prompts/` now covers all 22 skills (previously 10: several squad phases, the doc family, and the agent/meta skills were missing).
+- **`/squad-auto` isolates Dev, Test, Review, and Doc in their own subagent context by default** — matching `/squad-spec`'s design, and for the same reason: a Tester or Reviewer sharing Dev's context tends to verify Dev's account of its own work rather than the diff itself. `model_routing` no longer toggles isolation on/off; it only picks which model Dev/Test run on (Haiku vs. the primary model). Codex gets the same treatment where its now-stable `multi_agent` capability (CLI 0.155.1+) is available, falling back to inline execution otherwise.
+
+### Fixed
+- **Codex and OpenCode no longer overwrite each other's `AGENTS.md` block** — both previously wrote different content to the same marker-delimited section, so installing one after the other silently replaced the other's customization. Both now render from one shared `lib/integrations/agents-md.js`.
+- **Stale `.contextkit/commands/...` paths in the standards block shared by Aider, Copilot, Gemini, Windsurf, and Continue** — missing the `dev/` subdirectory on every path, and referencing a `run-tests.md` file removed in 1.7.0. All five integrations pointed agents at files that don't exist.
+- **Stale `showUsage()` output** in the Claude and Cursor integrations still listed `/review`, `/refactor`, `/test`, `/doc` — removed from the product in 1.7.0.
+- **`squad-spec` global skill's argument hint** was missing the `.md`-file option `/squad`/`squad.md` skills already documented.
+
 ## [1.8.0] - 2026-09-28
 
 ### Added

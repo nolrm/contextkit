@@ -50,7 +50,9 @@ describe('CodexIntegration', () => {
     expect(content).toContain('is loaded on demand via the `standards-aware` skill');
     expect(content).toContain('`squad-test` skill');
     expect(content).toContain('`product-context` skill');
-    expect(content).toContain('.codex/skills/');
+    // Shared verbatim with OpenCode's AGENTS.md body (so installing one after
+    // the other doesn't overwrite the other's content) — no Codex-only path.
+    expect(content).toContain('ContextKit skills are available via');
   });
 
   it('2. creates .codex/skills/ directory with all skill files', async () => {
