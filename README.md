@@ -386,6 +386,8 @@ ck gates --enable prettier      # re-enable it
 
 Gate state is saved to `.contextkit/quality-gates.yml`. Commit this file to share gate preferences with your team.
 
+**Already-verified code skips the gates.** When every gate passes on a clean working tree, the hook records a fingerprint of that exact code (the commit's tree plus your gate config). Pushing the same code again skips the gates instead of re-running the full suite — e.g. a re-push after a rejected push, or an AI pipeline that already verified by running `.contextkit/hooks/pre-push < /dev/null` before pushing. Any file change or gate-config change forces a full run. `CK_FORCE_GATES=1 git push` always runs them.
+
 ### Commit Message Format
 
 When the `commit-msg` hook is enabled, all commits must follow this format:

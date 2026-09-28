@@ -771,4 +771,91 @@ describe('pre-push hook', () => {
       expect(result.output).not.toContain('ℹ️');
     });
   });
+
+  describe('AC16: skip gates for already-verified code', () => {
+    const markerFile = () => path.join(tmpDir, '.contextkit', '.verified-tree');
+
+    function runHook(stdinInput = '', env = {}) {
+      try {
+        const output = execSync(path.join(hookPath, 'pre-push'), {
+          input: stdinInput,
+          stdio: ['pipe', 'pipe', 'pipe'],
+          encoding: 'utf8',
+          shell: '/bin/bash',
+          env: { ...process.env, ...env },
+        });
+        return { success: true, output };
+      } catch (error) {
+        const allOutput = (error.stdout || '') + (error.stderr || '') + (error.message || '');
+        return { success: false, output: allOutput };
+      }
+    }
+
+    async function commitNodeProject() {
+      await fs.writeJSON('package.json', { name: 'test', scripts: { test: 'echo RAN-TESTS' } });
+      await fs.writeFile('.gitignore', '.contextkit/\n');
+      execSync('git add -A && git commit -m init', { stdio: 'pipe', shell: true });
+    }
+
+    it('58. a passing run on a clean tree records the verified fingerprint', async () => {
+      await commitNodeProject();
+      const result = runHook();
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('RAN-TESTS');
+      const tree = execSync('git rev-parse HEAD^{tree}', { encoding: 'utf8' }).trim();
+      expect((await fs.readFile(markerFile(), 'utf8')).trim()).toBe(`${tree}:none`);
+    });
+
+    it('59. pushing the same code again skips every gate', async () => {
+      await commitNodeProject();
+      runHook();
+      const sha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+      const result = runHook(`refs/heads/main ${sha} refs/heads/main ${'0'.repeat(40)}\n`);
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('already passed for this exact code');
+      expect(result.output).not.toContain('RAN-TESTS');
+    });
+
+    it('60. a new commit invalidates the fingerprint and runs the gates', async () => {
+      await commitNodeProject();
+      runHook();
+      await fs.writeFile('a.js', '// change\n');
+      execSync('git add -A && git commit -m two', { stdio: 'pipe', shell: true });
+      const result = runHook();
+      expect(result.output).toContain('RAN-TESTS');
+      expect(result.output).not.toContain('already passed');
+    });
+
+    it('61. CK_FORCE_GATES=1 runs the gates even when the code is verified', async () => {
+      await commitNodeProject();
+      runHook();
+      const result = runHook('', { CK_FORCE_GATES: '1' });
+      expect(result.output).toContain('RAN-TESTS');
+    });
+
+    it('62. a dirty working tree runs the gates but never records a fingerprint', async () => {
+      await commitNodeProject();
+      await fs.writeFile('uncommitted.js', '// wip\n');
+      const result = runHook();
+      expect(result.output).toContain('RAN-TESTS');
+      expect(await fs.pathExists(markerFile())).toBe(false);
+    });
+
+    it('63. changing quality-gates.yml invalidates the fingerprint', async () => {
+      await commitNodeProject();
+      runHook();
+      await fs.writeFile(
+        path.join(tmpDir, '.contextkit', 'quality-gates.yml'),
+        'disabled:\n  - lint\n'
+      );
+      const result = runHook();
+      expect(result.output).toContain('RAN-TESTS');
+    });
+
+    it('64. DRY_RUN neither skips on nor records a fingerprint', async () => {
+      await commitNodeProject();
+      runHook('', { DRY_RUN: '1' });
+      expect(await fs.pathExists(markerFile())).toBe(false);
+    });
+  });
 });

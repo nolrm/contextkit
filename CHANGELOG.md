@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.13.0] - 2026-09-28
+
+### Added
+- **Pre-push skips the gates for code that already passed them.** After every gate passes on a clean working tree, the hook records a fingerprint of that exact code — the commit's tree hash plus `.contextkit/quality-gates.yml` — in `.contextkit/.verified-tree`. Pushing the same code again skips the gates instead of re-running the full suite (on this repo, ~4.5 minutes saved per push). Any file change, new commit, or gate-config change forces a full run; a dirty working tree runs the gates but never records a fingerprint, since the gates wouldn't have tested exactly what the commit contains. `CK_FORCE_GATES=1` always runs them. An AI pipeline can verify ahead of time by running `.contextkit/hooks/pre-push < /dev/null` after committing — same gates, same fingerprint — so the push that follows doesn't repeat the work.
+- **`SHIP-PLAN.md`** — plan for a single-command `/ship` pipeline replacing squad's ten manual commands: planning → implementation (tests from acceptance criteria, scoped tests only) → review in parallel with one full-suite run → verification against the real app → docs → commit + PR.
+
+### Fixed
+- **`.contextkit/.last-update-check`** (the update-nudge cache) is now in the runtime gitignore entries `ck install` writes, alongside the new `.contextkit/.verified-tree`. It previously showed up as an untracked file in projects that commit `.contextkit/`.
+
 ## [1.12.1] - 2026-09-28
 
 ### Changed

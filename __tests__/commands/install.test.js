@@ -661,6 +661,8 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(content).toContain('.contextkit/spec/');
     expect(content).toContain('.contextkit/spec-archived-*/');
     expect(content).toContain('.contextkit/backup-*/');
+    expect(content).toContain('.contextkit/.verified-tree');
+    expect(content).toContain('.contextkit/.last-update-check');
   });
 
   it('53. is idempotent — does not duplicate entries when run twice', async () => {
