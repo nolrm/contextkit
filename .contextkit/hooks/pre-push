@@ -648,6 +648,38 @@ run_generic_gates() {
   echo "  💡 Add a package.json, Cargo.toml, go.mod, etc. for automatic Quality Gates."
 }
 
+# ── Already-verified skip ───────────────────
+# After every gate passes on a clean working tree, record a fingerprint of that
+# exact code. Pushing the same code again skips the gates instead of re-running
+# them — e.g. a pipeline that already verified by running this hook directly
+# (`.contextkit/hooks/pre-push < /dev/null`), or a re-push after a rejected one.
+# Fingerprint = pushed commit's tree + gate config, so any file edit or gate
+# config change forces a full run. CK_FORCE_GATES=1 always runs them.
+
+CK_VERIFIED_FILE=".contextkit/.verified-tree"
+
+gates_fingerprint() {
+  local tree cfg="none"
+  tree=$(git rev-parse "$1^{tree}" 2>/dev/null) || return 1
+  if [ -f ".contextkit/quality-gates.yml" ]; then
+    cfg=$(git hash-object ".contextkit/quality-gates.yml" 2>/dev/null) || cfg="unreadable"
+  fi
+  echo "${tree}:${cfg}"
+}
+
+record_verified() {
+  [ "${DRY_RUN:-0}" = "1" ] && return 0
+  local dirty fp
+  # Only a clean tree means the gates tested exactly what HEAD contains.
+  # ContextKit's own cache files don't count as changes.
+  dirty=$(git status --porcelain -- . \
+    ':(exclude).contextkit/.verified-tree' \
+    ':(exclude).contextkit/.last-update-check' 2>/dev/null) || return 0
+  [ -z "$dirty" ] || return 0
+  fp=$(gates_fingerprint HEAD) || return 0
+  echo "$fp" > "$CK_VERIFIED_FILE" 2>/dev/null || true
+}
+
 # ── Main ────────────────────────────────────
 
 # Capture push ref info from stdin (format: local-ref local-sha remote-ref remote-sha)
@@ -656,6 +688,23 @@ run_generic_gates() {
 LOCAL_SHA=""
 REMOTE_SHA=""
 IFS=' ' read -r _push_local_ref LOCAL_SHA _push_remote_ref REMOTE_SHA 2>/dev/null || true
+
+if [ "${DRY_RUN:-0}" != "1" ] && [ "${CK_FORCE_GATES:-0}" != "1" ] && [ -f "$CK_VERIFIED_FILE" ]; then
+  _VERIFIED_FP=$(cat "$CK_VERIFIED_FILE" 2>/dev/null || true)
+  _PUSH_FP=$(gates_fingerprint "${LOCAL_SHA:-HEAD}" || true)
+  if [ -n "$_PUSH_FP" ] && [ "$_PUSH_FP" = "$_VERIFIED_FP" ]; then
+    echo ""
+    if [ "$AGENT_MODE" = "1" ]; then
+      echo "  SKIP all gates — this exact code already passed (tree ${_PUSH_FP:0:7})"
+    else
+      echo "  ✅ Quality Gates already passed for this exact code (tree ${_PUSH_FP:0:7}) — skipping."
+      echo "     Set CK_FORCE_GATES=1 to run them anyway."
+    fi
+    echo ""
+    check_ck_update || true
+    exit 0
+  fi
+fi
 
 PROJECT_TYPE=$(detect_project_type)
 
@@ -712,4 +761,5 @@ echo "  Total: $_TOTAL_ELAPSED"
 fi
 echo ""
 
+record_verified || true
 check_ck_update || true
