@@ -136,4 +136,28 @@ describe('CheckCommand', () => {
     await check({ strict: true });
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
+
+  it('12. checkStandardsFreshness warns with a count of ck:unreviewed markers', async () => {
+    await writeMinimalConfig();
+    await fs.ensureDir(path.join(tmpDir, '.contextkit', 'standards'));
+    await fs.writeFile(
+      path.join(tmpDir, '.contextkit', 'standards', 'code-style.md'),
+      '# Code Style\n\n- Rule one.\n<!-- ck:unreviewed -->\n- Rule two.\n<!-- ck:unreviewed -->\n'
+    );
+    await check({ verbose: true });
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
+    expect(logged).toMatch(/2 unreviewed rule\(s\): standards\/code-style\.md/);
+  });
+
+  it('13. checkStandardsFreshness does not warn when no ck:unreviewed markers are present', async () => {
+    await writeMinimalConfig();
+    await fs.ensureDir(path.join(tmpDir, '.contextkit', 'standards'));
+    await fs.writeFile(
+      path.join(tmpDir, '.contextkit', 'standards', 'code-style.md'),
+      '# Code Style\n\n- A reviewed rule.\n'
+    );
+    await check({ verbose: true });
+    const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
+    expect(logged).not.toMatch(/unreviewed rule/);
+  });
 });

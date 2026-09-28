@@ -46,9 +46,9 @@ describe('AnalyzeCommand', () => {
   });
 
   async function setupInstalled() {
-    await fs.ensureDir(path.join(tmpDir, '.contextkit', 'commands'));
+    await fs.ensureDir(path.join(tmpDir, '.contextkit', 'commands', 'dev'));
     await fs.writeFile(
-      path.join(tmpDir, '.contextkit', 'commands', 'analyze.md'),
+      path.join(tmpDir, '.contextkit', 'commands', 'dev', 'analyze.md'),
       '# Analyze instructions\n'
     );
     await fs.writeFile(
@@ -57,7 +57,7 @@ describe('AnalyzeCommand', () => {
     );
   }
 
-  it('1. exits early when .contextkit/commands/analyze.md does not exist', async () => {
+  it('1. exits early when .contextkit/commands/dev/analyze.md does not exist', async () => {
     await analyze({});
     const logged = consoleSpy.mock.calls.map((c) => c.join(' ')).join(' ');
     expect(logged).toMatch(/ContextKit not found/);

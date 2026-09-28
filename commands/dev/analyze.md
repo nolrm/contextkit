@@ -70,7 +70,46 @@ When writing any `.contextkit/standards/*.md` file, first check `.contextkit/con
 
 This applies to newly generated files. Existing oversized files are retrofit via the `compress` skill, not by re-running `/analyze`.
 
+### 🎯 The Non-Inferable Filter — What Actually Earns a Line
+
+Everything in the Analysis Process below is for *your own* understanding of the codebase — it tells you what to look at, not what to write down. Before a candidate rule goes into `code-style.md`, `architecture.md`, `ai-guidelines.md`, or `workflows.md`, it must pass all three checks:
+
+1. **Not derivable from a manifest, config file, or directory listing a coding agent can already read.** A framework name, a directory tree, a dependency list, "this project uses TypeScript" — an agent gets these for free from `package.json`, `tsconfig.json`, `ls`. Writing them down taxes every future turn to restate what one `Glob`/`Read` already answers.
+2. **Grounded in a specific file you actually read.** Cite it: `// see src/api/client.ts` inline, or a short parenthetical. A rule with no source is a guess, not an observation.
+3. **Changes what an agent would otherwise do.** If a reasonable agent reading this codebase would naturally do the same thing anyway, the rule adds tokens without changing behavior.
+
+**Always exclude**, regardless of how the scan below surfaces them:
+- Directory trees / project structure diagrams — measured not to help agents locate files faster, despite being the single most common thing generated standards files include.
+- Dependency/library inventories ("uses Redux, uses Jest, uses Axios") — inferable from `package.json` in one read.
+- Generic framework best-practice advice not tied to something this codebase actually does differently.
+- Restating what the code's own naming/types already make obvious.
+
+**Always include when found:**
+- Exact commands this project actually uses (not "run tests" — the literal `npm run test:unit -- --watch=false` from `package.json`, if that's what's really run).
+- A hard constraint or prohibition an agent would otherwise violate (a footgun a file's own content wouldn't announce — a global side effect, an ordering requirement, a "this function is called from three places, don't rename it").
+- A convention that contradicts the obvious/default choice (e.g. this project imports named exports only, or resolves a merge conflict a specific way) — cite the file.
+- Domain terms and shorthand this codebase's identifiers don't spell out on their own.
+
+This is a hard filter, not a style preference — evidence on generated repository context files found they *reduced* task success by 0.5–2% and *raised* inference cost over 20%, while human-curated files (same non-inferable-only standard) *improved* success by ~4%. See `docs/token-efficiency.md` § Evidence for the full citation.
+
+### 📏 Always-Loaded Budget
+
+`code-style.md` and `architecture.md` load in full every session (see `docs/token-efficiency.md` § Proposed Split). After writing or updating either, count their combined lines. If the total exceeds **150 lines**, don't write past it — tell the user which file is over budget and that `compress` or manual trimming is needed before adding more, rather than letting it grow silently.
+
+### 🔖 Mark Generated Rules for Review
+
+Every rule you add to a standards file (new or updated) gets a trailing `<!-- ck:unreviewed -->` marker on its own line directly after it, e.g.:
+
+```markdown
+- Resolve import order with `eslint-plugin-simple-import-sort`, not manual grouping (see `.eslintrc.js`).
+<!-- ck:unreviewed -->
+```
+
+This is the human-review signal the evidence above rewards — a rule stops being "unreviewed" (delete the marker) once a person has actually read and confirmed it, not automatically. `ck check` reports the count of remaining `ck:unreviewed` markers per file so stale, never-reviewed content doesn't accumulate invisibly. Never add the marker to content a human already wrote or already reviewed — only to what this run generates.
+
 ## Analysis Process:
+
+The steps below are for building your own understanding of the codebase — run the **Non-Inferable Filter** above against everything you'd otherwise write down before any of it reaches a standards file. Most of a Project Structure Scan or Dependencies Analysis, for instance, ends up informing you without directly becoming file content.
 
 1. **📁 Project Structure Scan**
    - Framework detection (React, Vue, Angular, Next.js, etc.)

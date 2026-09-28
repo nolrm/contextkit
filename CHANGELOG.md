@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.10.0] - 2026-09-28
+
+### Added
+- **`/analyze` non-inferable filter** — every candidate rule must now pass three checks before it's written to a standards file: not derivable from a manifest/config/directory listing, grounded in a specific cited source file, and something that actually changes agent behavior. Directory trees, dependency inventories, and generic framework advice are explicitly excluded regardless of how the analysis scan surfaces them — grounded in a study finding generated context files with these included measured *lower* task success (0.5–2%) and *higher* inference cost (20%+) than no context file at all, while human-curated non-inferable-only content measured +4%. See `docs/token-efficiency.md` § Evidence for the full citations (added in this release).
+- **150-line always-loaded budget check** — `/analyze` now counts `code-style.md` + `architecture.md`'s combined lines after writing and flags the user if it's over budget instead of growing silently.
+- **`<!-- ck:unreviewed -->` markers** — every rule `/analyze` generates or updates gets one; a human clearing the marker is the review signal, not automatic. `ck check` now reports the count of unreviewed markers remaining per standards file.
+
+### Fixed
+- **`ck analyze` (the standalone CLI command, distinct from the `/analyze` skill) was silently broken against every real install** — its existence guard, its instructions-read, and both of its printed AI-chat prompt suggestions all checked/referenced `.contextkit/commands/analyze.md`, a path that has never existed since the file moved to `.contextkit/commands/dev/analyze.md`. It always printed "ContextKit not found" regardless of install state. The command's own test suite didn't catch this because its fixture wrote to the same wrong path the bug checked for.
+
 ## [1.9.0] - 2026-09-28
 
 ### Added
