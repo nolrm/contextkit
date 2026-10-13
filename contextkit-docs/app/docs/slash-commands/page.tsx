@@ -7,10 +7,14 @@ import { Terminal, Code, Bot, Info, ChevronRight, ArrowLeft, ArrowRight } from "
 export default function SlashCommandsPage() {
   const headings = [
     { id: 'overview', text: 'Overview' },
-    { id: 'commands', text: 'Available Commands' },
+    { id: 'skills', text: 'The Five Skills' },
+    { id: 'ck', text: '/ck' },
+    { id: 'doc', text: '/doc' },
+    { id: 'learn', text: '/learn' },
     { id: 'claude', text: 'Claude Code' },
     { id: 'cursor', text: 'Cursor' },
-    { id: 'custom', text: 'Custom Commands' },
+    { id: 'codex', text: 'Codex' },
+    { id: 'global', text: 'Global Skills & Plugin' },
   ];
 
   useEffect(() => {
@@ -47,7 +51,7 @@ export default function SlashCommandsPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Slash Commands</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          ContextKit installs reusable slash commands for Claude Code and Cursor. Each command delegates to universal workflow files in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/</code>.
+          ContextKit 2.0 installs five small skills: <span className="font-mono text-primary">/ck</span>, <span className="font-mono text-primary">/doc</span>, and <span className="font-mono text-primary">/learn</span>, plus two add-ons, <span className="font-mono text-primary">/goal</span> and <span className="font-mono text-primary">/headline</span>. Each skill is a thin wrapper around a workflow file in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/</code>.
         </p>
       </div>
 
@@ -55,7 +59,7 @@ export default function SlashCommandsPage() {
       <div id="overview" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Overview</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Slash commands are platform-specific thin wrappers that point to the universal command files in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/</code>. This means you maintain one set of workflows that work across all platforms.
+          Skills are generated from one registry and rendered for each tool, so they behave the same everywhere. In Claude Code and Cursor you run them as <code className="rounded bg-muted px-1 font-mono text-xs">/name</code>. In Codex you run them as <code className="rounded bg-muted px-1 font-mono text-xs">$name</code>.
         </p>
 
         <div className="rounded-lg border border-primary/30 bg-primary/10 p-4">
@@ -64,102 +68,136 @@ export default function SlashCommandsPage() {
             How it works
           </p>
           <div className="space-y-1 text-sm text-muted-foreground">
-            <p>1. <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> installs slash commands to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/</code></p>
-            <p>2. <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code> installs slash commands to <code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/</code></p>
-            <p>3. Both delegate to <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/*.md</code></p>
+            <p>1. <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> writes skills to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/&lt;name&gt;/SKILL.md</code></p>
+            <p>2. <code className="rounded bg-muted px-1 font-mono text-xs">ck codex</code> writes <code className="rounded bg-muted px-1 font-mono text-xs">.codex/skills/</code> and the portable <code className="rounded bg-muted px-1 font-mono text-xs">.agents/skills/</code></p>
+            <p>3. <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code> writes <code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/&lt;name&gt;.md</code> and <code className="rounded bg-muted px-1 font-mono text-xs">.agents/skills/</code></p>
+            <p>4. Every skill reads its workflow from <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/</code></p>
           </div>
         </div>
       </div>
 
-      {/* Available Commands */}
-      <div id="commands" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Available Commands</h2>
+      {/* The five skills */}
+      <div id="skills" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The Five Skills</h2>
 
         <div className="rounded-lg border border-border bg-card/50 overflow-x-auto">
-          <table aria-label="Available slash commands" className="w-full text-sm">
+          <table aria-label="ContextKit skills" className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th scope="col" className="text-left py-3 px-4 font-semibold text-foreground w-32">Command</th>
+                <th scope="col" className="text-left py-3 px-4 font-semibold text-foreground w-32">Skill</th>
+                <th scope="col" className="text-left py-3 px-4 font-semibold text-foreground w-64">Usage</th>
                 <th scope="col" className="text-left py-3 px-4 font-semibold text-foreground">What it does</th>
-                <th scope="col" className="text-left py-3 px-4 font-semibold text-foreground w-48">Source file</th>
               </tr>
             </thead>
             <tbody className="text-muted-foreground">
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/analyze</span></td>
-                <td className="py-3 px-4">Scan codebase and generate standards content</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/analyze.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/review</span></td>
-                <td className="py-3 px-4">Code review with checklist</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/review.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/fix</span></td>
-                <td className="py-3 px-4">Diagnose and fix bugs</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/fix.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/refactor</span></td>
-                <td className="py-3 px-4">Refactor code with safety checks</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/refactor.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/test</span></td>
-                <td className="py-3 px-4">Generate comprehensive tests</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/run-tests.md</code></td>
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/ck</span></td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">/ck</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/ck update</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/ck tidy</code></td>
+                <td className="py-3 px-4">Status, first-time setup, finishing an upgrade, and keeping context lean</td>
               </tr>
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
                 <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc</span></td>
-                <td className="py-3 px-4">Add documentation</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/add-documentation.md</code></td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">/doc</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc arch</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc feature [name]</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc component &lt;path&gt;</code></td>
+                <td className="py-3 px-4">Update docs and standards affected by your change, or write a doc at a given level</td>
               </tr>
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-arch</span></td>
-                <td className="py-3 px-4">Generate architecture docs — stack-aware (Level 1)</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-arch.md</code></td>
+                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/learn</span></td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">/learn &quot;rule&quot;</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/learn</code></td>
+                <td className="py-3 px-4">Turn a correction into one rule in the right standards file</td>
               </tr>
               <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-feature</span></td>
-                <td className="py-3 px-4">Generate feature-level docs — stack-aware (Level 2)</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-feature.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/doc-component</span></td>
-                <td className="py-3 px-4">Generate component-level docs colocated with the target — stack-aware (Level 3)</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/doc-component.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/compress</span></td>
-                <td className="py-3 px-4">Measure a file's size, rewrite it for density, and report the before/after diff</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/dev/compress.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/product-context</span></td>
-                <td className="py-3 px-4">Load architecture decisions and roadmap context before proposing changes</td>
-                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">commands/agents/product-context.md</code></td>
-              </tr>
-              <tr className="border-b border-border/50 hover:bg-card transition-colors">
-                <td className="py-3 px-4"><span className="font-mono text-sm text-primary">/spec</span></td>
-                <td className="py-3 px-4">Turn a product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories</td>
-                <td className="py-3 px-4"><Link href="/docs/spec" className="text-primary hover:underline text-xs">See Spec docs →</Link></td>
+                <td className="py-3 px-4">
+                  <span className="font-mono text-sm text-primary">/goal</span>
+                  <span className="text-xs text-muted-foreground ml-1">add-on</span>
+                </td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">/goal &quot;idea&quot;</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/goal status</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/goal done</code></td>
+                <td className="py-3 px-4">Run a long task against a one-page goal file. <Link href="/docs/goal" className="text-primary hover:underline">See /goal →</Link></td>
               </tr>
               <tr className="hover:bg-card transition-colors">
                 <td className="py-3 px-4">
-                  <span className="font-mono text-sm text-primary">/squad</span>
-                  <span className="text-xs text-muted-foreground ml-1">+ 8 more</span>
+                  <span className="font-mono text-sm text-primary">/headline</span>
+                  <span className="text-xs text-muted-foreground ml-1">add-on</span>
                 </td>
-                <td className="py-3 px-4">Multi-role pipeline: PO → Architect → Dev → Test → Review → Doc</td>
-                <td className="py-3 px-4"><Link href="/docs/squad" className="text-primary hover:underline text-xs">See Squad docs →</Link></td>
+                <td className="py-3 px-4"><code className="rounded bg-muted px-1 font-mono text-xs">/headline</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/headline off</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/headline pause</code></td>
+                <td className="py-3 px-4">Short, result-first replies, always on. <Link href="/docs/headline" className="text-primary hover:underline">See /headline →</Link></td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <p className="text-sm text-muted-foreground italic">
-          All commands are framework-agnostic. They auto-detect your project type and adapt accordingly.
+          Upgrading from 1.x? The older skills were removed or folded into these five. The <Link href="/docs/upgrade-2-0" className="text-primary hover:underline not-italic">upgrade guide</Link> lists each one and its replacement.
         </p>
+      </div>
+
+      {/* /ck */}
+      <div id="ck" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">/ck</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Manages the project&apos;s AI context from inside your AI tool.
+        </p>
+        <div className="space-y-3">
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-mono text-sm font-semibold text-primary mb-1">/ck</h3>
+            <p className="text-sm text-muted-foreground">Status: what&apos;s set up and what needs attention.</p>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-mono text-sm font-semibold text-primary mb-1">/ck setup</h3>
+            <p className="text-sm text-muted-foreground">
+              First run. Analyzes the codebase and writes the standards, the always-loaded{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/index.md</code>, and the{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> in{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code> that decide which topic file loads for which paths.
+            </p>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-mono text-sm font-semibold text-primary mb-1">/ck update</h3>
+            <p className="text-sm text-muted-foreground">
+              Finishes an upgrade after <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code>. Works through{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/pending-cleanup.md</code> and asks before each change. For custom content in{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> you choose: Move to AGENTS.md, Keep in CLAUDE.md, or Delete. For unfinished work from removed 1.x workflows you choose: convert to a goal, archive, or keep.
+            </p>
+          </div>
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-mono text-sm font-semibold text-primary mb-1">/ck tidy</h3>
+            <p className="text-sm text-muted-foreground">
+              Shrinks always-loaded context, prunes generic or linter-enforced rules, wires guides that nothing loads into{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code>, and promotes corrections that keep repeating into standards.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* /doc */}
+      <div id="doc" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">/doc</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Keeps docs and standards in step with the code.
+        </p>
+        <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
+          <li><strong className="text-foreground">No argument:</strong> finds docs and standards that reference the code changed on this branch and updates the stale ones. On a feature branch it lists the updates first. For an npm package it also suggests a version bump and checks <code className="rounded bg-muted px-1 font-mono text-xs">CHANGELOG.md</code>.</li>
+          <li><code className="rounded bg-muted px-1 font-mono text-xs">/doc arch</code>: architecture doc (Level 1)</li>
+          <li><code className="rounded bg-muted px-1 font-mono text-xs">/doc feature [name]</code>: feature or page README (Level 2)</li>
+          <li><code className="rounded bg-muted px-1 font-mono text-xs">/doc component &lt;path&gt;</code>: component README, colocated (Level 3)</li>
+        </ul>
+      </div>
+
+      {/* /learn */}
+      <div id="learn" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">/learn</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Turns a correction into one rule so the mistake doesn&apos;t repeat. It checks for an existing rule first, writes to the right file in{" "}
+          <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> (topic file, <code className="rounded bg-muted px-1 font-mono text-xs">index.md</code>, glossary, or architecture), and logs it with{" "}
+          <code className="rounded bg-muted px-1 font-mono text-xs">ck note</code>.
+        </p>
+        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">In Claude Code</span>
+          </div>
+          <code className="block font-mono text-sm text-primary">/learn &quot;we use the MUI wrapper, never raw MUI&quot;</code>
+          <code className="block font-mono text-sm text-primary">/learn</code>
+        </div>
       </div>
 
       {/* Claude Code */}
@@ -170,7 +208,7 @@ export default function SlashCommandsPage() {
           </div>
           <div>
             <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Claude Code</h2>
-            <p className="text-sm text-muted-foreground">Slash commands in <code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/</code></p>
+            <p className="text-sm text-muted-foreground">Skills in <code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/</code></p>
           </div>
         </div>
 
@@ -192,21 +230,20 @@ export default function SlashCommandsPage() {
                 <Terminal className="h-4 w-4" />
                 <span className="font-mono">In Claude Code</span>
               </div>
-              <code className="block font-mono text-sm text-primary">/analyze</code>
-              <code className="block font-mono text-sm text-primary">/review</code>
-              <code className="block font-mono text-sm text-primary">/fix</code>
+              <code className="block font-mono text-sm text-primary">/ck setup</code>
+              <code className="block font-mono text-sm text-primary">/doc</code>
+              <code className="block font-mono text-sm text-primary">/goal &quot;add CSV export to reports&quot;</code>
             </div>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold mb-2">Files created</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/analyze.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/review.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/fix.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/refactor.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/test.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/doc.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/ck/SKILL.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/doc/SKILL.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/learn/SKILL.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/goal/SKILL.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/headline/SKILL.md</code></li>
             </ul>
           </div>
         </div>
@@ -220,7 +257,7 @@ export default function SlashCommandsPage() {
           </div>
           <div>
             <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Cursor</h2>
-            <p className="text-sm text-muted-foreground">Slash commands in <code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/</code></p>
+            <p className="text-sm text-muted-foreground">Prompts in <code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/</code></p>
           </div>
         </div>
 
@@ -236,56 +273,72 @@ export default function SlashCommandsPage() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold mb-2">Usage</h3>
-            <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-1">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <Terminal className="h-4 w-4" />
-                <span className="font-mono">In Cursor Chat</span>
-              </div>
-              <code className="block font-mono text-sm text-primary">/analyze</code>
-              <code className="block font-mono text-sm text-primary">/review</code>
-              <code className="block font-mono text-sm text-primary">/fix</code>
-            </div>
-          </div>
-
-          <div>
             <h3 className="text-sm font-semibold mb-2">Files created</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/analyze.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/review.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/fix.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/refactor.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/test.md</code></li>
-              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/doc.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.cursor/prompts/ck.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">doc.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">learn.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">goal.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">headline.md</code></li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.agents/skills/&lt;name&gt;/SKILL.md</code> (portable copy)</li>
             </ul>
           </div>
         </div>
       </div>
 
-      {/* Custom Commands */}
-      <div id="custom" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Custom Commands</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          You can create custom commands by adding markdown files to <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/commands/</code>. Each file defines a workflow that AI assistants can execute.
-        </p>
-
-        <div className="rounded-lg border border-border bg-muted/30 p-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <Terminal className="h-4 w-4" />
-            <span className="font-mono">.contextkit/commands/my-workflow.md</span>
+      {/* Codex */}
+      <div id="codex" className="rounded-lg border border-border bg-card p-6 scroll-mt-20">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted border border-border">
+            <Terminal className="h-5 w-5 text-foreground" />
           </div>
-          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`# My Custom Workflow
-
-## Steps
-
-1. Read the relevant source files
-2. Analyze the current implementation
-3. Apply the following changes...`}</pre>
+          <div>
+            <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Codex</h2>
+            <p className="text-sm text-muted-foreground">Skills in <code className="rounded bg-muted px-1 font-mono text-xs">.codex/skills/</code> and <code className="rounded bg-muted px-1 font-mono text-xs">.agents/skills/</code></p>
+          </div>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          Then reference it in your AI tool: <code className="rounded bg-muted px-1 font-mono text-xs">@.contextkit/commands/my-workflow.md</code>
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Setup</h3>
+            <div className="flex items-center justify-between bg-background border border-border rounded-lg px-4 py-3 font-mono text-sm">
+              <div>
+                <span className="text-primary mr-2">$</span>
+                <span className="text-muted-foreground">contextkit codex</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Usage</h3>
+            <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                <Terminal className="h-4 w-4" />
+                <span className="font-mono">In Codex</span>
+              </div>
+              <code className="block font-mono text-sm text-primary">$ck setup</code>
+              <code className="block font-mono text-sm text-primary">$goal</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Global skills & plugin */}
+      <div id="global" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Global Skills &amp; Plugin</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          The add-ons don&apos;t need ContextKit in the project, so you can share them on their own. Global install writes to{" "}
+          <code className="rounded bg-muted px-1 font-mono text-xs">~/.claude/skills/</code>:
         </p>
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`ck install --global goal
+ck install --global headline
+ck update --global          # regenerate; also removes retired pre-2.0 global skills
+ck uninstall --global <name> # remove one skill, including retired pre-2.0 ones`}</pre>
+        </div>
+        <p className="text-muted-foreground leading-relaxed">
+          ContextKit is also a Claude Code plugin. It ships <span className="font-mono text-primary">/ck</span>, <span className="font-mono text-primary">/doc</span>, <span className="font-mono text-primary">/learn</span>, <span className="font-mono text-primary">/goal</span>, and <span className="font-mono text-primary">/headline</span>:
+        </p>
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <pre className="rounded bg-muted px-4 py-2 font-mono text-sm overflow-x-auto">{`claude plugin marketplace add nolrm/contextkit
+claude plugin install contextkit@contextkit-marketplace`}</pre>
+        </div>
       </div>
 
       {/* Prev / Next navigation */}
@@ -304,12 +357,12 @@ export default function SlashCommandsPage() {
         </Link>
 
         <Link
-          href="/docs/squad"
+          href="/docs/goal"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="text-right">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Next</div>
-            <div className="text-sm font-medium">Squad Workflow</div>
+            <div className="text-sm font-medium">/goal</div>
           </div>
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
             <ArrowRight className="h-3.5 w-3.5" />

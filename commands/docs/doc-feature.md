@@ -13,10 +13,10 @@ Generate or update feature-level documentation for a specific feature, route, or
 ## How to Use
 
 ```
-/doc-feature                    # infer feature from current branch or recent changes
-/doc-feature 98                 # infer feature from PR #98
-/doc-feature apps/billing       # target a specific directory
-/doc-feature auth               # target a named feature
+/doc feature                    # infer feature from current branch or recent changes
+/doc feature 98                 # infer feature from PR #98
+/doc feature apps/billing       # target a specific directory
+/doc feature auth               # target a named feature
 ```
 
 ## Stack Detection

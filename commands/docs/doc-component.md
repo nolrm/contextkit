@@ -13,10 +13,10 @@ Generate or update component-level documentation colocated with the target file 
 ## How to Use
 
 ```
-/doc-component                              # infer from current file
-/doc-component src/components/Button.tsx    # target a specific file
-/doc-component lib/utils/parser.js          # target a utility
-/doc-component internal/auth/               # target a directory (documents all files in it)
+/doc component                              # infer from current file
+/doc component src/components/Button.tsx    # target a specific file
+/doc component lib/utils/parser.js          # target a utility
+/doc component internal/auth/               # target a directory (documents all files in it)
 ```
 
 ## Stack Detection

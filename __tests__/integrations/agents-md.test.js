@@ -4,6 +4,9 @@ const os = require('os');
 
 const CodexIntegration = require('../../lib/integrations/codex-integration');
 const OpencodeIntegration = require('../../lib/integrations/opencode-integration');
+const ClaudeIntegration = require('../../lib/integrations/claude-integration');
+const CopilotIntegration = require('../../lib/integrations/copilot-integration');
+const { renderAgentsMd } = require('../../lib/integrations/agents-md');
 const { SKILLS } = require('../../lib/skills/registry');
 
 jest.mock('chalk', () => ({
@@ -32,10 +35,10 @@ describe('AGENTS.md — shared across integrations', () => {
   });
 
   it('1. Codex then OpenCode leaves exactly one ContextKit block with identical content', async () => {
-    await new CodexIntegration().generateFiles();
+    await new CodexIntegration().install();
     const afterCodex = await fs.readFile('AGENTS.md', 'utf-8');
 
-    await new OpencodeIntegration().generateFiles();
+    await new OpencodeIntegration().install(true);
     const afterOpencode = await fs.readFile('AGENTS.md', 'utf-8');
 
     expect(afterOpencode).toBe(afterCodex);
@@ -43,10 +46,10 @@ describe('AGENTS.md — shared across integrations', () => {
   });
 
   it('2. OpenCode then Codex leaves exactly one ContextKit block with identical content', async () => {
-    await new OpencodeIntegration().generateFiles();
+    await new OpencodeIntegration().install();
     const afterOpencode = await fs.readFile('AGENTS.md', 'utf-8');
 
-    await new CodexIntegration().generateFiles();
+    await new CodexIntegration().install(true);
     const afterCodex = await fs.readFile('AGENTS.md', 'utf-8');
 
     expect(afterCodex).toBe(afterOpencode);
@@ -57,6 +60,27 @@ describe('AGENTS.md — shared across integrations', () => {
     for (const skill of SKILLS) {
       const sourcePath = path.resolve(__dirname, '../../', skill.source);
       expect(await fs.pathExists(sourcePath)).toBe(true);
+    }
+  });
+
+  it('4. Claude installs AGENTS.md too, and Copilot mirrors the same body', async () => {
+    await new ClaudeIntegration().install();
+    await new CopilotIntegration().install();
+    const agents = await fs.readFile('AGENTS.md', 'utf-8');
+    const copilot = await fs.readFile('.github/copilot-instructions.md', 'utf-8');
+    expect(agents).toContain(renderAgentsMd());
+    expect(copilot).toContain(renderAgentsMd());
+  });
+
+  it('5. every file the AGENTS.md body points at is shipped or created by ck install', () => {
+    const refs = [...renderAgentsMd().matchAll(/`(\.contextkit\/[\w./-]+\.md)`/g)].map((m) => m[1]);
+    const installSource = require('fs').readFileSync(
+      path.resolve(__dirname, '../../lib/commands/install.js'),
+      'utf-8'
+    );
+    for (const ref of refs) {
+      const rel = ref.replace('.contextkit/', '');
+      expect(installSource.includes(`'${rel}'`) || installSource.includes(ref)).toBe(true);
     }
   });
 });

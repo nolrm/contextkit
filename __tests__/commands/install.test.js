@@ -347,56 +347,35 @@ describe('InstallCommand', () => {
     expect(config).toContain('npm: "https://www.npmjs.com/package/@nolrm/contextkit"');
   });
 
-  it('23. CI squad workflow is installed when prompt returns yes', async () => {
-    // Temporarily unset CI env so promptGitHubActionsWorkflow runs interactively
-    const savedCI = process.env.CI;
-    delete process.env.CI;
-
-    try {
-      inquirer.prompt.mockReset();
-      // noHooks=true skips hook prompts; mock squad CI (yes) then platform (none)
-      inquirer.prompt
-        .mockResolvedValueOnce({ squadCi: true })
-        .mockResolvedValueOnce({ platform: null });
-
-      const install = getInstallModule();
-      await install({ noHooks: true });
-
-      expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(true);
-      const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-      expect(config).toContain('squad_ci_workflow: true');
-    } finally {
-      process.env.CI = savedCI;
-    }
-  });
-
-  it('24. config.yml sets squad_ci_workflow: false when prompt declined', async () => {
-    const savedCI = process.env.CI;
-    delete process.env.CI;
-
-    try {
-      inquirer.prompt.mockReset();
-      inquirer.prompt
-        .mockResolvedValueOnce({ squadCi: false })
-        .mockResolvedValueOnce({ platform: null });
-
-      const install = getInstallModule();
-      await install({ noHooks: true });
-
-      expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(false);
-      const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-      expect(config).toContain('squad_ci_workflow: false');
-    } finally {
-      process.env.CI = savedCI;
-    }
-  });
-
-  it('25. config.yml sets squad_ci_workflow: false by default', async () => {
+  it('23. config.yml is format v2 with no squad CI flag', async () => {
     const install = getInstallModule();
     await install({ nonInteractive: true, noHooks: true });
 
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toContain('squad_ci_workflow: false');
+    expect(config).toContain('format_version: 2');
+    expect(config).not.toContain('squad_ci_workflow');
+    expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(false);
+  });
+
+  it('24. config.yml defaults headline on and ships default context rules', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toMatch(/^headline: true$/m);
+    expect(config).toContain('context_rules:');
+    expect(config).toContain('  - file: standards/testing.md');
+    expect(config).toContain('context_budget_lines: 400');
+  });
+
+  it('25. --no-headline writes headline: false and no headline block', async () => {
+    await fs.writeFile('AGENTS.md', '# Agents\n');
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true, headline: false });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).toMatch(/^headline: false$/m);
+    expect(await fs.readFile('AGENTS.md', 'utf8')).not.toContain('<!-- headline:start -->');
   });
 
   it('22. ck install <platform> when already installed adds platform without reinstall prompt', async () => {
@@ -647,7 +626,7 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(await fs.pathExists('.gitignore')).toBe(false);
   });
 
-  it('52. appends all 8 entries and descriptive header to an empty .gitignore', async () => {
+  it('52. appends all runtime entries and descriptive header to an empty .gitignore', async () => {
     await fs.writeFile('.gitignore', '');
     await installer.addContextKitGitignoreEntries();
 
@@ -656,10 +635,6 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
     expect(content).toContain('.contextkit/status.json');
     expect(content).toContain('.contextkit/status.yml');
     expect(content).toContain('.contextkit/context.md');
-    expect(content).toContain('.contextkit/squad/');
-    expect(content).toContain('.contextkit/squad-done-*/');
-    expect(content).toContain('.contextkit/spec/');
-    expect(content).toContain('.contextkit/spec-archived-*/');
     expect(content).toContain('.contextkit/backup-*/');
     expect(content).toContain('.contextkit/.verified-tree');
     expect(content).toContain('.contextkit/.last-update-check');
@@ -681,10 +656,6 @@ describe('InstallCommand — addContextKitGitignoreEntries', () => {
 
     const content = await fs.readFile('.gitignore', 'utf-8');
     expect(content).toContain('.contextkit/context.md');
-    expect(content).toContain('.contextkit/squad/');
-    expect(content).toContain('.contextkit/squad-done-*/');
-    expect(content).toContain('.contextkit/spec/');
-    expect(content).toContain('.contextkit/spec-archived-*/');
     expect(content).toContain('.contextkit/backup-*/');
     // Already-present entries should appear only once
     const count = (content.match(/\.contextkit\/status\.json/g) || []).length;
@@ -866,25 +837,30 @@ describe('InstallCommand — _writeUserOwnedFile (skip on reinstall)', () => {
     expect(logged).toContain('--force');
   });
 
-  it('64. config.yml includes response_style block defaulting to terse chat and no diagrams', async () => {
+  it('64. headline block goes in AGENTS.md, not a CLAUDE.md that imports it', async () => {
+    await fs.writeFile('AGENTS.md', '# Agents\n');
+    await fs.writeFile('CLAUDE.md', '@AGENTS.md\n');
     const install = getInstallModule();
     await install({ nonInteractive: true, noHooks: true });
 
-    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toContain('response_style:');
-    expect(config).toContain('chat_minimal_words: true');
-    expect(config).toContain('diagrams_in_docs: false');
+    expect(await fs.readFile('AGENTS.md', 'utf8')).toContain('<!-- headline:start -->');
+    expect(await fs.readFile('CLAUDE.md', 'utf8')).not.toContain('<!-- headline:start -->');
   });
 
-  it('65. ai-guidelines.md skeleton documents the response_style config flags', async () => {
+  it('65. writes the index.md skeleton and drops response_style from config and ai-guidelines', async () => {
     const install = getInstallModule();
     await install({ nonInteractive: true, noHooks: true });
 
-    const content = await fs.readFile('.contextkit/standards/ai-guidelines.md', 'utf8');
-    expect(content).toContain('## Response Style');
-    expect(content).toContain('response_style');
-    expect(content).toContain('chat_minimal_words');
-    expect(content).toContain('diagrams_in_docs');
+    const index = await fs.readFile('.contextkit/standards/index.md', 'utf8');
+    expect(index).toContain('When You Touch X → Read Y');
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).not.toContain('response_style');
+    expect(config).toContain('diagrams_in_docs: false');
+    expect(config).toContain('  - standards/index.md');
+    const guidelines = await fs.readFile('.contextkit/standards/ai-guidelines.md', 'utf8');
+    expect(guidelines).not.toContain('response_style');
+    expect(guidelines).not.toContain('standards-aware');
+    expect(guidelines).toContain('/learn');
   });
 
   it('66. config.yml includes an empty pending_standards_updates list', async () => {

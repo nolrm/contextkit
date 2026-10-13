@@ -119,7 +119,7 @@ export default function MonorepoPage() {
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-2">3. Scope Selection</h3>
                 <p className="text-sm text-muted-foreground mb-3">
-                  When running <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code>, you'll be prompted to select:
+                  When running <code className="rounded bg-muted px-1 font-mono text-xs">contextkit analyze</code>, you'll be prompted to select:
                 </p>
                 <div className="space-y-2">
                   <div className="rounded-lg border border-muted p-2">
@@ -226,8 +226,20 @@ export default function MonorepoPage() {
           <div className="rounded-lg border bg-card p-4">
             <h3 className="font-semibold text-base mb-2">3. Commit Standards to Git</h3>
             <p className="text-sm text-muted-foreground">
-              Commit the entire <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/</code> directory to git. Team members on different AI tools run their own platform command (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code>, <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>) to set up their local integration against the shared standards.
+              Commit <code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code> and the entire <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/</code> directory to git. Team members on different AI tools run their own platform command (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">ck cursor</code>, <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>) to set up their local integration against the shared standards.
             </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-semibold text-base mb-2">4. Scope Standards to Packages</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Map each topic standards file to the packages it applies to with <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code>, so frontend rules load only when the AI touches frontend files. Then re-render with <code className="rounded bg-muted px-1 font-mono text-xs">ck update --force</code> or <code className="rounded bg-muted px-1 font-mono text-xs">ck &lt;platform&gt;</code>.
+            </p>
+            <pre className="rounded bg-muted p-3 font-mono text-xs overflow-x-auto">{`context_rules:
+  - file: standards/frontend/code-style.md
+    paths: ["apps/web/**", "packages/ui/**"]
+  - file: standards/backend/code-style.md
+    paths: ["apps/api/**"]`}</pre>
           </div>
         </div>
       </div>

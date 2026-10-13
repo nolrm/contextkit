@@ -6,7 +6,8 @@ import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 
 export default function MdFirstPage() {
   const headings = [
-    { id: 'why', text: 'Why Specs First?' },
+    { id: 'why', text: 'Why Markdown First?' },
+    { id: 'goal', text: 'Start With a Goal File' },
     { id: 'hierarchy', text: 'The 3-Level Hierarchy' },
     { id: 'level-2', text: 'Level 2: The Page Spec' },
     { id: 'level-3', text: 'Level 3: The Component Spec' },
@@ -49,20 +50,54 @@ export default function MdFirstPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">MD-First Development</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Write a markdown spec before writing any code. Every component, every page, every feature
-          starts with a <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> file — living
-          alongside the code it describes.
+          Write the markdown before the code. A long task starts with a goal file; every page and
+          component gets a <code className="rounded bg-muted px-1 font-mono text-xs">.md</code> spec living
+          alongside the code it describes; and <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code> keeps
+          those docs in step once the code changes.
         </p>
       </div>
 
       {/* Why */}
       <div id="why" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Why Specs First?</h2>
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Why Markdown First?</h2>
         <p className="text-muted-foreground leading-relaxed">
           AI tools hallucinate when they lack context. A spec file gives the AI everything it needs
           before it touches a single line of code: purpose, responsibilities, props, logic, and
           dependencies. The result is more accurate output, fewer corrections, and a codebase
           that documents itself.
+        </p>
+      </div>
+
+      {/* Goal file */}
+      <div id="goal" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Start With a Goal File</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          For work that spans many steps or sessions, run{" "}
+          <code className="rounded bg-muted px-1 font-mono text-xs">/goal &quot;your idea&quot;</code>. The agent drafts a
+          one-page goal file in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/goals/</code> with
+          3–7 checkable outcomes, you approve them, and only then does it start building. The goal file is the
+          markdown-first contract for the whole task: it survives context compaction and new sessions, and every
+          outcome gets an independent review before it&apos;s ticked.
+        </p>
+        <div className="rounded-lg border bg-muted/50 p-4 mt-3">
+          <p className="text-xs font-mono text-muted-foreground mb-2">.contextkit/goals/dashboard.md</p>
+          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`---
+status: active
+created: 2026-10-13
+---
+
+# Goal: Account dashboard
+
+## Goal
+Give signed-in users one page with their account summary, recent activity, and quick actions.
+
+## Outcomes
+- [ ] O1: A user sees balance, usage, and alerts on /dashboard
+- [ ] O2: A user can page through recent activity, newest first
+- [ ] O3: Quick actions only show what the user's role allows`}</pre>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          See <Link href="/docs/goal" className="text-primary hover:underline">/goal</Link> for the full template and build loop.
         </p>
       </div>
 
@@ -258,9 +293,9 @@ src/
             <p className="text-sm text-muted-foreground">
               For each component referenced in the page spec, create a colocated{" "}
               <code className="rounded bg-muted px-1 font-mono text-xs">ComponentName.md</code>.
-              Use the{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">/spec</code> command to
-              scaffold it from the template.
+              The{" "}
+              <code className="rounded bg-muted px-1 font-mono text-xs">create-component</code> workflow
+              scaffolds it from <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/templates/component-spec.md</code>.
             </p>
           </div>
           <div className="rounded-lg border bg-card p-4">
@@ -300,16 +335,15 @@ src/
             <pre className="rounded bg-muted p-2 font-mono text-xs">{`Create a Dashboard feature with summary, activity feed, and quick actions`}</pre>
           </div>
           <div className="rounded-lg border bg-card p-4">
-            <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
+            <p className="text-xs font-mono text-muted-foreground mb-1">Task</p>
             <h3 className="font-semibold text-base mb-1">
-              <code className="font-mono text-sm">/spec</code>
+              <code className="font-mono text-sm">/goal</code>
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Create a component spec before writing any code. Scaffolds{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">ComponentName/ComponentName.md</code>{" "}
-              from the template and waits for your approval.
+              Draft a one-page goal file with checkable outcomes, get your approval, then build outcome by
+              outcome with a fresh-context review of each.
             </p>
-            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/spec SummaryCard — shows a metric with label, value, optional alert`}</pre>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/goal "account dashboard with summary, activity feed, and quick actions"`}</pre>
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
@@ -317,8 +351,8 @@ src/
               <code className="font-mono text-sm">create-component</code>
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Scaffold the implementation. Checks for an existing spec first — if none exists,
-              drafts one before touching any code.
+              Scaffold the implementation. Checks for an existing component spec first — if none exists,
+              drafts one from <code className="rounded bg-muted px-1 font-mono text-xs">component-spec.md</code> before touching any code.
             </p>
             <pre className="rounded bg-muted p-2 font-mono text-xs">{`Create a SummaryCard component`}</pre>
           </div>
@@ -329,52 +363,53 @@ src/
       <div id="doc-commands" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Generating Docs</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Once code exists, these three commands generate documentation at each level of the hierarchy
-          — automatically tailored to your project's stack (React, Vue, Go, Python, and more).
+          Once code exists, <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code> generates documentation at
+          each level of the hierarchy — tailored to your project&apos;s stack (React, Vue, Go, Python, and more). With no
+          argument, it finds the docs and standards that reference code changed on your branch and updates the stale ones.
         </p>
 
         <div className="rounded-lg border bg-muted/50 p-4 mt-1">
-          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Level 1  /doc-arch       → docs/architecture.md
-Level 2  /doc-feature    → docs/features/<name>.md
-Level 3  /doc-component  → <path>/<name>.md  (colocated)`}</pre>
+          <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Level 1  /doc arch        → docs/architecture.md
+Level 2  /doc feature     → docs/features/<name>.md
+Level 3  /doc component   → <path>/<name>.md  (colocated)`}</pre>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3 mt-2">
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs font-mono text-muted-foreground mb-1">Level 1</p>
             <h3 className="font-semibold text-base mb-1">
-              <code className="font-mono text-sm">/doc-arch</code>
+              <code className="font-mono text-sm">/doc arch</code>
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
               Generates or updates <code className="rounded bg-muted px-1 font-mono text-xs">docs/architecture.md</code> —
               system overview, key flows, Mermaid diagrams, and architecture decisions.
             </p>
-            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-arch
-/doc-arch 142  # from PR #142`}</pre>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc arch
+/doc arch 142  # from PR #142`}</pre>
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs font-mono text-muted-foreground mb-1">Level 2</p>
             <h3 className="font-semibold text-base mb-1">
-              <code className="font-mono text-sm">/doc-feature</code>
+              <code className="font-mono text-sm">/doc feature</code>
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
               Generates or updates <code className="rounded bg-muted px-1 font-mono text-xs">docs/features/{'<name>'}.md</code> —
               purpose, components used, data flow, and user flows for a specific feature area.
             </p>
-            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-feature auth
-/doc-feature apps/billing`}</pre>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc feature auth
+/doc feature apps/billing`}</pre>
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs font-mono text-muted-foreground mb-1">Level 3</p>
             <h3 className="font-semibold text-base mb-1">
-              <code className="font-mono text-sm">/doc-component</code>
+              <code className="font-mono text-sm">/doc component</code>
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
               Creates a colocated <code className="rounded bg-muted px-1 font-mono text-xs">{'<name>'}.md</code> next
               to the target file — API/props, usage example, behavior, and edge cases.
             </p>
-            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc-component src/components/Button.tsx
-/doc-component lib/utils/parser.js`}</pre>
+            <pre className="rounded bg-muted p-2 font-mono text-xs">{`/doc component src/components/Button.tsx
+/doc component lib/utils/parser.js`}</pre>
           </div>
         </div>
 
@@ -390,11 +425,12 @@ Level 3  /doc-component  → <path>/<name>.md  (colocated)`}</pre>
             </thead>
             <tbody>
               {[
-                ['Merged a PR that changed system boundaries or added a service', '/doc-arch'],
-                ['Shipped a new feature — want to document how it works end-to-end', '/doc-feature'],
-                ['Wrote a new component, utility, or module', '/doc-component'],
-                ['Reviewing a PR and want to understand architecture impact', '/doc-arch <PR number>'],
-                ['Backfilling docs on existing code', '/doc-component <path>'],
+                ['Finished a change and want every affected doc and standard updated', '/doc'],
+                ['Merged a PR that changed system boundaries or added a service', '/doc arch'],
+                ['Shipped a new feature — want to document how it works end-to-end', '/doc feature'],
+                ['Wrote a new component, utility, or module', '/doc component'],
+                ['Reviewing a PR and want to understand architecture impact', '/doc arch <PR number>'],
+                ['Backfilling docs on existing code', '/doc component <path>'],
               ].map(([scenario, cmd], i) => (
                 <tr key={i} className={i % 2 === 0 ? '' : 'bg-muted/30'}>
                   <td className="px-4 py-2 text-muted-foreground">{scenario}</td>
@@ -406,13 +442,11 @@ Level 3  /doc-component  → <path>/<name>.md  (colocated)`}</pre>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 mt-2">
-          <p className="text-sm font-medium mb-1">Squad integration</p>
+          <p className="text-sm font-medium mb-1">Before you push</p>
           <p className="text-sm text-muted-foreground">
-            When using the squad pipeline (<code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code>),
-            the Doc Writer step (<code className="rounded bg-muted px-1 font-mono text-xs">/squad-doc</code>) generates
-            companion docs automatically after review passes — you don't need to run these commands manually
-            after a squad task. Use them directly when patching code outside the pipeline, backfilling docs,
-            or documenting a PR from another team.
+            Run <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code> with no argument at the end of a branch.
+            On a feature branch it lists the recommended updates first, then applies them. For npm packages it also
+            suggests a version bump and checks <code className="rounded bg-muted px-1 font-mono text-xs">CHANGELOG.md</code>.
           </p>
         </div>
       </div>

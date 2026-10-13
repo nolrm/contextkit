@@ -7,9 +7,11 @@ This is the official documentation website for [ContextKit](https://github.com/n
 The `contextkit-docs` directory contains the complete source code for the ContextKit documentation website. This site provides comprehensive documentation about ContextKit, including:
 
 - Quick start guide (installation + setup)
-- Platform-specific examples (Cursor, VS Code, Aider, Claude CLI, Gemini)
+- Platform-specific examples (Claude Code, Codex, Cursor, Copilot, Gemini, Aider, and more)
 - Project structure overview
 - CLI commands reference
+- Skills (/ck, /doc, /learn) and the /goal and /headline add-ons
+- Upgrading to 2.0
 
 ## Technologies
 

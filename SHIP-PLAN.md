@@ -1,5 +1,7 @@
 # `/ship` — Automatic Pipeline Plan
 
+> **Superseded (2026-10-13):** ContextKit 2.0 removed squad instead of replacing it with `/ship`. Long tasks now use `/goal` (a one-page goal file, the agent's own build loop, fresh-context review per outcome). See `docs/plans/contextkit-2.0.md`.
+
 > Problem: squad works, but nobody runs it. In a month of sessions the user typed zero squad
 > commands — every run was one Claude invoked. Ten separate commands (`/squad`, `/squad-architect`,
 > `/squad-dev`, …) is too much ceremony, and the pipeline stops short of what actually matters

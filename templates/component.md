@@ -4,4 +4,4 @@
 
 Your canonical component/module pattern will be generated based on your project's framework, language, and conventions.
 
-Run `/analyze` to generate this content, or manually add your component pattern below.
+Run `/ck setup` to generate this content, or manually add your component pattern below.

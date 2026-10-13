@@ -1,42 +1,42 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, FileCode, Layers, Users, FileText, Terminal } from "lucide-react"
+import { FileCode, Layers, Target, ShieldCheck, Terminal, ListTree } from "lucide-react"
 
 const features = [
   {
-    icon: Brain,
-    title: "Context Engineering",
+    icon: FileCode,
+    title: "One Canonical AGENTS.md",
     description:
-      "Provide structured markdown context to AI assistants, preventing hallucinations and ensuring code matches your exact patterns and architecture.",
+      "Every integration writes the same AGENTS.md. CLAUDE.md imports it, and tools that don't read AGENTS.md get the same body in their own file. One source of truth, every tool.",
   },
   {
-    icon: FileCode,
-    title: "Project-Specific Standards",
+    icon: ListTree,
+    title: "Short Index, Path-Scoped Standards",
     description:
-      "Auto-detect your tech stack and customize standards. Glossary, code style, testing patterns—all tailored specifically to your project's needs.",
+      "A short always-loaded index.md holds the must-know rules and commands. Topic standards like testing and code style load only when the AI touches matching files, via context_rules.",
   },
   {
     icon: Layers,
     title: "Multi-Platform Support",
     description:
-      "Works with Cursor (auto-loads), VS Code (Copilot), Aider, Continue.dev, UX Pilot CLI, Gemini, and more. One context source for all tools.",
+      "Claude-first, and works with Codex, Cursor, GitHub Copilot, Gemini, OpenCode, Aider, Continue, and Windsurf. Each tool gets context in the format it actually reads.",
   },
   {
-    icon: Users,
-    title: "Squad Workflow",
+    icon: ShieldCheck,
+    title: "Quality Gates",
     description:
-      "Multi-agent pipeline that simulates a full team: Product Owner → Architect → Dev → Test → Review. Each role reads and writes to a shared handoff file.",
+      "Pre-push and commit-msg git hooks run your lint, type-check, test, and build commands. Code that already passed is skipped, and stale context gets a warning before you push.",
   },
   {
-    icon: FileText,
-    title: "MD-First Development",
+    icon: Target,
+    title: "/goal for Long Tasks",
     description:
-      "Write a spec before writing code. Every component gets a colocated markdown file describing its purpose, props, and logic — giving AI full context before it touches a line.",
+      "Run a long task against a one-page goal file with checkable outcomes. The agent builds in its own loop, re-reads the goal after compaction, and gets a fresh-context review before ticking each outcome.",
   },
   {
     icon: Terminal,
-    title: "Slash Commands",
+    title: "Five Small Skills",
     description:
-      "25 reusable AI workflows installed across all platforms: /analyze, /review, /refactor, /spec, /squad, and more. One command set, every tool.",
+      "/ck to set up, update, and tidy context, /doc to keep docs current, /learn to turn corrections into rules, plus the /goal and /headline add-ons.",
   },
 ]
 
@@ -49,7 +49,7 @@ export function Features() {
             Key Features
           </h2>
           <p className="text-balance text-lg text-muted-foreground max-w-2xl">
-            Context-aware AI development that works seamlessly with your existing tools and engineering patterns.
+            Give your AI coding tools the project context they need, without loading everything into every session.
           </p>
         </div>
 

@@ -6,7 +6,7 @@
 
 **This is not set-and-forget!**
 
-After running `/analyze`, **manually review and edit** these files to match YOUR project:
+After running `/ck setup`, **manually review and edit** these files to match YOUR project:
 
 - **Fine-tune** the AI-generated content to your actual needs
 - **Remove** what doesn't apply to your project
@@ -56,12 +56,11 @@ Treat these files as **living documentation** that grows with your project.
 
 ## Commands
 
-- `@.contextkit/commands/analyze.md` - **Analyze and customize standards for your project**
-- `@.contextkit/commands/create-component.md` - Create new component
-- `@.contextkit/commands/create-feature.md` - Create new feature
-- `@.contextkit/commands/run-tests.md` - Run test suite
-- `@.contextkit/commands/quality-check.md` - Quality check
-- `@.contextkit/commands/add-documentation.md` - Add documentation
+- `.contextkit/commands/dev/analyze.md` - **Analyze and customize standards for your project**
+- `.contextkit/commands/dev/create-component.md` - Create new component
+- `.contextkit/commands/dev/create-feature.md` - Create new feature
+- `.contextkit/commands/dev/quality-check.md` - Quality check
+- `.contextkit/commands/docs/doc.md` - Update docs affected by a change
 
 ## Templates
 

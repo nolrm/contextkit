@@ -9,13 +9,8 @@ jest.mock('chalk', () => ({
 }));
 
 const mockFixtures = {
-  'commands/squad/squad.md': '# Squad — Kickoff\n\nSome squad workflow content.\n',
-  'commands/squad/squad-dev.md': '# Squad — Dev\n\nImplementation workflow.\n',
-  'commands/spec/spec.md':
-    '# Spec — Project Specification\n\nIntro text.\n\n## Step 0 — Guard Check\n\nVerify `.contextkit/` exists in the current directory. If not, tell the user to run `ck install` first and stop.\n\n## Step 1 — Parse Input\n\nRest of the workflow.\n',
-  'commands/dev/spec-component.md':
-    '# Spec — Component\n\n3. Create `<ComponentName>/<ComponentName>.md` using `.contextkit/templates/component-spec.md`\n\n## Standards Applied\n',
-  'templates/component-spec.md': '# [ComponentName]\n\nTemplate body.\n',
+  'commands/addons/goal.md': '# Goal\n\nRun a long task against a goal file.\n',
+  'commands/addons/headline.md': '# Headline\n\nShort, result-first replies.\n',
 };
 
 // Resolve fetched content by matching the known fixture suffix against the URL.
@@ -44,112 +39,82 @@ describe('GlobalSkillsManager', () => {
   });
 
   const newManager = () => new GlobalSkillsManager({ homeDir: tempHome });
+  const skillFile = (name) => path.join(tempHome, '.claude', 'skills', name, 'SKILL.md');
 
-  test('1. resolveNames with no filter returns all 12 skills', () => {
-    const manager = newManager();
-    expect(manager.resolveNames(undefined)).toHaveLength(12);
+  async function writeManagedSkill(name) {
+    await fs.ensureDir(path.dirname(skillFile(name)));
+    await fs.writeFile(
+      skillFile(name),
+      `---\ndescription: old\ncontextkit-managed: true\ncontextkit-version: 1.13.0\n---\nOld.\n`
+    );
+  }
+
+  test('1. resolveNames with no filter returns the goal and headline skills', () => {
+    expect(newManager().resolveNames(undefined)).toEqual(['goal', 'headline']);
   });
 
-  test('2. resolveNames("squad") returns the 10-skill squad family', () => {
+  test('2. resolveNames accepts family and skill names, ignores unknown ones', () => {
     const manager = newManager();
-    const names = manager.resolveNames('squad');
-    expect(names).toHaveLength(10);
-    expect(names).toContain('squad-dev');
-    expect(names).not.toContain('spec');
+    expect(manager.resolveNames('goal')).toEqual(['goal']);
+    expect(manager.resolveNames('headline,nope')).toEqual(['headline']);
+    expect(manager.resolveNames('squad')).toEqual([]);
   });
 
-  test('3. resolveNames("spec") returns spec + spec-component', () => {
-    const manager = newManager();
-    expect(manager.resolveNames('spec')).toEqual(['spec', 'spec-component']);
-  });
-
-  test('4. install writes a self-contained SKILL.md with contextkit-managed frontmatter', async () => {
-    const manager = newManager();
-    await manager.install('squad-dev');
-
-    const skillPath = path.join(tempHome, '.claude', 'skills', 'squad-dev', 'SKILL.md');
-    expect(await fs.pathExists(skillPath)).toBe(true);
-
-    const content = await fs.readFile(skillPath, 'utf-8');
+  test('3. install writes a self-contained SKILL.md with contextkit-managed frontmatter', async () => {
+    await newManager().install('goal');
+    const content = await fs.readFile(skillFile('goal'), 'utf-8');
     expect(content).toContain('contextkit-managed: true');
     expect(content).toContain(`contextkit-version: ${CK_VERSION}`);
-    expect(content).toContain('Implementation workflow.');
-    // No pointer to an external .contextkit/commands/ file — fully inlined
+    expect(content).toContain('Run a long task against a goal file.');
     expect(content).not.toContain('.contextkit/commands/');
   });
 
-  test('5. install applies the spec guard-removal transform', async () => {
+  test('4. list() reports only contextkit-managed skills with their version', async () => {
     const manager = newManager();
-    await manager.install('spec');
-
-    const content = await fs.readFile(
-      path.join(tempHome, '.claude', 'skills', 'spec', 'SKILL.md'),
-      'utf-8'
-    );
-    expect(content).not.toContain('Guard Check');
-    expect(content).not.toContain('tell the user to run `ck install`');
-    expect(content).toContain('## Step 1 — Parse Input');
+    await manager.install('headline');
+    expect(await manager.list()).toEqual([
+      { name: 'headline', version: CK_VERSION, current: true },
+    ]);
   });
 
-  test('6. install applies the spec-component template-inlining transform', async () => {
+  test('5. update() regenerates only currently-installed skills when no filter given', async () => {
     const manager = newManager();
-    await manager.install('spec-component');
-
-    const content = await fs.readFile(
-      path.join(tempHome, '.claude', 'skills', 'spec-component', 'SKILL.md'),
-      'utf-8'
-    );
-    expect(content).not.toContain('.contextkit/templates/component-spec.md');
-    expect(content).toContain('## Component Spec Template');
-    expect(content).toContain('Template body.');
+    await manager.install('goal');
+    expect(await manager.update()).toEqual(['goal']);
   });
 
-  test('7. list() reports only contextkit-managed skills with their version', async () => {
-    const manager = newManager();
-    await manager.install('squad-dev');
-
-    const list = await manager.list();
-    expect(list).toEqual([{ name: 'squad-dev', version: CK_VERSION, current: true }]);
+  test('6. update() removes managed skills that were retired in 2.0', async () => {
+    await writeManagedSkill('squad-dev');
+    await newManager().update();
+    expect(await fs.pathExists(path.dirname(skillFile('squad-dev')))).toBe(false);
   });
 
-  test('8. update() regenerates only currently-installed skills when no filter given', async () => {
+  test('7. uninstall requires an explicit filter or all:true — bare call is a no-op', async () => {
     const manager = newManager();
-    await manager.install('squad-dev');
-    const updated = await manager.update();
-    expect(updated).toEqual(['squad-dev']);
+    await manager.install('goal');
+    expect(await manager.uninstall(undefined, {})).toEqual([]);
+    expect(await fs.pathExists(skillFile('goal'))).toBe(true);
   });
 
-  test('9. uninstall requires an explicit filter or all:true — bare call is a no-op', async () => {
-    const manager = newManager();
-    await manager.install('squad-dev');
-
-    const removed = await manager.uninstall(undefined, {});
-    expect(removed).toEqual([]);
-    expect(
-      await fs.pathExists(path.join(tempHome, '.claude', 'skills', 'squad-dev', 'SKILL.md'))
-    ).toBe(true);
+  test('8. uninstall never removes a same-named skill without the ownership marker', async () => {
+    await fs.ensureDir(path.dirname(skillFile('goal')));
+    await fs.writeFile(skillFile('goal'), '---\ndescription: My own skill\n---\nNot managed.\n');
+    expect(await newManager().uninstall('goal')).toEqual([]);
+    expect(await fs.pathExists(skillFile('goal'))).toBe(true);
   });
 
-  test('10. uninstall never removes a same-named skill without the ownership marker', async () => {
-    const manager = newManager();
-    const foreignSkillDir = path.join(tempHome, '.claude', 'skills', 'squad-dev');
-    await fs.ensureDir(foreignSkillDir);
-    await fs.writeFile(
-      path.join(foreignSkillDir, 'SKILL.md'),
-      '---\ndescription: My own skill\n---\nNot managed by ContextKit.\n'
-    );
-
-    const removed = await manager.uninstall('squad-dev', {});
-    expect(removed).toEqual([]);
-    expect(await fs.pathExists(path.join(foreignSkillDir, 'SKILL.md'))).toBe(true);
+  test('9. uninstall("squad") removes pre-2.0 squad skills by family name', async () => {
+    await writeManagedSkill('squad');
+    await writeManagedSkill('squad-auto');
+    const removed = await newManager().uninstall('squad');
+    expect(removed.sort()).toEqual(['squad', 'squad-auto']);
   });
 
-  test('11. uninstall --all removes every contextkit-managed skill', async () => {
+  test('10. uninstall --all removes every contextkit-managed skill', async () => {
     const manager = newManager();
-    await manager.install('spec');
+    await manager.install('goal');
+    await writeManagedSkill('spec');
     const removed = await manager.uninstall(undefined, { all: true });
-    expect(removed.sort()).toEqual(['spec', 'spec-component']);
-    expect(await fs.pathExists(path.join(tempHome, '.claude', 'skills'))).toBe(true);
-    expect(await fs.readdir(path.join(tempHome, '.claude', 'skills'))).toEqual([]);
+    expect(removed.sort()).toEqual(['goal', 'spec']);
   });
 });

@@ -9,9 +9,9 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://contextkit-docs.vercel.app'),
-  title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
+  title: "ContextKit - Better Project Context for AI Coding Tools",
   description:
-    "Scaffold structured context for your AI tools and run autonomous multi-role pipelines grounded by that context. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
+    "One canonical AGENTS.md, a short always-loaded index, topic standards that load only where they apply, quality-gate git hooks, and five small skills. Claude-first; works with Codex, Cursor, Copilot, Gemini, OpenCode, Aider, Continue, and Windsurf.",
   generator: "next.js",
   keywords: ["AI development", "context engineering", "developer tools", "TypeScript", "code quality", "Cursor", "Claude", "Aider"],
   authors: [{ name: "Marlon Maniti", url: "https://github.com/nolrm" }],
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://github.com/nolrm/contextkit/tree/main/contextkit-docs",
     siteName: "ContextKit",
-    title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
-    description: "Scaffold structured standards for your AI tools and run a grounded multi-role agentic pipeline — PO to Architect to Dev to Tester to Reviewer — without agents hallucinating your conventions.",
+    title: "ContextKit - Better Project Context for AI Coding Tools",
+    description: "Give your AI coding tools the right project context: one canonical AGENTS.md, a short always-loaded index, path-scoped topic standards, quality-gate hooks, and five small skills.",
     images: [
       {
         url: "/contextkit-logo.svg",
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines",
-    description: "Structured context for your AI tools + an autonomous multi-role pipeline grounded by that context. No hallucinated conventions.",
+    title: "ContextKit - Better Project Context for AI Coding Tools",
+    description: "One canonical AGENTS.md, path-scoped standards, quality-gate hooks, and five small skills — so AI tools follow your project's conventions.",
     creator: "@nolrm",
     images: ["/contextkit-logo.svg"],
   },
@@ -73,7 +73,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
               "name": "ContextKit",
-              "description": "Token-Efficient Context Engineering + Agentic AI Pipelines — scaffold project standards for AI assistants and run grounded autonomous pipelines that never hallucinate your conventions",
+              "description": "Better project context for AI coding tools — one canonical AGENTS.md, a short always-loaded index, path-scoped topic standards, quality-gate git hooks, and five small skills",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Any",
               "offers": {

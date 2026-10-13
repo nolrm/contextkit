@@ -53,10 +53,13 @@ describe('plugins/contextkit/ — generated output stays in sync', () => {
     expect(manifest.version.length).toBeGreaterThan(0);
   });
 
-  it("5. spec skill's Step 0 guard-check is stripped (works with no .contextkit/ present)", async () => {
-    const content = await fs.readFile(path.join(PLUGIN_DIR, 'skills', 'spec', 'SKILL.md'), 'utf-8');
-    expect(content).not.toContain('Guard Check');
-    expect(content).not.toContain('tell the user to run `ck install` first and stop');
+  it('5. add-on skills are self-contained (inline content, no .contextkit/ pointer)', async () => {
+    for (const name of ['goal', 'headline']) {
+      const content = await fs.readFile(path.join(PLUGIN_DIR, 'skills', name, 'SKILL.md'), 'utf-8');
+      expect(content).not.toMatch(/^Read `\.contextkit\/commands/m);
+    }
+    const goal = await fs.readFile(path.join(PLUGIN_DIR, 'skills', 'goal', 'SKILL.md'), 'utf-8');
+    expect(goal).toContain('## Template');
   });
 
   it('6. root marketplace.json points at ./plugins/contextkit and is valid JSON', async () => {

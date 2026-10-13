@@ -81,143 +81,77 @@ describe('Download manifest validation', () => {
     expect(unreferenced).toEqual([]);
   });
 
-  it('5. commands/dev/health-check.md contains the update check step', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/health-check.md'), 'utf8');
-    expect(content).toContain('npm view @nolrm/contextkit version');
-    expect(content).toContain('status.json');
-    expect(content).toContain('ck update');
+  it('5. commands/core/ck.md is in both manifests and covers status, setup, update, and tidy', () => {
+    expect(installPaths).toContain('commands/core/ck.md');
+    expect(updatePaths).toContain('commands/core/ck.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/core/ck.md'), 'utf8');
+    expect(content).toContain('## /ck setup');
+    expect(content).toContain('## /ck update');
+    expect(content).toContain('## /ck tidy');
+    expect(content).toContain('pending-cleanup.md');
+    // custom CLAUDE.md content is never moved without asking
+    expect(content).toContain('**Move to `AGENTS.md`**');
+    expect(content).toContain('**Keep in `CLAUDE.md`**');
   });
 
-  it('6. commands/squad/squad-doc.md is in both install and update manifests and contains doc instructions', () => {
-    expect(installPaths).toContain('commands/squad/squad-doc.md');
-    expect(updatePaths).toContain('commands/squad/squad-doc.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-doc.md'), 'utf8');
-    expect(content).toContain('companion');
-    expect(content).toContain('`doc`');
-    expect(content).toContain('## 7. Doc');
+  it('6. commands/addons/goal.md is in both manifests and anchors long tasks to a goal file', () => {
+    expect(installPaths).toContain('commands/addons/goal.md');
+    expect(updatePaths).toContain('commands/addons/goal.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/addons/goal.md'), 'utf8');
+    expect(content).toContain('.contextkit/goals/');
+    expect(content).toContain('after any context compaction');
+    expect(content).toContain('Outcomes are human-owned');
+    expect(content).toContain('fresh context');
+    expect(content).toContain('Never pass your own account of the work');
+    expect(content).toContain('AskUserQuestion');
+    expect(content).toContain('request_user_input');
   });
 
-  it('7. commands/squad/squad-architect.md contains the complexity check step and split signal', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-architect.md'), 'utf8');
-    expect(content).toContain('Evaluate complexity');
-    expect(content).toContain('### Recommended Split');
-    expect(content).toContain('po-clarify');
-    expect(content).toContain('7 files');
+  it('7. commands/addons/headline.md is in both manifests and supports on, off, and pause', () => {
+    expect(installPaths).toContain('commands/addons/headline.md');
+    expect(updatePaths).toContain('commands/addons/headline.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/addons/headline.md'), 'utf8');
+    expect(content).toContain('/headline off');
+    expect(content).toContain('/headline pause');
+    expect(content).toContain('<!-- headline:start -->');
   });
 
-  it('8. commands/squad/squad.md Clarification Mode handles split recommendation', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad.md'), 'utf8');
-    expect(content).toContain('### Recommended Split');
-    expect(content).toContain('Approve split');
-    expect(content).toContain('Proceed as-is');
+  it('8. commands/core/learn.md is in both manifests and logs via ck note', () => {
+    expect(installPaths).toContain('commands/core/learn.md');
+    expect(updatePaths).toContain('commands/core/learn.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/core/learn.md'), 'utf8');
+    expect(content).toContain('ck note');
+    expect(content).toContain('.contextkit/standards/');
   });
 
-  it('9. commands/squad/squad-auto.md po-clarify message covers split scenario', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-auto.md'), 'utf8');
-    expect(content).toContain('split recommendation');
+  it('9. commands/docs/doc.md is in both manifests, diff-driven by default, with level guides', () => {
+    expect(installPaths).toContain('commands/docs/doc.md');
+    expect(updatePaths).toContain('commands/docs/doc.md');
+    const content = fs.readFileSync(path.join(ROOT, 'commands/docs/doc.md'), 'utf8');
+    expect(content).toContain('## Default: Docs for the Current Change');
+    expect(content).toContain('.contextkit/commands/docs/doc-arch.md');
+    expect(content).toContain('.contextkit/commands/docs/doc-feature.md');
+    expect(content).toContain('.contextkit/commands/docs/doc-component.md');
   });
 
-  it('10. commands/agents/context-budget.md is in both manifests and contains priority/budget guidance', () => {
-    expect(installPaths).toContain('commands/agents/context-budget.md');
-    expect(updatePaths).toContain('commands/agents/context-budget.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/context-budget.md'), 'utf8');
-    expect(content).toContain('Context Budget');
-    expect(content).toContain('standards');
+  it('10. commands/dev/analyze.md writes the index and context rules, compact by default', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/analyze.md'), 'utf8');
+    expect(content).toContain('.contextkit/standards/index.md');
+    expect(content).toContain('context_rules');
+    expect(content).toContain('50 lines');
+    expect(content).toContain('/ck tidy');
+    expect(content).toContain('The Non-Inferable Filter');
+    expect(content).not.toContain('response_style');
   });
 
-  it('11. commands/agents/agent-push-checklist.md is in both manifests and contains checklist content', () => {
-    expect(installPaths).toContain('commands/agents/agent-push-checklist.md');
-    expect(updatePaths).toContain('commands/agents/agent-push-checklist.md');
-    const content = fs.readFileSync(
-      path.join(ROOT, 'commands/agents/agent-push-checklist.md'),
-      'utf8'
+  it('11. retired squad, spec, and agents commands are in neither manifest', () => {
+    const retired = [...installPaths, ...updatePaths].filter((p) =>
+      /commands\/(squad|spec|agents)\/|spec-component|compress\.md|health-check/.test(p)
     );
-    expect(content).toContain('checklist');
-    expect(content).toContain('commit');
+    expect(retired).toEqual([]);
   });
 
-  it('12. commands/agents/standards-aware.md is in both manifests and contains standards loop content', () => {
-    expect(installPaths).toContain('commands/agents/standards-aware.md');
-    expect(updatePaths).toContain('commands/agents/standards-aware.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
-    expect(content).toContain('standards');
-  });
-
-  it('13. spec pipeline commands are in both manifests; removed domain agents are not', () => {
-    // Only spec.md remains — single CTO pass, no domain sub-agents
-    expect(installPaths).toContain('commands/spec/spec.md');
-    expect(updatePaths).toContain('commands/spec/spec.md');
-
-    // squad-spec is the spec-to-squad bridge command
-    expect(installPaths).toContain('commands/squad/squad-spec.md');
-    expect(updatePaths).toContain('commands/squad/squad-spec.md');
-
-    // domain agent files and old sequential CTO files removed
-    const removedFiles = [
-      'commands/spec/spec-ux.md',
-      'commands/spec/spec-data.md',
-      'commands/spec/spec-systems.md',
-      'commands/spec/spec-planner.md',
-      'commands/spec/spec-init.md',
-      'commands/spec/spec-brief.md',
-      'commands/spec/spec-challenge.md',
-      'commands/spec/spec-author.md',
-    ];
-    for (const f of removedFiles) {
-      expect(installPaths).not.toContain(f);
-      expect(updatePaths).not.toContain(f);
-    }
-  });
-
-  it('14. commands/dev/spec-component.md is in both manifests and commands/dev/spec.md is not', () => {
-    expect(installPaths).toContain('commands/dev/spec-component.md');
-    expect(updatePaths).toContain('commands/dev/spec-component.md');
-    expect(installPaths).not.toContain('commands/dev/spec.md');
-    expect(updatePaths).not.toContain('commands/dev/spec.md');
-  });
-
-  it('15. commands/spec/spec.md orchestrator detects multiple overview file names', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('PROJECT_OVERVIEW.md');
-    expect(content).toContain('OVERVIEW.md');
-    expect(content).toContain('BRIEF.md');
-    expect(content).toContain('.contextkit/spec/PROGRESS.md');
-    expect(content).toContain('.contextkit/spec/INDEX.md');
-  });
-
-  it('16. commands/spec/spec.md single CTO pass covers all domains in one SPEC.md', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('## Data Model');
-    expect(content).toContain('## API Contracts');
-    expect(content).toContain('## UX Flows');
-    expect(content).toContain('## Stories');
-    expect(content).toContain('### Squad Commands');
-  });
-
-  it('17. commands/spec/spec.md uses ASSUMPTION: marker and does not reference domain agent files', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('ASSUMPTION:');
-    expect(content).not.toContain('spec-ux.md');
-    expect(content).not.toContain('spec-data.md');
-    expect(content).not.toContain('spec-systems.md');
-    expect(content).not.toContain('spec-planner.md');
-  });
-
-  it('18. commands/spec/spec.md updates PROGRESS.md and INDEX.md', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    expect(content).toContain('PROGRESS.md');
-    expect(content).toContain('INDEX.md');
-  });
-
-  it('19. commands/squad/squad-spec.md processes one story per invocation and skips PO phase', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/squad/squad-spec.md'), 'utf8');
-    expect(content).toContain('manifest.md');
-    expect(content).toContain('status: architect');
-    expect(content).toContain('.contextkit/spec/[scope-slug]/SPEC.md');
-    expect(content).toContain('/loop /clear /squad-spec');
-  });
-
-  it('20. doc-arch/doc-feature/doc-component each define a Length Check with a concrete threshold', () => {
+  it('12. doc-arch/doc-feature/doc-component each define a Length Check with a concrete threshold', () => {
     const cases = [
       { file: 'commands/docs/doc-arch.md', threshold: '300 lines' },
       { file: 'commands/docs/doc-feature.md', threshold: '250 lines' },
@@ -229,78 +163,5 @@ describe('Download manifest validation', () => {
       expect(content).toContain(threshold);
       expect(content).toContain('never split silently');
     }
-  });
-
-  it('21. commands/dev/compress.md is in both manifests and contains the measure/marker-safety/backup workflow', () => {
-    expect(installPaths).toContain('commands/dev/compress.md');
-    expect(updatePaths).toContain('commands/dev/compress.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/compress.md'), 'utf8');
-    expect(content).toContain('wc -l');
-    expect(content).toContain('## Marker Safety');
-    expect(content).toContain('## Backup Before Editing Generated Files');
-  });
-
-  it('22. commands/agents/product-context.md is in both manifests and reads decisions.md + roadmap.md', () => {
-    expect(installPaths).toContain('commands/agents/product-context.md');
-    expect(updatePaths).toContain('commands/agents/product-context.md');
-    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/product-context.md'), 'utf8');
-    expect(content).toContain('.contextkit/product/decisions.md');
-    expect(content).toContain('.contextkit/product/roadmap.md');
-  });
-
-  it('24. commands/agents/agent-push-checklist.md reads workflows.md before building the checklist', () => {
-    const content = fs.readFileSync(
-      path.join(ROOT, 'commands/agents/agent-push-checklist.md'),
-      'utf8'
-    );
-    expect(content).toContain('Read `.contextkit/standards/workflows.md` first');
-  });
-
-  it('25. commands/agents/standards-aware.md reads corrections.md before flagging a new pattern', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
-    expect(content).toContain('.contextkit/corrections.md');
-  });
-
-  it('26. commands/dev/analyze.md generates compact-by-default and points to the compress skill', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/dev/analyze.md'), 'utf8');
-    expect(content).toContain('### ✍️ Output Density — Generate Compact by Default');
-    expect(content).toContain('response_style.diagrams_in_docs');
-    expect(content).toContain('no Mermaid diagrams unless the user asks for one');
-    expect(content).toContain('`compress` skill');
-    expect(content).toContain('docs/token-efficiency.md');
-  });
-
-  it('27. commands/agents/standards-aware.md offers (not silently runs) a self-update when stale', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/agents/standards-aware.md'), 'utf8');
-    expect(content).toContain('## Staleness Check & Self-Update');
-    expect(content).toContain('npm view @nolrm/contextkit version');
-    expect(content).toContain('ck update');
-    expect(content).toContain('shall I run');
-  });
-
-  it('28. commands/spec/spec.md writes acceptance criteria in EARS format, separate from the Squad Commands block', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    const storiesSection = content.slice(
-      content.indexOf('## Stories'),
-      content.indexOf('## Open Questions')
-    );
-    expect(storiesSection).toContain('### Acceptance Criteria');
-    expect(storiesSection).toContain('EARS format');
-    expect(storiesSection).toContain('WHEN [event], the system SHALL [response]');
-    expect(storiesSection).toContain('IF [precondition], THEN the system SHALL [response]');
-    // Acceptance Criteria must come before Squad Commands so squad-spec can read it directly
-    expect(storiesSection.indexOf('### Acceptance Criteria')).toBeLessThan(
-      storiesSection.indexOf('### Squad Commands')
-    );
-  });
-
-  it('29. commands/spec/spec.md Extend Scope (--extend) appends acceptance criteria blocks for new stories', () => {
-    const content = fs.readFileSync(path.join(ROOT, 'commands/spec/spec.md'), 'utf8');
-    const extendSection = content.slice(
-      content.indexOf('## Step 3D'),
-      content.indexOf('## Step 4')
-    );
-    expect(extendSection).toContain('### Acceptance Criteria');
-    expect(extendSection).toContain('EARS-format block');
   });
 });

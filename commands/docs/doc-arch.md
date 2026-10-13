@@ -14,10 +14,10 @@ Generate or update architecture-level documentation for this project or a specif
 ## How to Use
 
 ```
-/doc-arch                   # whole-system overview → docs/architecture.md
-/doc-arch auth              # auth subsystem → docs/auth.md
-/doc-arch payment-pipeline  # specific area → docs/payment-pipeline.md
-/doc-arch 142               # from PR #142 — infer topic from PR title → docs/<topic>.md
+/doc arch                   # whole-system overview → docs/architecture.md
+/doc arch auth              # auth subsystem → docs/auth.md
+/doc arch payment-pipeline  # specific area → docs/payment-pipeline.md
+/doc arch 142               # from PR #142 — infer topic from PR title → docs/<topic>.md
 ```
 
 ## Output filename

@@ -11,6 +11,7 @@ const docsNav = [
       { title: "Introduction", href: "/docs" },
       { title: "Quick Start", href: "/docs/quick-start" },
       { title: "Project Structure", href: "/docs/project-structure" },
+      { title: "Upgrading to 2.0", href: "/docs/upgrade-2-0" },
     ],
   },
   {
@@ -25,9 +26,8 @@ const docsNav = [
     items: [
       { title: "Commands", href: "/docs/commands" },
       { title: "Slash Commands", href: "/docs/slash-commands" },
-      { title: "Squad Workflow", href: "/docs/squad" },
-      { title: "Spec Pipeline", href: "/docs/spec" },
-      { title: "CI Squad", href: "/docs/ci-squad" },
+      { title: "/goal", href: "/docs/goal" },
+      { title: "/headline", href: "/docs/headline" },
       { title: "Quality Gates", href: "/docs/quality-gates" },
       { title: "Platform Examples", href: "/docs/platform-examples" },
     ],

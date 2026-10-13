@@ -27,7 +27,7 @@ export function Footer() {
               <span className="font-bold">ContextKit</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Context engineering + agentic pipelines for AI development. Scaffold standards your AI tools read automatically, then run a grounded multi-role pipeline that respects your exact conventions.
+              Better project context for AI coding tools. One canonical AGENTS.md, path-scoped standards, quality-gate hooks, and five small skills that keep your AI tools on your conventions.
             </p>
           </div>
 

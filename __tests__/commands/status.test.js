@@ -102,7 +102,7 @@ git_hooks: true`;
       expect(consoleSpy).toHaveBeenCalledWith('🔍 Analysis:');
       expect(consoleSpy).toHaveBeenCalledWith('   Status: Not analyzed');
       expect(consoleSpy).toHaveBeenCalledWith(
-        '   Recommendation: Run @.contextkit/commands/analyze.md to customize standards'
+        '   Recommendation: Run /ck setup (or `ck analyze`) to customize standards'
       );
 
       consoleSpy.mockRestore();
@@ -221,7 +221,7 @@ git_hooks: true`;
       expect(consoleSpy).toHaveBeenCalledWith('🔍 Analysis:');
       expect(consoleSpy).toHaveBeenCalledWith('   Status: Not analyzed');
       expect(consoleSpy).toHaveBeenCalledWith(
-        '   Recommendation: Run @.contextkit/commands/analyze.md to customize standards'
+        '   Recommendation: Run /ck setup (or `ck analyze`) to customize standards'
       );
 
       require = originalRequire;
@@ -251,7 +251,7 @@ git_hooks: true`;
       expect(consoleSpy).toHaveBeenCalledWith('🔍 Analysis:');
       expect(consoleSpy).toHaveBeenCalledWith('   Status: Not analyzed');
       expect(consoleSpy).toHaveBeenCalledWith(
-        '   Recommendation: Run @.contextkit/commands/analyze.md to customize standards'
+        '   Recommendation: Run /ck setup (or `ck analyze`) to customize standards'
       );
 
       consoleSpy.mockRestore();

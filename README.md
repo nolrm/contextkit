@@ -1,38 +1,30 @@
 # ContextKit
 
-> Token-Efficient Context Engineering + Agentic AI Pipelines
+> Better project context for your AI coding tools
 
-ContextKit gives your AI assistants (Cursor, Claude, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf) structured context through markdown files—and gives you a multi-role autonomous pipeline (PO → Architect → Dev → Test → Review → Doc) to execute work with those same agents. The context layer is what keeps the pipeline grounded: agents read your standards, so they never hallucinate your conventions.
-
-ContextKit is a CLI tool with two capabilities: **context engineering** (`.contextkit/standards/` + platform bridge files so every AI tool reads your project conventions automatically) and **squad pipelines** (a six-role agentic workflow grounded by those same standards).
+ContextKit gives your AI assistants (Claude Code, Codex, Cursor, Copilot, Gemini, OpenCode, Aider, Continue, Windsurf) your project's conventions through plain markdown files: one canonical `AGENTS.md`, a short always-loaded index, topic standards that load only where they apply, quality-gate git hooks, and five small skills.
 
 **[Read the full documentation](https://contextkit-docs.vercel.app/)** · **[How context works](https://contextkit-docs.vercel.app/docs/how-context-works)**
 
 ## Why ContextKit?
 
-**The problem:** LLMs are good at syntax, not at _your_ conventions — and multi-agent pipelines amplify that. An autonomous dev agent that doesn't know your architecture, naming, or testing patterns will produce code you have to fully rewrite.
+**The problem:** LLMs are good at syntax, not at _your_ conventions. An agent that doesn't know your architecture, naming, or testing patterns writes code you have to rewrite — and loading every rule into every session wastes the context it needs for the task.
 
-**The solution — two pillars that reinforce each other:**
+**The solution:** give the agent the right context, in the right place, and nothing more.
 
-**Pillar 1: Context engineering**
-- **Glossary** — project terminology and domain-specific entity names
-- **Standards** — code style, testing patterns, architecture rules
-- **Templates** — canonical component shapes
-- **Platform bridges** — auto-generated `CLAUDE.md`, `AGENTS.md`, `.windsurfrules`, etc. so every AI tool reads the same context without manual setup
-- **Token-efficient by design** — tiered loading (core standards always on, the rest on-demand via skills), a `compress` skill to retrofit oversized docs, and a `response_style` config to tune chat/doc density per project
+- **One main file** — `AGENTS.md` is canonical and written by every integration. `CLAUDE.md`, `GEMINI.md`, and the other tool files import or mirror it, so every tool reads the same context.
+- **Short always-loaded index** — `.contextkit/standards/index.md` (≤ 50 lines): what the project is, must/must-not rules, exact commands, and a "when you touch X → read Y" table.
+- **Path-scoped topic standards** — testing, code style, and other topic files load only when the agent works on matching paths (`context_rules`).
+- **Quality gates** — pre-push and commit-msg hooks that check the code before it leaves your machine.
+- **Five skills** — `/ck`, `/doc`, `/learn`, plus the `/goal` and `/headline` add-ons.
 
-**Pillar 2: Agentic squad pipeline**
-- A six-role pipeline (PO → Architect → Dev → Tester → Reviewer → Doc Writer) runs in a single AI session
-- Each role reads the context layer before acting — no hallucinated conventions
-- Run `/squad "add dark mode"` then `/squad-auto` and walk away
-
-Update your `.md` standards as your project evolves; every agent that runs after picks up the change automatically.
+Update your `.md` standards as your project evolves; every session after picks up the change.
 
 ## Multi-Platform Support
 
-Works with: **Cursor** • **Claude Code** • **GitHub Copilot** • **Codex CLI** • **OpenCode** • **Gemini CLI** • **Aider** • **Continue** • **Windsurf**
+Works with: **Claude Code** • **Codex CLI** • **Cursor** • **GitHub Copilot** • **Gemini CLI** • **OpenCode** • **Aider** • **Continue** • **Windsurf**
 
-Each platform gets auto-loaded bridge files (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.windsurfrules`, etc.) so your AI tools read project standards automatically. Claude Code and Codex always-load `code-style.md` and `architecture.md` via `@` imports; testing, workflows, AI-behavior rules, terminology, decisions, and roadmap load on demand the first time a matching skill triggers, instead of every session. Other platforms still auto-load the full standards set.
+Every integration writes `AGENTS.md`. Tools that don't read it natively get a bridge file: `CLAUDE.md` and `GEMINI.md` import it with `@AGENTS.md`; `.github/copilot-instructions.md`, `.windsurfrules`, and `CONVENTIONS.md` carry the same body.
 
 ---
 
@@ -51,11 +43,11 @@ cd your-project
 contextkit install
 ```
 
-Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and an attribution block in `config.yml` (including a `response_style` toggle for chat terseness and doc diagrams) so any developer who encounters the folder knows what manages it.
+Creates `.contextkit/` with skeleton standards files, a self-describing `README.md`, and `config.yml`, plus `AGENTS.md` and the bridge files for the tools you pick.
 
 **3. Generate your standards**
 
-Run `/analyze` in your AI tool — it scans your codebase and fills the skeleton files with your project's conventions.
+Run `/ck setup` in your AI tool — it scans your codebase and writes the standards, `index.md`, and `context_rules` for your project.
 
 Done. Your AI tools now have project-specific context.
 
@@ -70,10 +62,10 @@ Perfect for teams where members use different AI tools:
 contextkit install claude   # or: contextkit install (interactive picker)
 
 # Each additional team member adds their platform
-ck claude      # creates CLAUDE.md + .claude/rules/ — skips if already up to date
-ck cursor      # creates .cursor/rules/ (scoped .mdc files) — skips if already up to date
-ck copilot     # creates .github/copilot-instructions.md
-ck codex       # creates AGENTS.md + .codex/skills/ (24 skills)
+ck claude      # creates CLAUDE.md (imports AGENTS.md) + .claude/skills/ + .claude/rules/
+ck cursor      # creates .cursor/rules/ (scoped .mdc files) + .cursor/prompts/
+ck copilot     # creates .github/copilot-instructions.md + .github/instructions/
+ck codex       # creates AGENTS.md + .codex/skills/ + .agents/skills/
 ck opencode    # creates AGENTS.md
 ck gemini      # creates GEMINI.md + .gemini/settings.json
 ck aider       # creates CONVENTIONS.md + .aider/rules.md
@@ -82,7 +74,7 @@ ck windsurf    # creates .windsurfrules + .windsurf/rules/
 ck vscode      # alias for copilot
 ```
 
-Each platform generates bridge files that the AI tool auto-reads. If a bridge file already exists (e.g., you have a custom `CLAUDE.md`), ContextKit appends its section below your content instead of overwriting. Share your `.contextkit/standards/*.md` files with the team and everyone gets the same context.
+If a bridge file already exists (e.g., you have a custom `CLAUDE.md`), ContextKit writes its section inside `<!-- Generated by ContextKit -->` markers below your content instead of overwriting. Share your `.contextkit/standards/*.md` files with the team and everyone gets the same context.
 
 ---
 
@@ -96,9 +88,10 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 
 **What the AI does with ContextKit**
 
+- Reads `index.md` → sees "touching `src/checkout/` → read `glossary.md`"
 - Reads `glossary.md` → `checkout` = checkout process; `customer` = customer account
 - Applies `code-style.md` → strict TS, functional components
-- Follows `testing.md` → testing levels, change-driven test selection, numbered test cases
+- Follows `testing.md` (loaded because it's writing a `*.test.*` file) → numbered test cases
 
 **Result (diff)**
 
@@ -114,32 +107,32 @@ Each platform generates bridge files that the AI tool auto-reads. If a bridge fi
 
 ## Use it in your tool
 
-**Cursor** — rules auto-load from `.cursor/rules/`, slash commands in `.cursor/prompts/`
+`AGENTS.md` is the canonical context file. It tells the agent what to read first (`index.md`, any active goal, `corrections.md`), lists the topic standards to read when relevant, and lists the skills.
 
-```
-/analyze    # scan codebase and generate standards
-/review     # code review with checklist
-```
-
-**Claude Code** — `CLAUDE.md` uses `@` imports to auto-load all standards into context every session (no manual reads needed, saves tokens). Skills in `.claude/skills/`.
+**Claude Code** — `CLAUDE.md` imports `@AGENTS.md` and `@.contextkit/standards/index.md` (Claude Code only reads `AGENTS.md` on its own when there is no `CLAUDE.md`). Skills in `.claude/skills/`, path-scoped rules in `.claude/rules/`.
 
 ```bash
-/analyze    # scan codebase and generate standards
-/review     # code review with checklist
+/ck setup   # scan codebase and write standards
 claude "create checkout flow for customer"
-```
-
-**GitHub Copilot** — reads `.github/copilot-instructions.md` automatically
-
-```
-@.contextkit Create checkout flow for customer
 ```
 
 **Codex CLI** — reads `AGENTS.md` automatically + skills in `.codex/skills/`
 
 ```bash
 codex "create checkout flow for customer"
-# Skills available: $spec, $squad, $squad-auto, $squad-spec, $analyze, $ck, and more
+# Skills available: $ck, $doc, $learn, $goal, $headline
+```
+
+**Cursor** — rules auto-load from `.cursor/rules/`, slash commands in `.cursor/prompts/`
+
+```
+/ck setup   # scan codebase and write standards
+```
+
+**GitHub Copilot** — reads `.github/copilot-instructions.md` and path-scoped `.github/instructions/` automatically
+
+```
+@.contextkit Create checkout flow for customer
 ```
 
 **OpenCode** — reads `AGENTS.md` automatically
@@ -148,195 +141,99 @@ codex "create checkout flow for customer"
 opencode "create checkout flow for customer"
 ```
 
+### Context rules
+
+Topic standards load only for the paths they apply to. Map them in `.contextkit/config.yml` (`/ck setup` writes this for you):
+
+```yaml
+context_rules:
+  - file: standards/testing.md
+    paths: ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"]
+  - file: standards/code-style.md
+    paths: ["src/**", "lib/**", "app/**", "packages/**"]
+```
+
+`ck update --force` (or `ck <platform>`) renders each rule in the tool's own format:
+
+| Tool | File | Scope field |
+| ---- | ---- | ----------- |
+| Claude Code | `.claude/rules/contextkit-<name>.md` | `paths:` |
+| Cursor | `.cursor/rules/contextkit-<name>.mdc` | `globs:` |
+| GitHub Copilot | `.github/instructions/contextkit-<name>.instructions.md` | `applyTo:` |
+
+Stale `contextkit-*` rule files are removed; your own rule files are left alone.
+
 ---
 
 ## Slash Commands
 
-ContextKit installs reusable slash commands for supported platforms:
+ContextKit installs five skills — `/name` in Claude Code and Cursor, `$name` in Codex:
 
-| Command                | What it does                                                                                                                    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `/analyze`             | Scan codebase and generate standards content                                                                                    |
-| `/doc-arch`            | Generate architecture docs — stack-aware (Level 1). Output: `docs/<topic>.md`, or `docs/architecture.md` if no topic given. Pass a topic name, PR number, or leave blank to infer from branch. Proposes a split if the file grows too long. |
-| `/doc-feature`         | Generate feature-level docs (`docs/features/<name>.md`) — stack-aware (Level 2). Proposes a split if the file grows too long. |
-| `/doc-component`       | Generate component-level docs colocated with the target file — stack-aware (Level 3). Proposes a split if the file grows too long. |
-| `/compress`            | Measure a file's size, rewrite it for information density, and report the before/after diff                                    |
-| `/spec`                | Turn a product overview into a reference spec — data model, API contracts, UX flows, and squad-ready stories. Single CTO pass per scope. |
-| `/spec-component`      | Write a component spec (MD-first) before any code is created                                                                    |
-| `/squad`               | Kick off a squad task — one task or many (auto-detects batch mode). Pushes back with clarifying questions if the task is vague. |
-| `/squad-architect`     | Design the technical plan from the PO spec                                                                                      |
-| `/squad-dev`           | Implement code following the architect plan                                                                                     |
-| `/squad-test`          | Classify test levels, write and run tests against acceptance criteria                                                           |
-| `/squad-review`        | Review the full pipeline and give a verdict                                                                                     |
-| `/squad-doc`           | Create companion `.md` files for new/modified code after review passes                                                          |
-| `/squad-spec [scope]`  | Run all stories in a spec scope through the full pipeline, retrying automatically on review failure before pausing for input. On Claude Code, each phase runs as its own isolated Task subagent, and Review — the only gate before an unattended commit — runs on your primary model. With a slug, runs that scope only. Without a slug, runs ALL completed scopes in sequence automatically. Claude Code: use with `/loop /clear /squad-spec` (context clearing matters — stories add up fast). Codex: use `/goal`, which clears context between turns natively. |
-| `/squad-go`            | Extract tasks from the current conversation and run the full pipeline immediately — no second command needed                     |
-| `/squad-auto`          | Auto-run the full pipeline after `/squad` kickoff (sequential)                                                                  |
-| `/ck`                     | Health check — verify setup, standards, and integrations                                                                        |
-| `/agent-push-checklist`   | Pre-push quality checklist for agents to self-check before `git push`                                                           |
-| `/context-budget`         | Prioritized guide for which standards files to load for a given task                                                            |
-| `/standards-aware`        | Decide whether and how to add a newly discovered pattern to the project's standards files. Also checks `corrections.md` first and offers to self-run `ck update` when the install is stale. |
-| `/product-context`        | Load architecture decisions and roadmap context before proposing changes that might conflict with a prior decision or plan      |
+| Skill | Usage | What it does |
+| ----- | ----- | ------------ |
+| `/ck` | `/ck`, `/ck setup`, `/ck update`, `/ck tidy` | Status. `setup` analyzes the codebase and writes standards, `index.md`, and `context_rules`. `update` finishes an upgrade after `ck update`, asking before each change. `tidy` shrinks always-loaded context, prunes generic or linter-enforced rules, wires orphan guides into `context_rules`, and promotes repeated corrections. |
+| `/doc` | `/doc`, `/doc arch`, `/doc feature [name]`, `/doc component <path>` | No argument: finds docs and standards that reference code changed on this branch and updates the stale ones. With a level: writes architecture, feature, or component docs. |
+| `/learn` | `/learn "rule"` or `/learn` | Turns a correction into one rule in the right `.contextkit/standards/` file and logs it via `ck note`. |
+| `/goal` (add-on) | `/goal "idea"`, `/goal`, `/goal status`, `/goal done` | Runs a long task against a one-page goal file. See [Long-running tasks](#long-running-tasks-goal). |
+| `/headline` (add-on) | `/headline`, `/headline off`, `/headline pause` | Short, result-first replies, always on. See [Add-ons](#add-ons). |
 
-**Claude Code** — available as `/analyze`, `/squad`, etc. via `.claude/skills/`
-**Cursor** — available as slash commands in Chat via `.cursor/prompts/`
-
-Both platforms delegate to the universal command files in `.contextkit/commands/`, so you maintain one set of workflows.
+All platforms delegate to the same command files, so you maintain one set of workflows.
 
 ---
 
-## Squad Workflow
+## Long-running tasks (`/goal`)
 
-The squad workflow turns a single AI session into a structured multi-role pipeline. Each role has its own slash command that reads and writes to a shared handoff file (`.contextkit/squad/handoff.md`), simulating a team of specialists.
+`/goal "idea"` creates a one-page goal file at `.contextkit/goals/<slug>.md` (frontmatter `status: active|paused|done`):
 
-Because state lives in plain markdown on disk instead of an in-memory session, handoff files survive closing the terminal, context compaction, even switching tools mid-pipeline — start a task in Claude Code, pick it up in Codex or Cursor tomorrow.
+| Section | Owner | Content |
+| ------- | ----- | ------- |
+| Goal | — | 2–3 sentences |
+| Outcomes | You | 3–7 checkable, user-side outcomes |
+| Checks | Agent | How each outcome is verified; refined while building |
+| Constraints / Non-goals | — | Boundaries |
+| Open Decisions | — | Multiple-choice questions |
+| Changes | — | Dated log of every change to Outcomes or Checks, with the reason |
+| Progress | Agent | Done / next / blocked |
 
-> **Squad works standalone.** If `.contextkit/` isn't set up, `/squad` will offer to create just `.contextkit/squad/` so you can use the pipeline without a full `ck install`.
+**Flow**
 
-### Pipeline Roles
+1. Kickoff drafts the outcomes and asks up to 4 multiple-choice questions per round. You approve the outcomes.
+2. The agent builds in its own loop — plan, edit, test, fix — and re-reads the goal file every session and after compaction.
+3. Internal check changes are logged; user-visible changes (scope, UX, dropping an outcome) are asked first.
+4. Each outcome gets tests plus a fresh-context review subagent on the same model that sees only the goal file, the outcome ID, and the diff. Max 3 review rounds, then it asks you.
+5. One commit per outcome, then `status: done` and a summary.
 
-| Step | Role          | Command            | What it does                                                                                                                                                                                                   |
-| ---- | ------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Product Owner | `/squad`           | Writes a user story, acceptance criteria, edge cases, and scope. If the task is ambiguous, asks up to 5 clarifying questions before writing the spec. Optionally captures screenshots/images as visual assets. |
-| 2    | Architect     | `/squad-architect` | Designs the technical approach, files to change, and implementation steps                                                                                                                                      |
-| 3    | Developer     | `/squad-dev`       | Implements the code following the architect's plan                                                                                                                                                             |
-| 4    | Tester        | `/squad-test`      | Writes and runs tests against the PO's acceptance criteria                                                                                                                                                     |
-| 5    | Reviewer      | `/squad-review`    | Reviews everything and gives a PASS or NEEDS-WORK verdict                                                                                                                                                      |
-| 6    | Doc Writer    | `/squad-doc`       | Creates companion `.md` files for every new/modified code file                                                                                                                                                 |
+Strong models plan, build, and test best in their own loop. What they still need is a durable goal, checkable done criteria, and an independent check.
 
-### Conversation-First Flow
-
-After a planning conversation, `/squad` extracts the agreed tasks automatically — no need to retype them:
-
-```bash
-/squad                    # scans the conversation, shows extracted tasks, confirms before writing specs
-/squad "let's do this"    # directive phrase — same behaviour, not treated as a task
-
-/squad-go                 # same as above but immediately runs the full pipeline after specs — no second command needed
-```
-
-Phrases like "let's do it", "go ahead", "let's go" are recognised as directives and trigger conversation extraction. Quoted task descriptions bypass extraction and go straight to the PO spec.
-
-### Single-Task Flow
-
-```bash
-/squad "add dark mode support"   # PO writes the spec
-
-/squad-auto                      # Auto-runs architect → dev → test → review → doc
-# — or step through manually —
-/squad-architect                 # Architect designs the plan
-/squad-dev                       # Dev implements the code
-/squad-test                      # Tester writes and runs tests
-/squad-review                    # Reviewer gives the verdict
-/squad-doc                       # Doc Writer creates companion .md files
-```
-
-### Batch Flow
-
-Pass multiple tasks to `/squad` and it automatically runs in batch mode:
-
-```bash
-/squad "add dark mode" "fix login bug" "refactor checkout"
-# PO writes specs for all three tasks
-
-/squad-auto
-# Runs Architect → Dev → Test → Review → Doc for each task sequentially
-```
-
-**Model routing (Claude Code only):** Set `model_routing: true` in `.contextkit/squad/config.md` to have `/squad-auto` automatically use Claude Haiku for Dev and Test phases. Architect and Review always run on your primary model. Saves ~35% tokens — the Review gate stays on the primary model to catch what a smaller Dev/Test model misses.
-
-Each task is committed individually right after its Doc phase, before `/squad-auto` moves on to the next one — staged from that task's own Changes Made/Tests Written/Doc Notes, Conventional Commits format, skipped cleanly if there's nothing to commit or no git repo.
-
-```markdown
-# .contextkit/squad/config.md
-
-checkpoint: po
-model_routing: true # dev + test → Haiku, architect + review → primary model
-```
-
-### Feedback Loop
-
-Any downstream role can raise questions for an upstream role. When this happens, the pipeline pauses and directs you to the right command:
-
-```
-Reviewer has questions for Dev → run /squad-dev to clarify
-Tester has questions for Architect → run /squad-architect to clarify
-Architect has questions for PO → run /squad to clarify
-```
-
-After clarifications are added, re-run the asking role's command to continue. This prevents misunderstandings from compounding through the pipeline.
-
-### Visual Assets (Optional)
-
-If you have a screenshot, mockup, or design image relevant to the task, paste or attach it when running `/squad`. The PO agent will save it to `.contextkit/squad/assets/` and reference the path in the handoff. Architect and Dev agents automatically read any listed assets when they pick up the handoff.
+**[Goal docs](https://contextkit-docs.vercel.app/docs/goal)**
 
 ---
 
-## Spec Pipeline
+## Add-ons
 
-The spec pipeline turns a high-level product overview into a full reference spec — data model, API contracts, UX flows, and squad-ready stories. It runs before the squad, one scope at a time.
-
-```bash
-/spec                        # Start or continue — picks up the next unchecked scope automatically
-/spec OVERVIEW.md            # Start a new spec from a specific file (prompts before archiving an existing spec)
-/spec 02-jobs                # Run a specific scope by name
-/spec --redo 01-identity-auth  # Re-run a completed scope from scratch
-/spec --reset                # Delete the entire .contextkit/spec/ folder and start over
-/spec --add analytics        # Append a new scope and run it immediately
-/spec --extend 02-jobs       # Add new stories to an existing scope's SPEC.md
-```
-
-### How It Works
-
-Each `/spec` run is a single inline CTO pass — no sub-agents, no revision rounds. The CTO reads the overview and any prior scope specs (for consistency), then writes the full `SPEC.md` for that scope.
-
-Each `SPEC.md` contains: data model (full schema + ERD), API contracts (all endpoints with request/response), UX flows (key journeys and edge cases), a story table with sizes and dependencies, and copy-paste `/squad` commands for every story.
-
-### Output Structure
-
-Each scope produces one `SPEC.md`. Progress and index files track the full project:
-
-```
-.contextkit/spec/
-  PROGRESS.md              ← scope checklist, updated after each run
-  INDEX.md                 ← links to every completed SPEC.md
-
-  01-identity-auth/
-    SPEC.md                ← full spec for this scope
-
-  02-jobs-scheduling/
-    SPEC.md
-```
-
-### First Run
-
-On the first run, the CTO reads the entire overview and identifies all logical scopes — ordering them by dependency (identity before marketplace, invoicing before tax). This produces `.contextkit/spec/PROGRESS.md` which acts as the checklist for all subsequent runs.
-
-You can also pass the overview file directly: `/spec MY_OVERVIEW.md`. If an existing spec is detected from a different file, you'll be prompted before anything is archived.
-
-### From Spec to Squad
-
-Each `SPEC.md`'s `## Stories` section has an `### Acceptance Criteria` block per story (EARS format — `WHEN [event], the system SHALL [response]`) followed by `### Squad Commands` — copy-paste `/squad` commands for every story. Run them one at a time, or use `/squad-spec` to implement scopes automatically:
+`/goal` and `/headline` don't need the rest of ContextKit. Share them on their own:
 
 ```bash
-# Option 1 — one story at a time
-/squad "S1 — Workspace schema: create workspaces table with RLS policies"
-/squad-auto
-
-# Option 2 — single scope, context-safe
-/loop /clear /squad-spec 01-identity-auth        # Claude Code
-/goal complete every story in scope 01-identity-auth via /squad-spec   # Codex
-
-# Option 3 — all scopes in sequence, fully automatic
-/loop /clear /squad-spec        # Claude Code
-/goal complete every story in every scope via /squad-spec   # Codex
+ck install --global goal       # writes ~/.claude/skills/goal/
+ck install --global headline   # writes ~/.claude/skills/headline/
 ```
 
-Both drive `/squad-spec` repeatedly and clear context between stories, so a scope with many stories won't blow the context window. Claude's `/loop /clear` re-invokes on an interval; Codex's `/goal` keeps working autonomously until the stated condition holds, then stops on its own.
+Both also ship in the [Claude Code plugin](#commands).
 
-Within a story, Claude Code dispatches each phase (Architect/Dev/Test/Review/Doc) as its own isolated Task subagent — Review runs on your primary model, checking each EARS-format acceptance criterion individually against the diff, and on a retry confirms each prior issue is actually fixed in the diff. Codex uses its multi-agent capability for the same isolation where available, otherwise runs phases inline. At the end of each scope, the full-suite regression gate runs in the foreground with serial/low parallelism rather than backgrounded at max workers, so it doesn't saturate your machine while confirming the scope is clean before the next one starts.
+### `/headline`
 
-Each story is committed individually right after its Doc phase passes, before moving to the next story — Conventional Commits format, staged from that story's own Changes Made/Tests Written/Doc Notes rather than a blanket `git add -A`, so history stays bisectable and revertable per story instead of landing as one scope-sized commit. If a story's spec lists open questions blocking it, Architect resolves them itself and records the assumption plus rationale under Open Question Resolutions in the handoff — squad-spec runs unattended, so there's no human mid-run to escalate to.
+Faster-to-read replies. `ck install` writes this block into `AGENTS.md` (and the Copilot, Windsurf, and Aider mirror files) between `<!-- headline:start -->` and `<!-- headline:end -->`:
+
+- Lead with the result or answer.
+- Don't narrate reasoning or recap what you did.
+- Plain sentences; tables only when comparing.
+- Ask with options, not open-ended questions.
+- Say plainly when something failed or was skipped.
+- Code, commands, and paths stay complete — only prose gets shorter.
+
+Grammar stays normal. Skip it with `ck install --no-headline`, or set `headline: false` in `.contextkit/config.yml` and run `ck update`.
+
+**[Headline docs](https://contextkit-docs.vercel.app/docs/headline)**
 
 ---
 
@@ -356,6 +253,8 @@ If you enable the pre-push hook on a Node.js project that has no `format` or `li
 | -------------- | --------------------------------------------------------------------------------------- |
 | **pre-push**   | **Quality Gates** — auto-detects your project framework and runs the appropriate checks |
 | **commit-msg** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) format            |
+
+When `ck` is on your PATH, the pre-push hook also runs `ck check --context` as a non-blocking warning.
 
 ### Framework-Aware Quality Gates
 
@@ -386,7 +285,7 @@ ck gates --enable prettier      # re-enable it
 
 Gate state is saved to `.contextkit/quality-gates.yml`. Commit this file to share gate preferences with your team.
 
-**Already-verified code skips the gates.** When every gate passes on a clean working tree, the hook records a fingerprint of that exact code (the commit's tree plus your gate config). Pushing the same code again skips the gates instead of re-running the full suite — e.g. a re-push after a rejected push, or an AI pipeline that already verified by running `.contextkit/hooks/pre-push < /dev/null` before pushing. Any file change or gate-config change forces a full run. `CK_FORCE_GATES=1 git push` always runs them.
+**Already-verified code skips the gates.** When every gate passes on a clean working tree, the hook records a fingerprint of that exact code (the commit's tree plus your gate config). Pushing the same code again skips the gates instead of re-running the full suite — e.g. a re-push after a rejected push, or an agent that already verified by running `.contextkit/hooks/pre-push < /dev/null` before pushing. Any file change or gate-config change forces a full run. `CK_FORCE_GATES=1 git push` always runs them.
 
 ### Commit Message Format
 
@@ -411,47 +310,16 @@ Hooks are optional and can be skipped with `ck install --no-hooks`.
 
 ---
 
-## CI Squad — GitHub Issues → PR
-
-ContextKit can automatically turn GitHub issues into pull requests — no local development required.
-
-**How it works:**
-
-1. Label any issue `squad-ready`
-2. GitHub Actions runs the full squad pipeline (architect → dev → test → review) using Claude
-3. A draft PR is opened, linked to the issue
-
-**Setup:**
-
-```bash
-ck install   # answer "yes" to the CI squad prompt
-```
-
-Then add your Anthropic API key as a repository secret:
-
-> **Settings → Secrets and variables → Actions → New repository secret**
-> Name: `ANTHROPIC_API_KEY`
-
-**Tips:**
-
-- Write issues with clear acceptance criteria for the best results
-- If the issue is too vague, the workflow posts a comment asking for clarification instead of generating a bad PR
-- PRs always open as **draft** — you review and merge manually
-- Re-apply the `squad-ready` label after answering a clarification comment to re-trigger the pipeline
-
----
-
 ## Key Features
 
-- 🧠 **Context Engineering** - Structured MD files your AI reads automatically
-- 🔍 **Smart Analysis** - AI generates standards content based on your codebase
+- 🧠 **Context Engineering** - One canonical `AGENTS.md`, a short index, and path-scoped standards
+- 🔍 **Smart Analysis** - `/ck setup` writes standards content based on your codebase
 - 🌍 **Project Agnostic** - Works with React, Vue, Node.js, PHP, Python, Rust, monorepos—any project type
-- 🤖 **Multi-Platform** - Works with Cursor, Claude Code, Copilot, Codex, OpenCode, Gemini, Aider, Continue, Windsurf
+- 🤖 **Multi-Platform** - Works with Claude Code, Codex, Cursor, Copilot, Gemini, OpenCode, Aider, Continue, Windsurf
 - 🛡️ **Safe Install** - Backs up existing files with rollback support
 - ⚡ **Zero Config** - Auto-detects project type and package manager
-- ✅ **Policy Enforcement** - Configurable validation with `ck check`
-- 📝 **Corrections Tracking** - Track AI performance issues with corrections log
-- ⚙️ **Configurable Output** - Tune chat terseness and doc diagrams per project via `config.yml`
+- ✅ **Stale-Context Checks** - `ck check` flags instructions pointing at missing files or removed skills, and oversized always-loaded context
+- 📝 **Corrections Tracking** - `/learn` and `ck note` turn AI mistakes into rules
 
 ## Commands
 
@@ -460,6 +328,7 @@ Then add your Anthropic API key as a repository secret:
 ck install            # set up .contextkit + pick AI tool interactively
 ck install claude     # set up .contextkit + Claude, or add Claude to an existing install
 ck install --force    # regenerate all files, including user-customized standards
+ck install --no-headline  # skip the always-on headline block
 ck claude      # add or refresh Claude integration — skips if already up to date
 ck cursor      # add or refresh Cursor integration — skips if already up to date
 ck copilot     # add GitHub Copilot integration
@@ -472,42 +341,64 @@ ck windsurf    # add Windsurf integration (.windsurfrules)
 ck vscode      # alias for copilot
 
 # Analysis & Updates
-/analyze       # customize standards to your project (slash command in your AI tool)
-ck update             # pull latest commands/hooks — never bulk-overwrites your standards or glossary (may patch specific unedited sections, see CHANGELOG)
+/ck setup      # customize standards to your project (skill in your AI tool)
+ck update             # pull latest commands/hooks — never bulk-overwrites your standards or glossary
 ck update --force     # also regenerate user-owned files (standards, glossary)
-                      # updates are also flagged automatically after each ck command (24h cache),
-                      # on git push (pre-push hook nudge, 24h cache), and in-session via /standards-aware
-                      # (which offers to run ck update itself when stale)
 ck status      # check install & integrations
+ck usage       # which skills get used, from local Claude Code + Codex session logs
+               # (--days 90, --all for every project, --json; local only)
 
-# Global Skills — squad/spec skills shared across all your projects, no per-repo install
-ck install --global           # install all squad + spec skills to ~/.claude/skills/
-ck install --global squad     # install just the squad family
-ck install --global spec      # install spec + spec-component
-ck update --global            # regenerate/overwrite currently installed global skills
+# Global Skills — the /goal and /headline add-ons, shared across all your projects
+ck install --global           # install both to ~/.claude/skills/
+ck install --global goal      # install just /goal (or: headline)
+ck update --global            # regenerate installed global skills; removes retired ones
 ck check --global             # list installed global skills + flag version drift
-ck uninstall --global squad   # remove them (--all for everything; no name/--all lists instead of deleting)
+ck uninstall --global squad   # remove old pre-2.0 global skills (or: spec, a retired skill name, --all)
 
-# Claude Code Plugin — same squad/spec skills, installed and updated the native Claude Code way
+# Claude Code Plugin — /ck, /doc, /learn, /goal, /headline, updated the native Claude Code way
 claude plugin marketplace add nolrm/contextkit
 claude plugin install contextkit@contextkit-marketplace
-# All 22 skills, self-contained (no .contextkit/ required for /spec or /squad) — Claude Code
-# tracks version/updates itself instead of ck managing a ~/.claude/skills/ folder by hand.
 
 # Validation & Compliance
-ck check       # validate installation & policy compliance
+ck check           # validate installation, policy compliance, and stale context
 ck check --strict  # treat warnings as errors
+ck check --context # only the stale-context check (--quiet, --strict)
 
 # Corrections Logging
 ck note "message"  # add note to corrections log
 ck note "AI issue" --category "AI Behavior" --priority HIGH
-
-# Squad — multi-role AI pipeline (slash commands in your AI tool)
-/squad "add dark mode"   # PO writes spec
-/squad-auto              # runs architect → dev → test → review → doc hands-free
-/squad-reset             # clear stuck or mixed squad state
-
 ```
+
+---
+
+## Upgrading to 2.0
+
+2.0 drops the multi-role workflows in favor of better context. Steps:
+
+1. `npm i -g @nolrm/contextkit@latest`
+2. Commit or stash your work.
+3. `ck update` — changes only what's inside ContextKit markers: rewrites the `AGENTS.md` block, shrinks the `CLAUDE.md` block to the import, removes retired skills and command files, converts `response_style` to `headline` / `diagrams_in_docs`, creates `index.md`, and writes the headline block. It never moves your own content or deletes work in progress.
+4. If it prints "N item(s) need a decision", run `/ck update` in Claude Code or Codex. It walks through `.contextkit/pending-cleanup.md` (custom `CLAUDE.md` content, unfinished squad/spec state, the squad CI workflow file, stale references), asks before each change, then makes one commit.
+5. Optional: `/ck setup` (or `/ck tidy`) to write the index and context rules for your project.
+6. Global skills: `ck update --global` or `ck uninstall --global squad`.
+
+Claude Code plugin users: update the plugin.
+
+**What was removed → what replaces it**
+
+| Removed | Replacement |
+| ------- | ----------- |
+| `/squad*`, `/spec`, `/spec-component`, CI Squad (`squad-issue.yml`) | `/goal` |
+| `/doc-arch`, `/doc-feature`, `/doc-component` | `/doc arch\|feature\|component` |
+| `/analyze`, `/compress` skills | `/ck setup`, `/ck tidy` (the `ck analyze` CLI stays) |
+| `/standards-aware`, `/product-context` | `AGENTS.md` + path-scoped rules |
+| `/context-budget` | your tool's built-in context command |
+| `/agent-push-checklist` | pre-push gates |
+| `response_style` (`chat_minimal_words`, `diagrams_in_docs`) | `headline: true\|false` + top-level `diagrams_in_docs` |
+
+**[Upgrade guide](https://contextkit-docs.vercel.app/docs/upgrade-2-0)**
+
+---
 
 ## Links
 

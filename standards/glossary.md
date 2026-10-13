@@ -34,4 +34,4 @@ In CLI: Reference file - `"Read .contextkit/standards/glossary.md and create [te
 
 Edit this file to add your project-specific terminology. Keep it concise — only the most important terms.
 
-Run `/analyze` to auto-detect domain terms from your codebase.
+Run `/ck setup` to auto-detect domain terms from your codebase.

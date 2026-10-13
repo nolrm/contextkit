@@ -4,4 +4,4 @@
 
 Your canonical hook, composable, or helper pattern will be generated based on your project's framework and conventions.
 
-Run `/analyze` to generate this content, or manually add your pattern below.
+Run `/ck setup` to generate this content, or manually add your pattern below.

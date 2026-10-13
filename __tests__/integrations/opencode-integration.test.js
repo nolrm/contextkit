@@ -58,6 +58,6 @@ describe('OpencodeIntegration', () => {
 
     const result = await integration.validate();
     expect(result.valid).toBe(true);
-    expect(result.present).toContain('AGENTS.md');
+    expect(await fs.pathExists('AGENTS.md')).toBe(true);
   });
 });

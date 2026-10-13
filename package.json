@@ -1,7 +1,7 @@
 {
   "name": "@nolrm/contextkit",
-  "version": "1.13.0",
-  "description": "ContextKit - Token-Efficient Context Engineering + Agentic AI Pipelines. Scaffold structured standards for AI assistants and run autonomous multi-role pipelines (PO → Architect → Dev → Test → Review → Doc) grounded by that same context layer. Works with Cursor, Claude Code, Copilot, Codex, Gemini, Aider, and more.",
+  "version": "2.0.0",
+  "description": "ContextKit — context engineering for AI coding tools. One AGENTS.md, a short always-loaded index, topic standards that load only where they apply, quality gates, and five skills (/ck, /doc, /learn, /goal, /headline). Works with Claude Code, Codex, Cursor, Copilot, Gemini, Aider, and more.",
   "main": "lib/index.js",
   "bin": {
     "contextkit": "bin/contextkit.js",
@@ -44,9 +44,9 @@
     "markdown-standards",
     "project-standards",
     "code-patterns",
-    "agentic-pipeline",
+    "agents-md",
     "agentic-ai",
-    "squad-workflow",
+    "long-running-tasks",
     "ai-agents",
     "autonomous-agents",
     "multi-agent",

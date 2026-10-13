@@ -26,38 +26,38 @@ describe('yamlScalar', () => {
 });
 
 describe('renderWrapper', () => {
-  const squad = findSkill('squad');
+  const goal = findSkill('goal');
 
   it('4. claude target includes rich frontmatter and a pointer to the source command', () => {
-    const out = renderWrapper(squad, 'claude');
+    const out = renderWrapper(goal, 'claude');
     expect(out).toContain('description:');
     expect(out).toContain('argument-hint:');
     expect(out).toContain('allowed-tools:');
-    expect(out).toContain(`.contextkit/${squad.source}`);
+    expect(out).toContain(`.contextkit/${goal.source}`);
   });
 
   it('5. codex target uses name+description only, no allowed-tools/effort', () => {
-    const out = renderWrapper(squad, 'codex');
-    expect(out).toContain('name: squad');
+    const out = renderWrapper(goal, 'codex');
+    expect(out).toContain('name: goal');
     expect(out).toContain('description:');
     expect(out).not.toContain('allowed-tools:');
     expect(out).not.toContain('effort:');
   });
 
   it('6. agents target has no argument-hint or claude-only fields', () => {
-    const out = renderWrapper(squad, 'agents');
-    expect(out).toContain('name: squad');
+    const out = renderWrapper(goal, 'agents');
+    expect(out).toContain('name: goal');
     expect(out).not.toContain('argument-hint:');
     expect(out).not.toContain('allowed-tools:');
   });
 
   it('7. cursor target has a heading and no frontmatter block', () => {
-    const out = renderWrapper(squad, 'cursor');
-    expect(out.startsWith('# Squad')).toBe(true);
+    const out = renderWrapper(goal, 'cursor');
+    expect(out.startsWith('# Goal')).toBe(true);
     expect(out).not.toContain('---\n');
   });
 
   it('8. throws on an unknown target', () => {
-    expect(() => renderWrapper(squad, 'nonsense')).toThrow(/Unknown render target/);
+    expect(() => renderWrapper(goal, 'nonsense')).toThrow(/Unknown render target/);
   });
 });

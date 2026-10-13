@@ -39,7 +39,7 @@ async function buildPluginManifest() {
         name: 'contextkit',
         version,
         description:
-          'ContextKit squad + spec pipelines — multi-role dev pipeline (PO → Architect → Dev → Test → Review → Doc) and product-overview-to-spec generation, grounded in your project standards.',
+          'ContextKit skills — /ck (set up, update, tidy project context), /doc (docs for the current change), /learn (corrections → rules), /goal (long tasks with a goal file and milestone review), /headline (short, result-first replies).',
         author: { name: 'nolrm', url: 'https://github.com/nolrm/contextkit' },
         homepage: 'https://github.com/nolrm/contextkit',
         license: 'MIT',
@@ -56,6 +56,15 @@ async function build() {
     path.join(PLUGIN_DIR, '.claude-plugin', 'plugin.json'),
     await buildPluginManifest()
   );
+
+  // Drop skill dirs whose registry entry was removed or renamed.
+  const skillsDir = path.join(PLUGIN_DIR, 'skills');
+  const current = new Set(SKILLS.map((s) => s.name));
+  if (await fs.pathExists(skillsDir)) {
+    for (const name of await fs.readdir(skillsDir)) {
+      if (!current.has(name)) await fs.remove(path.join(skillsDir, name));
+    }
+  }
 
   for (const entry of SKILLS) {
     const dest = path.join(PLUGIN_DIR, 'skills', entry.name, 'SKILL.md');

@@ -6,10 +6,11 @@ import { AlertTriangle, ChevronRight, ArrowLeft, ArrowRight, Info } from "lucide
 
 export default function HowContextWorksPage() {
   const headings = [
-    { id: 'two-layer', text: 'The Two-Layer Architecture' },
+    { id: 'layers', text: 'How Context Loads' },
     { id: 'always-vs-conditional', text: 'Always Loaded vs. Conditionally Loaded' },
-    { id: 'token-optimization', text: 'Token Optimization Strategies' },
-    { id: 'token-budget', text: 'Typical Token Budget' },
+    { id: 'per-tool', text: 'Per-Tool Rendering' },
+    { id: 'keeping-small', text: 'Keeping Context Small' },
+    { id: 'budget-check', text: 'Context Budget Check' },
     { id: 'enforced-vs-convention', text: "What's Enforced vs. Convention-Based" },
   ]
 
@@ -46,33 +47,37 @@ export default function HowContextWorksPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">How Context Works</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          ContextKit uses a two-layer loading system to give AI assistants the right context at the right time —
-          without flooding every session with content that isn't relevant.
+          ContextKit keeps a small amount of context loaded every session — one canonical{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">AGENTS.md</code> and a short index — and
+          loads topic standards only when the AI touches files they apply to.
         </p>
       </div>
 
       {/* Layer Architecture */}
-      <div id="two-layer" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">The Two-Layer Architecture</h2>
+      <div id="layers" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">How Context Loads</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Every session goes through two layers before context reaches the AI:
+          Every session goes through the same layers before context reaches the AI:
         </p>
 
         <div className="rounded-lg border bg-muted/50 p-4 mt-3">
           <pre className="font-mono text-xs leading-relaxed overflow-x-auto">{`Session starts
     │
     ▼
-Layer 1 — Bridge file (always loaded)
-    CLAUDE.md / CONVENTIONS.md / GEMINI.md / etc.
-    └── @imports expand core standards files into context
-        (Claude Code/Codex: code-style + architecture + mission only —
-         testing/workflows/AI-guidelines/glossary/decisions/roadmap load
-         via Skills on demand instead)
+Layer 1 — Always loaded
+    AGENTS.md  (canonical; CLAUDE.md imports it, GEMINI.md imports it,
+                Copilot / Windsurf / Aider get the same body)
+    .contextkit/standards/index.md  (≤50 lines: rules, commands, pointers)
     │
     ▼
-Layer 2 — Scoped rules (conditionally loaded)
-    .claude/rules/contextkit-testing.md  →  only when editing *.test.*
-    .claude/rules/contextkit-code-style.md  →  only when editing src/**
+Layer 2 — Path-scoped rules (when matching files are touched)
+    .claude/rules/contextkit-testing.md     →  **/*.test.*, **/__tests__/**
+    .claude/rules/contextkit-code-style.md  →  src/**, lib/**, app/**, packages/**
+    │
+    ▼
+Layer 3 — Read when relevant (the model follows AGENTS.md's table)
+    architecture.md, ai-guidelines.md, workflows.md, glossary.md,
+    product/decisions.md, product/roadmap.md, active goal file
     │
     ▼
 AI receives context and generates code`}</pre>
@@ -80,40 +85,40 @@ AI receives context and generates code`}</pre>
 
         <div className="grid gap-4 md:grid-cols-2 mt-4">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-2">Layer 1 — Bridge File</h3>
+            <h3 className="font-semibold text-base mb-2">Layer 1 — AGENTS.md + index.md</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Loaded every session, no exceptions. Acts as the index for all your standards.
+              Loaded every session. Kept short on purpose: what to read first, when to read the rest, and the skills.
             </p>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> — Claude Code
+                <code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code> — canonical (Codex, OpenCode, Cursor read it directly)
               </li>
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">CONVENTIONS.md</code> — Aider
+                <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> — <code className="rounded bg-muted px-1 font-mono text-xs">@AGENTS.md</code> + <code className="rounded bg-muted px-1 font-mono text-xs">@.contextkit/standards/index.md</code>
               </li>
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">GEMINI.md</code> — Gemini CLI
+                <code className="rounded bg-muted px-1 font-mono text-xs">GEMINI.md</code> — pointer + <code className="rounded bg-muted px-1 font-mono text-xs">@AGENTS.md</code>
               </li>
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">.github/copilot-instructions.md</code> — Copilot
+                <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/index.md</code> — written by <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code>
               </li>
             </ul>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-2">Layer 2 — Scoped Rules</h3>
+            <h3 className="font-semibold text-base mb-2">Layer 2 — Path-Scoped Rules</h3>
             <p className="text-sm text-muted-foreground mb-2">
-              Loaded only when the current file matches a glob pattern. Enforced at the platform level.
+              Loaded only when the AI touches a matching file. Enforced by the tool itself.
             </p>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">alwaysApply: true</code> — loads every session
+                Driven by <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code>
               </li>
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">globs: ["**/*.test.*"]</code> — test files only
+                Claude Code: <code className="rounded bg-muted px-1 font-mono text-xs">paths:</code> frontmatter
               </li>
               <li>
-                <code className="rounded bg-muted px-1 font-mono text-xs">globs: ["src/**"]</code> — source files only
+                Cursor: <code className="rounded bg-muted px-1 font-mono text-xs">globs:</code> · Copilot: <code className="rounded bg-muted px-1 font-mono text-xs">applyTo:</code>
               </li>
             </ul>
           </div>
@@ -122,10 +127,10 @@ AI receives context and generates code`}</pre>
         <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 mt-4">
           <p className="text-sm font-semibold mb-2 flex items-center gap-2">
             <Info className="h-4 w-4 text-primary shrink-0" />
-            Claude Code &amp; Codex: a third, Skill-triggered tier
+            Why CLAUDE.md imports AGENTS.md
           </p>
           <p className="text-sm text-muted-foreground">
-            For these two platforms, only <code className="rounded bg-muted px-1 font-mono text-xs">code-style.md</code> and <code className="rounded bg-muted px-1 font-mono text-xs">architecture.md</code> are always-loaded via <code className="rounded bg-muted px-1 font-mono text-xs">@import</code>. <code className="rounded bg-muted px-1 font-mono text-xs">testing.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">workflows.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">ai-guidelines.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">glossary.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">decisions.md</code>, and <code className="rounded bg-muted px-1 font-mono text-xs">roadmap.md</code> load only once a matching Skill fires (<code className="rounded bg-muted px-1 font-mono text-xs">test</code>, <code className="rounded bg-muted px-1 font-mono text-xs">agent-push-checklist</code>, <code className="rounded bg-muted px-1 font-mono text-xs">standards-aware</code>, <code className="rounded bg-muted px-1 font-mono text-xs">product-context</code>) — not every session. Other platforms (Cursor, Aider, Gemini, Copilot, Windsurf) still auto-load the full standards set.
+            Claude Code reads <code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code> on its own only when there is no <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code>. ContextKit writes a <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> that imports it, so there is one source of truth and Claude still gets its Claude-only line (skills, <code className="rounded bg-muted px-1 font-mono text-xs">AskUserQuestion</code> for decisions).
           </p>
         </div>
       </div>
@@ -134,7 +139,7 @@ AI receives context and generates code`}</pre>
       <div id="always-vs-conditional" className="space-y-4 pt-4 scroll-mt-20">
         <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Always Loaded vs. Conditionally Loaded</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Not all context files load every session. Here's what fires when:
+          Not all context files load every session. Here's what fires when (Claude Code shown):
         </p>
 
         <div className="rounded-lg border overflow-hidden mt-3">
@@ -149,99 +154,141 @@ AI receives context and generates code`}</pre>
             </thead>
             <tbody className="divide-y">
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">CLAUDE.md</code>
-                </td>
+                <td className="p-3"><code className="font-mono text-xs">AGENTS.md</code> / <code className="font-mono text-xs">CLAUDE.md</code></td>
                 <td className="p-3 text-muted-foreground">Every session</td>
-                <td className="p-3 text-muted-foreground">Platform auto-loads bridge files</td>
+                <td className="p-3 text-muted-foreground">Tool auto-loads its context file</td>
               </tr>
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">contextkit-standards.md</code>
-                </td>
+                <td className="p-3"><code className="font-mono text-xs">standards/index.md</code></td>
                 <td className="p-3 text-muted-foreground">Every session</td>
+                <td className="p-3 text-muted-foreground">Imported by CLAUDE.md; AGENTS.md says read it first</td>
+              </tr>
+              <tr>
+                <td className="p-3"><code className="font-mono text-xs">contextkit-testing.md</code></td>
                 <td className="p-3 text-muted-foreground">
-                  <code className="font-mono text-xs">alwaysApply: true</code>
+                  Touching <code className="font-mono text-xs">*.test.*</code>, <code className="font-mono text-xs">*.spec.*</code>, <code className="font-mono text-xs">__tests__/**</code>
                 </td>
+                <td className="p-3 text-muted-foreground">Path-scoped rule</td>
               </tr>
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">contextkit-testing.md</code>
-                </td>
+                <td className="p-3"><code className="font-mono text-xs">contextkit-code-style.md</code></td>
                 <td className="p-3 text-muted-foreground">
-                  Editing <code className="font-mono text-xs">*.test.*</code>, <code className="font-mono text-xs">__tests__/**</code>
+                  Touching <code className="font-mono text-xs">src/**</code>, <code className="font-mono text-xs">lib/**</code>, <code className="font-mono text-xs">app/**</code>, <code className="font-mono text-xs">packages/**</code>
                 </td>
-                <td className="p-3 text-muted-foreground">Glob-scoped rule</td>
+                <td className="p-3 text-muted-foreground">Path-scoped rule</td>
               </tr>
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">contextkit-code-style.md</code>
-                </td>
-                <td className="p-3 text-muted-foreground">
-                  Editing <code className="font-mono text-xs">src/**</code>, <code className="font-mono text-xs">lib/**</code>, <code className="font-mono text-xs">app/**</code>
-                </td>
-                <td className="p-3 text-muted-foreground">Glob-scoped rule</td>
+                <td className="p-3"><code className="font-mono text-xs">architecture.md</code>, <code className="font-mono text-xs">glossary.md</code>, …</td>
+                <td className="p-3 text-muted-foreground">When the task calls for it</td>
+                <td className="p-3 text-muted-foreground">AGENTS.md "Read When Relevant" table</td>
               </tr>
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">mission-lite.md</code>
-                </td>
-                <td className="p-3 text-muted-foreground">Every session (via @import)</td>
-                <td className="p-3 text-muted-foreground">Included in bridge file imports</td>
+                <td className="p-3"><code className="font-mono text-xs">goals/&lt;slug&gt;.md</code></td>
+                <td className="p-3 text-muted-foreground">When a goal has <code className="font-mono text-xs">status: active</code></td>
+                <td className="p-3 text-muted-foreground">AGENTS.md "Always" section</td>
               </tr>
               <tr>
-                <td className="p-3">
-                  <code className="font-mono text-xs">css-style.md</code>, <code className="font-mono text-xs">typescript-style.md</code>
-                </td>
-                <td className="p-3 text-muted-foreground">When referenced in code-style.md</td>
-                <td className="p-3 text-muted-foreground">Granular sub-files, included as needed</td>
+                <td className="p-3"><code className="font-mono text-xs">.claude/skills/*</code></td>
+                <td className="p-3 text-muted-foreground">When a skill runs</td>
+                <td className="p-3 text-muted-foreground">Only the skill description is loaded up front</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Token optimization */}
-      <div id="token-optimization" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Token Optimization Strategies</h2>
+      {/* Per-tool rendering */}
+      <div id="per-tool" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Per-Tool Rendering</h2>
         <p className="text-muted-foreground leading-relaxed">
-          ContextKit is designed to keep the base context footprint small. Here's how:
+          You describe path scoping once, in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code>:
+        </p>
+        <pre className="rounded bg-muted p-3 font-mono text-xs overflow-x-auto">{`context_rules:
+  - file: standards/testing.md
+    paths: ["**/*.test.*", "**/*.spec.*", "**/__tests__/**"]
+  - file: standards/code-style.md
+    paths: ["src/**", "lib/**", "app/**", "packages/**"]`}</pre>
+        <p className="text-muted-foreground leading-relaxed">
+          <code className="rounded bg-muted px-1 font-mono text-xs">ck install</code> renders it in each tool's own format. After editing the list, re-render with <code className="rounded bg-muted px-1 font-mono text-xs">ck update --force</code> or <code className="rounded bg-muted px-1 font-mono text-xs">ck &lt;platform&gt;</code> (e.g. <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>):
+        </p>
+        <div className="rounded-lg border overflow-hidden">
+          <table className="w-full text-sm" aria-label="Rule file per tool">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="text-left p-3 font-semibold" scope="col">Tool</th>
+                <th className="text-left p-3 font-semibold" scope="col">Rule file</th>
+                <th className="text-left p-3 font-semibold" scope="col">Scope key</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              <tr>
+                <td className="p-3 text-muted-foreground">Claude Code</td>
+                <td className="p-3"><code className="font-mono text-xs">.claude/rules/contextkit-&lt;name&gt;.md</code></td>
+                <td className="p-3"><code className="font-mono text-xs">paths:</code></td>
+              </tr>
+              <tr>
+                <td className="p-3 text-muted-foreground">Cursor</td>
+                <td className="p-3"><code className="font-mono text-xs">.cursor/rules/contextkit-&lt;name&gt;.mdc</code></td>
+                <td className="p-3"><code className="font-mono text-xs">globs:</code></td>
+              </tr>
+              <tr>
+                <td className="p-3 text-muted-foreground">GitHub Copilot</td>
+                <td className="p-3"><code className="font-mono text-xs">.github/instructions/contextkit-&lt;name&gt;.instructions.md</code></td>
+                <td className="p-3"><code className="font-mono text-xs">applyTo:</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Other tools (Codex, Gemini, Windsurf, Aider) rely on the "Read When Relevant" table in AGENTS.md. Stale <code className="rounded bg-muted px-1 font-mono text-xs">contextkit-*</code> rule files are removed; your own rule files are left alone.
+        </p>
+        <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4 flex gap-3">
+          <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
+          <p className="text-sm text-muted-foreground">
+            <strong className="text-foreground">Fixed in 2.0:</strong> pre-2.0 Claude rule files used <code className="rounded bg-muted px-1 font-mono text-xs">globs:</code>, which Claude Code ignores, so they loaded in every session. They now use <code className="rounded bg-muted px-1 font-mono text-xs">paths:</code>. Run <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code> to rewrite them.
+          </p>
+        </div>
+      </div>
+
+      {/* Keeping small */}
+      <div id="keeping-small" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Keeping Context Small</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Always-loaded context competes with your actual task for the model's attention. ContextKit keeps it lean:
         </p>
 
         <div className="space-y-3 mt-3">
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-1">1. Skeleton Pattern</h3>
+            <h3 className="font-semibold text-base mb-1">1. A Short Index</h3>
             <p className="text-sm text-muted-foreground">
-              Standards files ship as empty templates. Until you run{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code>, they contribute almost
-              nothing to the token count. Content is only generated from your real codebase when you're ready.
+              <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/index.md</code> holds only what the AI needs every session — what the project is, must / must-not rules, exact commands, and a "When you touch X → read Y" table. 50 lines or fewer.
             </p>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-1">2. Mission-Lite</h3>
+            <h3 className="font-semibold text-base mb-1">2. Skeleton Standards</h3>
             <p className="text-sm text-muted-foreground">
-              Two versions of your product mission exist:{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">mission.md</code> (full, for humans) and{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">mission-lite.md</code> (condensed, for AI
-              context). The bridge file always imports the lite version, reducing product context cost by 50–70%.
+              Standards files ship as empty templates. <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code> analyzes your codebase and writes only rules the AI couldn't infer from the code itself, plus the index and <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code>.
             </p>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
-            <h3 className="font-semibold text-base mb-1">3. Granular Code Style Breakup</h3>
+            <h3 className="font-semibold text-base mb-1">3. /ck tidy</h3>
             <p className="text-sm text-muted-foreground">
-              <code className="rounded bg-muted px-1 font-mono text-xs">code-style.md</code> can be split into
-              language-specific sub-files (
-              <code className="rounded bg-muted px-1 font-mono text-xs">css-style.md</code>,{" "}
-              <code className="rounded bg-muted px-1 font-mono text-xs">typescript-style.md</code>, etc.). Reference
-              only the sub-files relevant to the current task instead of loading all style rules at once.
+              Shrinks always-loaded context: prunes generic or linter-enforced rules, wires orphan guides into <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code>, and promotes repeated corrections into standards.
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-semibold text-base mb-1">4. Granular Code Style</h3>
+            <p className="text-sm text-muted-foreground">
+              <code className="rounded bg-muted px-1 font-mono text-xs">code-style.md</code> can be split into language-specific sub-files (<code className="rounded bg-muted px-1 font-mono text-xs">css-style.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">typescript-style.md</code>). Add each one to <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> with the paths it applies to.
             </p>
           </div>
 
           <div className="rounded-lg border bg-card p-4">
             <h3 className="font-semibold text-base mb-1">
-              4. <code className="font-mono text-sm">{"<!-- when:X -->"}</code> Tags
+              5. <code className="font-mono text-sm">{"<!-- when:X -->"}</code> Tags
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
               Sections inside standards files can be tagged with conditional hints:
@@ -254,69 +301,27 @@ Use strict mode, prefer interfaces over types...
 ### CSS Conventions
 Use CSS modules, BEM naming...`}</pre>
             <p className="text-sm text-muted-foreground mt-2">
-              The AI skips sections whose tag doesn't match the current context (e.g., skips CSS rules when editing a
-              TypeScript file).
+              The AI skips sections whose tag doesn't match the current context.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Token budget */}
-      <div id="token-budget" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Typical Token Budget</h2>
+      {/* Context budget */}
+      <div id="budget-check" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Context Budget Check</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Here's what the actual context footprint looks like before and after running{" "}
-          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code>:
+          <code className="rounded bg-muted px-1 font-mono text-xs">ck check</code> includes a stale-context check. It flags instructions that point at missing files or removed skills, and always-loaded context (AGENTS.md, CLAUDE.md, index.md, unscoped rules) over <code className="rounded bg-muted px-1 font-mono text-xs">context_budget_lines</code> lines.
         </p>
-
-        <div className="grid gap-4 md:grid-cols-2 mt-3">
-          <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-semibold mb-3">Before <code className="font-mono text-xs">/analyze</code></p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Bridge file (CLAUDE.md)</span>
-                <span className="font-mono text-xs">~1.5 KB</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Standards files (9 files, skeleton)</span>
-                <span className="font-mono text-xs">~2–3 KB</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">.claude/rules/ files</span>
-                <span className="font-mono text-xs">~1 KB</span>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-medium">
-                <span>Total base context</span>
-                <span className="font-mono text-xs">~5–6 KB</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-lg border bg-card p-4">
-            <p className="text-sm font-semibold mb-3">After <code className="font-mono text-xs">/analyze</code></p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Bridge file (CLAUDE.md)</span>
-                <span className="font-mono text-xs">~1.5 KB</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Standards files (populated)</span>
-                <span className="font-mono text-xs">~8–15 KB</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Product context (mission-lite)</span>
-                <span className="font-mono text-xs">~1–2 KB</span>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-medium">
-                <span>Total base context</span>
-                <span className="font-mono text-xs">~12–20 KB</span>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              Actual size depends on how detailed your standards are.
-            </p>
-          </div>
+        <div className="rounded-lg border bg-muted/30 p-4 space-y-1">
+          <code className="block font-mono text-sm">ck check --context            # only the stale-context check</code>
+          <code className="block font-mono text-sm">ck check --context --strict   # treat warnings as errors</code>
         </div>
+        <pre className="rounded bg-muted p-3 font-mono text-xs overflow-x-auto">{`# .contextkit/config.yml
+context_budget_lines: 400   # default`}</pre>
+        <p className="text-sm text-muted-foreground">
+          The pre-push hook runs the same check as a non-blocking warning when <code className="rounded bg-muted px-1 font-mono text-xs">ck</code> is on your PATH.
+        </p>
       </div>
 
       {/* Honest callout */}
@@ -335,13 +340,13 @@ Use CSS modules, BEM naming...`}</pre>
             </p>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li>
-                ✓ Bridge file <code className="rounded bg-muted px-1 font-mono text-xs">@imports</code>
+                ✓ <code className="rounded bg-muted px-1 font-mono text-xs">@AGENTS.md</code> / <code className="rounded bg-muted px-1 font-mono text-xs">@index.md</code> imports
               </li>
               <li>
-                ✓ <code className="rounded bg-muted px-1 font-mono text-xs">alwaysApply: true</code> rules
+                ✓ The AGENTS.md mirror files (Copilot, Windsurf, Aider)
               </li>
               <li>
-                ✓ <code className="rounded bg-muted px-1 font-mono text-xs">globs:</code> scoped rules
+                ✓ Path-scoped rules (<code className="rounded bg-muted px-1 font-mono text-xs">paths:</code>, <code className="rounded bg-muted px-1 font-mono text-xs">globs:</code>, <code className="rounded bg-muted px-1 font-mono text-xs">applyTo:</code>)
               </li>
             </ul>
           </div>
@@ -353,6 +358,9 @@ Use CSS modules, BEM naming...`}</pre>
               technically enforced.
             </p>
             <ul className="space-y-1 text-sm text-muted-foreground">
+              <li>
+                ~ The "Read When Relevant" table in AGENTS.md
+              </li>
               <li>
                 ~ <code className="rounded bg-muted px-1 font-mono text-xs">{"<!-- when:X -->"}</code> tags
               </li>
@@ -367,8 +375,7 @@ Use CSS modules, BEM naming...`}</pre>
           <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
           <p className="text-sm text-muted-foreground">
             <strong className="text-foreground">Tip:</strong> For critical standards you always want applied, put them
-            in a bridge file <code className="rounded bg-muted px-1 font-mono text-xs">@import</code> or a rule with{" "}
-            <code className="rounded bg-muted px-1 font-mono text-xs">alwaysApply: true</code>. Reserve{" "}
+            in <code className="rounded bg-muted px-1 font-mono text-xs">index.md</code> (always loaded) or a path-scoped rule. Reserve{" "}
             <code className="rounded bg-muted px-1 font-mono text-xs">when:</code> tags for optional hints that help
             the AI focus but aren't load-bearing.
           </p>
@@ -380,16 +387,16 @@ Use CSS modules, BEM naming...`}</pre>
         <p className="text-sm font-medium mb-2">Pro Tip</p>
         <p className="text-sm text-muted-foreground">
           Start with the defaults and run{" "}
-          <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to populate your standards files.
-          As your project grows, break large standards into granular sub-files and scope them with globs — this keeps
-          per-session context tight without sacrificing coverage.
+          <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code> to populate your standards, index, and context rules.
+          As your project grows, split large standards into granular files and scope them in <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> —
+          then run <code className="rounded bg-muted px-1 font-mono text-xs">/ck tidy</code> now and then to keep always-loaded context tight.
         </p>
       </div>
 
       {/* Prev / Next navigation */}
       <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
         <Link
-          href="/docs/project-structure"
+          href="/docs/upgrade-2-0"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
@@ -397,7 +404,7 @@ Use CSS modules, BEM naming...`}</pre>
           </div>
           <div className="text-left">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
-            <div className="text-sm font-medium">Project Structure</div>
+            <div className="text-sm font-medium">Upgrading to 2.0</div>
           </div>
         </Link>
 

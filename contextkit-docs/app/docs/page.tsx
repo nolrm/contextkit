@@ -10,7 +10,7 @@ export default function DocsPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Welcome to ContextKit</h1>
         <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-          ContextKit has two capabilities that reinforce each other: context engineering (structured <code>.md</code> standards that every AI tool reads automatically) and agentic squad pipelines (a six-role autonomous workflow grounded by those same standards). Together they prevent agents from hallucinating your conventions.
+          ContextKit gives AI coding tools better project context: one canonical <code>AGENTS.md</code>, a short always-loaded index, topic standards that load only where they apply, quality-gate git hooks, and five small skills. Claude-first, and it works with Codex, Cursor, Copilot, Gemini, OpenCode, Aider, Continue, and Windsurf.
         </p>
       </div>
 
@@ -18,7 +18,8 @@ export default function DocsPage() {
       <div className="rounded-lg border border-primary/20 bg-primary/5 p-5">
         <p className="text-sm font-medium mb-1">New here?</p>
         <p className="text-sm text-muted-foreground mb-3">
-          Get up and running in under 2 minutes with the Quick Start guide.
+          Get up and running in under 2 minutes with the Quick Start guide. Already on 1.x? Read{" "}
+          <Link href="/docs/upgrade-2-0" className="text-primary hover:underline">Upgrading to 2.0</Link>.
         </p>
         <Button size="sm" asChild>
           <Link href="/docs/quick-start">
@@ -50,7 +51,7 @@ export default function DocsPage() {
             <Terminal className="h-6 w-6 text-primary mb-3" />
             <p className="font-semibold mb-1 group-hover:text-primary transition-colors">Features</p>
             <p className="text-sm text-muted-foreground">
-              Commands, Slash Commands, Squad Workflow, Quality Gates, and Platform Examples.
+              Commands, the five skills, /goal, /headline, Quality Gates, and Platform Examples.
             </p>
           </Link>
 

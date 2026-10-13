@@ -6,7 +6,9 @@ Registry of content updates to generic sections inside already-installed `standa
 
 `ck update` deliberately never re-downloads `ai-guidelines.md`, `architecture.md`, or `code-style.md` (see `update.js#downloadFiles`) — they're user-owned, since `/analyze` augments them with project-specific content. That's correct for project-specific content, but it also means a wording or behaviour fix to the *generic* boilerplate `install.js` ships in these files never reaches a project that already ran `ck install`.
 
-`standards-migrations.js` is the list of those fixes. `update.js#applyStandardsMigrations` looks for each entry's exact `from` text in the target file; if found, it replaces it with `to`. If not found — because the section was hand-edited by the user or customized by `/analyze` — the entry is left alone and recorded in `config.yml`'s `pending_standards_updates` list instead, for later AI-assisted reconciliation (see the `standards-aware` skill).
+`standards-migrations.js` is the list of those fixes. `update.js#applyStandardsMigrations` looks for each entry's exact `from` text in the target file; if found, it replaces it with `to`. If not found — because the section was hand-edited by the user or customized by `/ck setup` — the entry is left alone and recorded in `config.yml`'s `pending_standards_updates` list instead, for later AI-assisted reconciliation by `/ck update`.
+
+Two refinements: an entry whose `to` text is already present (the project installed after the fix shipped) is skipped silently, and an entry with `skipIfMissing: true` — used for fixes that only remove a stale reference — is skipped silently when its `from` text isn't there, since there's nothing to fix. An empty `to` removes the `from` text.
 
 ## Exports
 

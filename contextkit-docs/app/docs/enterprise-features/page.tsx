@@ -79,6 +79,9 @@ export default function EnterpriseFeaturesPage() {
               <p className="text-sm text-muted-foreground mt-3">
                 Enforcement levels: <code className="rounded bg-muted px-1 font-mono text-xs">off</code> (no check), <code className="rounded bg-muted px-1 font-mono text-xs">warn</code> (warning), <code className="rounded bg-muted px-1 font-mono text-xs">block</code> (error).
               </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                <code className="rounded bg-muted px-1 font-mono text-xs">check</code> also runs the stale-context check: instructions pointing at missing files or removed skills, and always-loaded context over <code className="rounded bg-muted px-1 font-mono text-xs">context_budget_lines</code> (default 400). Run only that part with <code className="rounded bg-muted px-1 font-mono text-xs">contextkit check --context</code>.
+              </p>
             </div>
           </div>
         </div>
@@ -102,6 +105,9 @@ export default function EnterpriseFeaturesPage() {
 
               <p className="text-sm text-muted-foreground">
                 Categories: AI Behavior, Preferences, Rule Updates, Trend Indicators. Use this to continuously improve AI performance over time.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                In your AI tool, <code className="rounded bg-muted px-1 font-mono text-xs">/learn &quot;rule&quot;</code> turns a correction into one rule in the right <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> file and logs it with <code className="rounded bg-muted px-1 font-mono text-xs">ck note</code>. <code className="rounded bg-muted px-1 font-mono text-xs">/ck tidy</code> promotes mistakes logged twice or more into rules.
               </p>
             </div>
           </div>

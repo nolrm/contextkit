@@ -1,5 +1,7 @@
 # Token-First Context Loading
 
+> **2.0 update (2026-10-13):** The `compress` skill described here is now `/ck tidy`, and `standards-aware` is gone — `AGENTS.md` plus path-scoped rules (`context_rules`) do its loading job, and `/ck update` reconciles pending standards. The always-loaded set is now `AGENTS.md` + `CLAUDE.md` + `.contextkit/standards/index.md`. See `docs/plans/contextkit-2.0.md`. The rest of this doc is kept as the design history.
+
 Status: mechanism decided (Skill-only, zero new CLI surface) — implementation + validation pending, see `.contextkit/product/decisions.md` once shipped.
 
 ## TL;DR

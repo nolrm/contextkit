@@ -11,7 +11,7 @@ export default function QualityGatesPage() {
     { id: 'how-it-works', text: 'How It Works' },
     { id: 'pre-push', text: 'Pre-push Quality Gates' },
     { id: 'commit-msg', text: 'Commit Message Hook' },
-    { id: 'live-hook', text: 'Claude Code Live Hook' },
+    { id: 'stale-context', text: 'Stale-Context Warning' },
     { id: 'team-setup', text: 'Team Setup' },
     { id: 'configuration', text: 'Configuration' },
     { id: 'troubleshooting', text: 'Troubleshooting' },
@@ -89,14 +89,14 @@ export default function QualityGatesPage() {
         <div className="rounded-lg border bg-muted/50 p-4 mt-2">
           <p className="text-sm font-medium mb-3">Where quality gates fit in the ContextKit workflow</p>
           <ol className="text-sm text-muted-foreground space-y-2 list-none pl-0">
-            <li><span className="font-medium text-foreground">1. Context</span> (MD-first specs + standards) — reduces AI hallucination upstream, before a line of code is written</li>
-            <li><span className="font-medium text-foreground">2. Squad workflow</span> (PO → Architect → Dev → Test → Review) — structures what gets built and how</li>
+            <li><span className="font-medium text-foreground">1. Context</span> (AGENTS.md, index.md, path-scoped standards) — reduces AI hallucination upstream, before a line of code is written</li>
+            <li><span className="font-medium text-foreground">2. Goal file</span> (<code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>) — checkable outcomes and an independent review per outcome for long tasks</li>
             <li><span className="font-medium text-foreground">3. Quality gates</span> (pre-push hook) — enforces standards mechanically at the git layer, no exceptions</li>
           </ol>
         </div>
 
         <p className="text-sm text-muted-foreground">
-          Specs and squad reduce the chance of bad code being written. Quality gates catch it if it
+          Good context and a clear goal reduce the chance of bad code being written. Quality gates catch it if it
           slips through anyway. They're the last line of defense — and the only one that's automatic.
         </p>
       </div>
@@ -302,54 +302,46 @@ Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
         </div>
       </div>
 
-      {/* Claude Code Live Hook */}
-      <div id="live-hook" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Claude Code Live Hook</h2>
+      {/* Stale-context warning */}
+      <div id="stale-context" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Stale-Context Warning</h2>
         <p className="text-muted-foreground leading-relaxed">
-          In addition to git hooks, ContextKit writes a <strong>PostToolUse hook</strong> to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/settings.json</code> when you install the Claude Code integration. This is not a git hook — it runs inside Claude Code after every Edit or Write tool call.
+          Instructions that point at a missing file or a removed skill are wrong context — the model follows them anyway.
+          After the gates pass, the pre-push hook runs <code className="rounded bg-muted px-1 font-mono text-xs">ck check --context --quiet</code> and
+          prints anything it finds. It is a warning only: it never blocks the push, and it only runs when the{" "}
+          <code className="rounded bg-muted px-1 font-mono text-xs">ck</code> CLI is on your <code className="rounded bg-muted px-1 font-mono text-xs">$PATH</code>.
         </p>
 
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-          <p className="text-sm font-medium mb-2">Two layers of quality enforcement</p>
-          <ul className="space-y-1 text-sm text-muted-foreground">
-            <li><strong>Git pre-push hook</strong> — enforces at push time, team-wide, blocks the push if checks fail</li>
-            <li><strong>PostToolUse hook</strong> — enforces at edit time, local to Claude Code sessions, catches failures immediately so they never reach pre-push</li>
+        <div className="rounded-lg border bg-card p-4">
+          <h3 className="text-sm font-semibold mb-2">What it flags</h3>
+          <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+            <li>Instructions in <code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code>, <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code>, rules, or standards that point at files that don&apos;t exist</li>
+            <li>References to skills removed in 2.0, with the replacement to use instead</li>
+            <li>Always-loaded context over <code className="rounded bg-muted px-1 font-mono text-xs">context_budget_lines</code> in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code> (default 400 lines)</li>
           </ul>
         </div>
 
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold">How it works</h3>
-          <p className="text-sm text-muted-foreground">
-            During <code className="rounded bg-muted px-1 font-mono text-xs">ck install</code>, ContextKit detects your project's tooling and writes the appropriate command to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/settings.json</code>. The command is re-detected and updated whenever you run <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code>.
-          </p>
-
-          <div className="overflow-x-auto">
-            <table aria-label="PostToolUse hook detection by stack" className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th scope="col" className="text-left py-2 pr-4 font-semibold">Stack</th>
-                  <th scope="col" className="text-left py-2 font-semibold">Command run after each edit</th>
-                </tr>
-              </thead>
-              <tbody className="text-muted-foreground">
-                <tr className="border-b">
-                  <td className="py-2 pr-4 font-medium">Node.js</td>
-                  <td className="py-2">Detected <code className="rounded bg-muted px-1 font-mono text-xs">format</code> and <code className="rounded bg-muted px-1 font-mono text-xs">lint</code> scripts via <code className="rounded bg-muted px-1 font-mono text-xs">package.json</code>; uses npm/pnpm/yarn/bun based on lockfile</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4 font-medium">Go</td>
-                  <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">gofmt</code> and/or <code className="rounded bg-muted px-1 font-mono text-xs">golangci-lint</code> — whichever is on PATH</td>
-                </tr>
-                <tr>
-                  <td className="py-2 pr-4 font-medium">Python</td>
-                  <td className="py-2"><code className="rounded bg-muted px-1 font-mono text-xs">black</code> and/or <code className="rounded bg-muted px-1 font-mono text-xs">ruff</code> — whichever is on PATH</td>
-                </tr>
-              </tbody>
-            </table>
+        <div className="rounded-lg border bg-muted/50 p-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Terminal className="h-4 w-4" />
+            <span className="font-mono">Run the same check by hand</span>
           </div>
+          <code className="block font-mono text-sm">ck check --context</code>
+          <code className="block font-mono text-sm mt-1">ck check --context --strict   # exit non-zero on warnings (for CI)</code>
+        </div>
 
+        <p className="text-sm text-muted-foreground">
+          To fix what it reports, edit the reference by hand, run <code className="rounded bg-muted px-1 font-mono text-xs">/ck update</code> after an upgrade,
+          or <code className="rounded bg-muted px-1 font-mono text-xs">/ck tidy</code> to shrink always-loaded context.
+        </p>
+
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <p className="text-sm font-medium mb-2">Already-verified code is skipped</p>
           <p className="text-sm text-muted-foreground">
-            If no tooling is detected, the hook is skipped and a notice is shown during install. The hook only applies to Claude Code — other platforms (Cursor, Copilot, etc.) are not affected.
+            When every gate passes on a clean working tree, the hook records a fingerprint of that exact code in{" "}
+            <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/.verified-tree</code>. Pushing the same code again skips the gates.
+            Any file change, new commit, or change to <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/quality-gates.yml</code> forces a full run;{" "}
+            <code className="rounded bg-muted px-1 font-mono text-xs">CK_FORCE_GATES=1</code> always runs them.
           </p>
         </div>
       </div>
@@ -459,7 +451,7 @@ Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
       {/* Prev / Next navigation */}
       <div className="mt-16 pt-8 border-t border-border flex justify-between items-center">
         <Link
-          href="/docs/ci-squad"
+          href="/docs/headline"
           className="group flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
@@ -467,7 +459,7 @@ Types: feat, fix, improve, docs, refactor, test, chore`}</pre>
           </div>
           <div className="text-left">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Previous</div>
-            <div className="text-sm font-medium">CI Squad</div>
+            <div className="text-sm font-medium">/headline</div>
           </div>
         </Link>
 

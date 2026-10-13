@@ -15,7 +15,7 @@ export default function QuickStartPage() {
       <div className="space-y-3">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">Quick Start</h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Get started with ContextKit in 3 simple steps. This guide walks you through installation, setup, and your first use.
+          Get started with ContextKit in 3 simple steps: install the CLI, install in your project, then let your AI tool write the standards with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/ck setup</code>.
         </p>
       </div>
 
@@ -40,10 +40,18 @@ export default function QuickStartPage() {
             <span className="text-primary mt-0.5">✓</span>
             <div>
               <strong className="text-foreground">AI Tools</strong>
-              <span className="block text-xs text-muted-foreground mt-0.5">Cursor, VS Code, or Aider - selected during installation.</span>
+              <span className="block text-xs text-muted-foreground mt-0.5">Claude Code, Codex, Cursor, Copilot, Gemini, OpenCode, Aider, Continue, or Windsurf — selected during installation.</span>
             </div>
           </li>
         </ul>
+      </div>
+
+      <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
+        <p className="text-sm font-medium mb-1">Already using ContextKit 1.x?</p>
+        <p className="text-sm text-muted-foreground mb-2">Run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck update</code>, then <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/ck update</code> in your AI tool. The upgrade guide covers what changed and what was removed.</p>
+        <Link href="/docs/upgrade-2-0" className="inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium">
+          Upgrading to 2.0 <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
 
       {/* Step 1 */}
@@ -90,6 +98,19 @@ export default function QuickStartPage() {
             <code className="block rounded bg-muted px-4 py-2 font-mono text-sm mt-2">contextkit install</code>
             <p className="text-xs text-muted-foreground mt-2 italic">Or specify your AI tool directly: <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">contextkit install claude</code></p>
           </div>
+          <div className="rounded-lg border bg-card p-4">
+            <p className="text-sm font-medium mb-2">What install writes</p>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">AGENTS.md</code> — the canonical context file every tool reads (<code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> imports it)</li>
+              <li><code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> — topic standards plus a short always-loaded <code className="rounded bg-muted px-1 font-mono text-xs">index.md</code></li>
+              <li>Path-scoped rules for your tool, rendered from <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code></li>
+              <li>Five skills: <code className="rounded bg-muted px-1 font-mono text-xs">/ck</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/learn</code>, and the <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code> and <code className="rounded bg-muted px-1 font-mono text-xs">/headline</code> add-ons</li>
+              <li>Pre-push and commit-msg quality-gate hooks</li>
+            </ul>
+            <p className="text-xs text-muted-foreground mt-2 italic">
+              Install also writes the always-on <Link href="/docs/headline" className="text-primary hover:underline">headline</Link> response-style block. Skip it with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">contextkit install --no-headline</code>.
+            </p>
+          </div>
           <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3">
             <p className="text-sm font-medium mb-2">💡 Multi-Team Workflow</p>
             <p className="text-sm text-muted-foreground mb-2">
@@ -104,6 +125,8 @@ export default function QuickStartPage() {
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit opencode</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit aider</code>
               <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit continue</code>
+              <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit copilot</code>
+              <code className="rounded bg-muted px-2 py-1 font-mono text-xs">contextkit windsurf</code>
             </div>
           </div>
         </div>
@@ -119,28 +142,28 @@ export default function QuickStartPage() {
         </h2>
         
         <div className="space-y-3">
-          <p className="text-muted-foreground leading-relaxed">Run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> in your AI tool to customize standards to your tech stack:</p>
+          <p className="text-muted-foreground leading-relaxed">Run <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/ck setup</code> in your AI tool (<code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">$ck setup</code> in Codex) to write standards for your codebase:</p>
           <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Terminal className="h-4 w-4" />
               <span className="font-mono">In your AI tool (Claude, Cursor, etc.)</span>
             </div>
-            <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">/analyze</code>
+            <code className="block rounded bg-muted px-4 py-2 font-mono text-sm">/ck setup</code>
           </div>
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-            <p className="text-sm font-medium mb-2">🎯 What analyze does:</p>
+            <p className="text-sm font-medium mb-2">🎯 What /ck setup does:</p>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
-              <li>Scans your project structure and dependencies</li>
-              <li>Detects existing patterns and configurations</li>
-              <li>Generates standards content based on your actual codebase</li>
-              <li>Creates project-specific AI guidelines</li>
+              <li>Scans your project structure, dependencies, and existing patterns</li>
+              <li>Writes topic standards with only what the code can&apos;t tell the model</li>
+              <li>Writes <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/index.md</code> — a short always-loaded index (50 lines or fewer)</li>
+              <li>Writes <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> so each topic file loads only where it applies</li>
               <li><strong>⚠️ Important:</strong> Review and edit the generated content manually</li>
             </ul>
           </div>
           <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 mt-3">
             <p className="text-sm font-medium mb-2">📦 Monorepo Support</p>
             <p className="text-sm text-muted-foreground mb-2">
-              For monorepos, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">/analyze</code> automatically detects frontend/backend packages and prompts you to select which to analyze:
+              For monorepos, the <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">contextkit analyze</code> CLI command detects frontend/backend packages and prompts you to select which to analyze:
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
               <li><strong>Frontend:</strong> Analyzes React/Vue/Angular packages</li>
@@ -199,10 +222,20 @@ export default function QuickStartPage() {
           <div className="rounded-lg border bg-card p-4">
             <h3 className="font-semibold mb-2 flex items-center gap-2">
               <BookOpen className="h-4 w-4 text-primary" />
+              Long Tasks with /goal
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              For multi-step work, run <code className="rounded bg-muted px-1 font-mono text-xs">/goal &quot;your idea&quot;</code>. See <Link href="/docs/goal" className="text-primary hover:underline">/goal</Link>.
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-4">
+            <h3 className="font-semibold mb-2 flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-primary" />
               Check Status
             </h3>
             <p className="text-sm text-muted-foreground">
-              Run <code className="rounded bg-muted px-1 font-mono text-xs">contextkit status</code> to see installed integrations.
+              Run <code className="rounded bg-muted px-1 font-mono text-xs">contextkit status</code> to see installed integrations, or <code className="rounded bg-muted px-1 font-mono text-xs">/ck</code> in your AI tool for a summary and the next step.
             </p>
           </div>
         </div>
@@ -211,7 +244,7 @@ export default function QuickStartPage() {
       <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 mt-6">
         <p className="text-sm font-medium mb-2">What Gets Created?</p>
         <p className="text-sm text-muted-foreground">
-          ContextKit creates a <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with standards, templates, and commands. Choose your AI tool during install or specify it directly with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck install claude</code>. For Claude Code installs, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.claude/settings.json</code> is also created with a PostToolUse hook that runs format+lint after every file edit.
+          ContextKit creates <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">AGENTS.md</code> and a <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.contextkit/</code> directory with standards, templates, and commands, plus the files your AI tool reads (for Claude Code: <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">CLAUDE.md</code>, <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.claude/rules/</code>, and <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">.claude/skills/</code>). Choose your AI tool during install or specify it directly with <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">ck install claude</code>.
         </p>
       </div>
 

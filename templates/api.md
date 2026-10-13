@@ -4,4 +4,4 @@
 
 Your canonical API service or client pattern will be generated based on your project's architecture and conventions.
 
-Run `/analyze` to generate this content, or manually add your API pattern below.
+Run `/ck setup` to generate this content, or manually add your API pattern below.

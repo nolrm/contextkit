@@ -9,6 +9,7 @@ jest.mock('chalk', () => ({
   yellow: (str) => str,
   blue: (str) => str,
   magenta: (str) => str,
+  cyan: (str) => str,
   dim: (str) => str,
   bold: (str) => str,
   rgb: () => (str) => str,
@@ -137,7 +138,7 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toContain('version: "1.1.0"');
+    expect(config).toContain(`version: "${require('../../package.json').version}"`);
   });
 
   it('33. syncs status.json version after update, not just config.yml', async () => {
@@ -153,7 +154,7 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const status = await fs.readJson('.contextkit/status.json');
-    expect(status.version).toBe('1.1.0');
+    expect(status.version).toBe(require('../../package.json').version);
   });
 
   it("34. strips single quotes from config.yml's version, not just double quotes", async () => {
@@ -257,7 +258,7 @@ describe('UpdateCommand', () => {
     expect(await fs.pathExists('.contextkit/commands/my-custom-command.md')).toBe(true);
   });
 
-  it('12. always downloads squad-ci.md command on update', async () => {
+  it('12. downloads the 2.0 skill commands and none of the retired ones', async () => {
     const DownloadManager = require('../../lib/utils/download');
     await fs.ensureDir('.contextkit');
     await fs.writeFile('.contextkit/config.yml', baseConfig);
@@ -266,22 +267,31 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const downloadMock = DownloadManager.mock.results.at(-1).value;
-    const downloadedUrls = downloadMock.downloadFile.mock.calls.map((c) => c[0]);
-    expect(downloadedUrls.some((u) => u.includes('squad-ci.md'))).toBe(true);
+    const urls = downloadMock.downloadFile.mock.calls.map((c) => c[0]);
+    for (const file of ['core/ck.md', 'core/learn.md', 'docs/doc.md', 'addons/goal.md', 'addons/headline.md']) {
+      expect(urls.some((u) => u.endsWith(`commands/${file}`))).toBe(true);
+    }
+    expect(urls.some((u) => /commands\/(squad|spec|agents)\//.test(u))).toBe(false);
   });
 
-  it('13. updates squad-issue.yml when squad_ci_workflow feature is enabled', async () => {
+  it('13. squad CI flag is removed and the workflow is listed for /ck update, not re-downloaded', async () => {
     const DownloadManager = require('../../lib/utils/download');
-    const configWithSquadCi = baseConfig + '  squad_ci_workflow: true\n';
     await fs.ensureDir('.contextkit');
-    await fs.writeFile('.contextkit/config.yml', configWithSquadCi);
+    await fs.writeFile('.contextkit/config.yml', baseConfig + '  squad_ci_workflow: true\n');
+    await fs.ensureDir('.github/workflows');
+    await fs.writeFile('.github/workflows/squad-issue.yml', 'name: squad\n');
 
     const update = getUpdateModule();
     await update({ force: true });
 
     const downloadMock = DownloadManager.mock.results.at(-1).value;
-    const downloadedDests = downloadMock.downloadFile.mock.calls.map((c) => c[1]);
-    expect(downloadedDests.some((d) => d.includes('squad-issue.yml'))).toBe(true);
+    const dests = downloadMock.downloadFile.mock.calls.map((c) => c[1]);
+    expect(dests.some((d) => d.includes('squad-issue.yml'))).toBe(false);
+    expect(await fs.readFile('.contextkit/config.yml', 'utf8')).not.toContain('squad_ci_workflow');
+    const cleanup = await fs.readFile('.contextkit/pending-cleanup.md', 'utf8');
+    expect(cleanup).toContain('Squad CI workflow');
+    // the CLI never deletes it on its own
+    expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(true);
   });
 
   it('14. does not update squad-issue.yml when squad_ci_workflow is false', async () => {
@@ -416,7 +426,7 @@ describe('UpdateCommand', () => {
     expect(logged).toContain('typescript-strict.json');
   });
 
-  it('22. appends missing response_style block with explanatory comment', async () => {
+  it('22. appends the 2.0 settings with explanatory comments', async () => {
     await fs.ensureDir('.contextkit');
     await fs.writeFile('.contextkit/config.yml', baseConfig);
 
@@ -424,9 +434,11 @@ describe('UpdateCommand', () => {
     await update({ force: true });
 
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toContain('response_style:');
-    expect(config).toContain('chat_minimal_words: true');
-    expect(config).toContain('# plain-text, terse chat explanations');
+    expect(config).toMatch(/^headline: true$/m);
+    expect(config).toMatch(/^diagrams_in_docs: false$/m);
+    expect(config).toContain('context_rules:');
+    expect(config).toContain('# Context rules: load a topic standards file only when');
+    expect(config).not.toContain('response_style');
   });
 
   it('23. appends missing required/optional/conditionals and analysis_scope blocks', async () => {
@@ -444,30 +456,40 @@ describe('UpdateCommand', () => {
     expect(config).toContain('analyzed_packages: []');
   });
 
-  it('24. inserts missing squad_ci_workflow flag inside the existing features block', async () => {
-    await fs.ensureDir('.contextkit');
+  it('24. removes retired skills and command files on update', async () => {
+    await fs.ensureDir('.contextkit/commands/squad');
+    await fs.writeFile('.contextkit/commands/squad/squad.md', 'old');
     await fs.writeFile('.contextkit/config.yml', baseConfig);
+    for (const dir of ['.claude/skills/squad-auto', '.codex/skills/spec', '.agents/skills/standards-aware']) {
+      await fs.ensureDir(dir);
+    }
+    await fs.ensureDir('.cursor/prompts');
+    await fs.writeFile('.cursor/prompts/doc-arch.md', 'old');
 
     const update = getUpdateModule();
     await update({ force: true });
 
-    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    const featuresBlock = config.slice(config.indexOf('features:'));
-    expect(featuresBlock).toContain('squad_ci_workflow: false');
+    expect(await fs.pathExists('.contextkit/commands/squad')).toBe(false);
+    expect(await fs.pathExists('.claude/skills/squad-auto')).toBe(false);
+    expect(await fs.pathExists('.codex/skills/spec')).toBe(false);
+    expect(await fs.pathExists('.agents/skills/standards-aware')).toBe(false);
+    expect(await fs.pathExists('.cursor/prompts/doc-arch.md')).toBe(false);
   });
 
   it('25. does not duplicate settings that are already present', async () => {
-    const configWithResponseStyle = `${baseConfig}\nresponse_style:\n  chat_minimal_words: false\n  diagrams_in_docs: true\n`;
+    const config2 = `${baseConfig}format_version: 2\nheadline: false\ndiagrams_in_docs: true\n`;
     await fs.ensureDir('.contextkit');
-    await fs.writeFile('.contextkit/config.yml', configWithResponseStyle);
+    await fs.writeFile('.contextkit/config.yml', config2);
 
     const update = getUpdateModule();
     await update({ force: true });
 
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config.match(/^response_style:/gm)).toHaveLength(1);
-    // User's existing value is preserved, not overwritten with the default
-    expect(config).toContain('chat_minimal_words: false');
+    expect(config.match(/^headline:/gm)).toHaveLength(1);
+    expect(config.match(/^diagrams_in_docs:/gm)).toHaveLength(1);
+    // User's existing values are preserved, not overwritten with the default
+    expect(config).toMatch(/^headline: false$/m);
+    expect(config).toMatch(/^diagrams_in_docs: true$/m);
   });
 
   it('26. does not remove or reorder any pre-existing line', async () => {
@@ -521,8 +543,9 @@ features:
     let update = getUpdateModule();
     await update({});
 
+    const { version: cliVersion } = require('../../package.json');
     let config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toMatch(/^version: "1\.2\.0"/m);
+    expect(config).toMatch(new RegExp(`^version: "${cliVersion.replace(/\./g, '\\.')}"`, 'm'));
     // The nested _source.version is metadata from install time — update.js
     // must never touch it when bumping the project's own version field
     expect(config).toContain('  version: "0.9.0"');
@@ -652,7 +675,7 @@ features:
     jest.doMock('../../lib/utils/standards-migrations', () => ({
       MIGRATIONS: [
         {
-          version: '9.9.1',
+          version: '1.99.1',
           file: '.contextkit/standards/ai-guidelines.md',
           id: 'synthetic-a',
           description: 'synthetic entry A',
@@ -660,7 +683,7 @@ features:
           to: 'aaa',
         },
         {
-          version: '9.9.2',
+          version: '1.99.2',
           file: '.contextkit/standards/ai-guidelines.md',
           id: 'synthetic-b',
           description: 'synthetic entry B',
@@ -673,7 +696,7 @@ features:
     await fs.ensureDir('.contextkit/standards');
     await fs.writeFile(
       '.contextkit/config.yml',
-      baseConfig.replace('version: "1.0.0"', 'version: "9.9.0"')
+      baseConfig.replace('version: "1.0.0"', 'version: "1.99.0"')
     );
     // Matches neither synthetic entry's `from` — both fall to the pending path
     await fs.writeFile(
@@ -713,5 +736,102 @@ features:
 
     const calls = console.log.mock.calls.flat().join(' ');
     expect(calls).toContain('already up to date');
+  });
+
+  it('34. lists custom CLAUDE.md content and squad state in pending-cleanup.md, moves nothing', async () => {
+    await fs.ensureDir('.contextkit/squad');
+    await fs.writeFile('.contextkit/squad/handoff.md', 'status: dev\n');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('CLAUDE.md', '# Team rules\n\n- Never touch prod.\n');
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const cleanup = await fs.readFile('.contextkit/pending-cleanup.md', 'utf8');
+    expect(cleanup).toContain('Custom content in CLAUDE.md');
+    expect(cleanup).toContain('Never touch prod.');
+    expect(cleanup).toContain('Squad state in .contextkit/squad/');
+    expect(cleanup).toContain('/ck update');
+    expect(await fs.readFile('CLAUDE.md', 'utf8')).toContain('Never touch prod.');
+    expect(await fs.pathExists('.contextkit/squad/handoff.md')).toBe(true);
+  });
+
+  it('35. refreshes the AGENTS.md ContextKit block even with no integration detected', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+    await fs.writeFile('AGENTS.md', '# Mine\n');
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const agents = await fs.readFile('AGENTS.md', 'utf8');
+    expect(agents).toContain('# Mine');
+    expect(agents).toContain('Read `.contextkit/standards/index.md` first');
+    expect(agents).toContain('<!-- headline:start -->');
+  });
+
+  it('36. creates the index.md skeleton for projects that predate it', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    expect(await fs.pathExists('.contextkit/standards/index.md')).toBe(true);
+  });
+
+  it('37. shared .agents/skills files alone do not trigger an integration refresh', async () => {
+    const integrations = require('../../lib/integrations');
+    const install = jest.fn().mockResolvedValue(undefined);
+    integrations.getAllIntegrationNames.mockReturnValueOnce(['cursor']);
+    integrations.getIntegration.mockReturnValueOnce({
+      validate: jest.fn().mockResolvedValue({ present: ['.agents/skills/goal/SKILL.md'], missing: [] }),
+      install,
+    });
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    expect(install).not.toHaveBeenCalled();
+  });
+
+  it('38. 2.0 standards migrations fix an untouched 1.x ai-guidelines.md and skip already-fixed text', async () => {
+    const old = [
+      '# AI Guidelines',
+      '',
+      '- **Before pushing** — run through `.contextkit/commands/agents/agent-push-checklist.md`',
+      '',
+      'When you discover a pattern worth standardising, use `/standards-aware` to decide whether and how to add it.',
+      '',
+    ].join('\n');
+    await fs.ensureDir('.contextkit/standards');
+    await fs.writeFile('.contextkit/standards/ai-guidelines.md', old);
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const content = await fs.readFile('.contextkit/standards/ai-guidelines.md', 'utf8');
+    expect(content).toContain('the pre-push quality gates block a failing push');
+    expect(content).toContain('use `/learn`');
+    expect(content).not.toContain('agent-push-checklist');
+    // 2.0 stale-reference fixes are never flagged as pending
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).not.toContain('push-checklist-to-gates');
+    expect(config).not.toContain('response-style-to-headline');
+    expect(config).not.toContain('standards-aware-to-learn');
+  });
+
+  it('39. records the running CLI version, not the npm latest', async () => {
+    await fs.ensureDir('.contextkit');
+    await fs.writeFile('.contextkit/config.yml', baseConfig);
+
+    const update = getUpdateModule();
+    await update({ force: true });
+
+    const { version } = require('../../package.json');
+    expect(await fs.readFile('.contextkit/config.yml', 'utf8')).toContain(`version: "${version}"`);
   });
 });

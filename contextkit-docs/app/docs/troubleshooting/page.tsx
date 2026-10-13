@@ -9,7 +9,8 @@ export default function TroubleshootingPage() {
     { id: 'install', text: 'Installation Issues' },
     { id: 'hooks', text: 'Git Hooks' },
     { id: 'integrations', text: 'Platform Integrations' },
-    { id: 'squad', text: 'Squad Workflow' },
+    { id: 'upgrade', text: 'Upgrading to 2.0' },
+    { id: 'context', text: 'Context & Rules' },
   ];
 
   useEffect(() => {
@@ -165,7 +166,7 @@ export default function TroubleshootingPage() {
             Claude Code not loading standards automatically
           </h3>
           <p className="text-sm text-muted-foreground">
-            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. If files aren&apos;t loading: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist — run <code className="rounded bg-muted px-1 font-mono text-xs">/analyze</code> to generate them.
+            ContextKit uses <code className="rounded bg-muted px-1 font-mono text-xs">@path</code> imports in CLAUDE.md to auto-load standards. If files aren&apos;t loading: (1) re-run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to regenerate CLAUDE.md, (2) check that the first-time approval dialog was accepted (Claude Code prompts you to approve @imports on first use), (3) make sure the referenced <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/standards/</code> files exist — run <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code> to write them. In 2.0, <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> imports <code className="rounded bg-muted px-1 font-mono text-xs">@AGENTS.md</code> and <code className="rounded bg-muted px-1 font-mono text-xs">@.contextkit/standards/index.md</code>; topic standards load from <code className="rounded bg-muted px-1 font-mono text-xs">.claude/rules/</code> only when you touch matching files.
           </p>
         </div>
 
@@ -175,7 +176,7 @@ export default function TroubleshootingPage() {
             Slash commands not appearing in Claude Code
           </h3>
           <p className="text-sm text-muted-foreground">
-            Run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to install slash commands to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/commands/</code>. Restart Claude Code to pick up the new commands. If commands are stale, run <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code> to pull the latest versions.
+            Run <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code> to install the skills to <code className="rounded bg-muted px-1 font-mono text-xs">.claude/skills/</code> (<code className="rounded bg-muted px-1 font-mono text-xs">/ck</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/learn</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/headline</code>). Restart Claude Code to pick them up. If they&apos;re stale, run <code className="rounded bg-muted px-1 font-mono text-xs">ck update --force</code> to regenerate them.
           </p>
         </div>
 
@@ -190,38 +191,87 @@ export default function TroubleshootingPage() {
         </div>
       </div>
 
-      {/* Squad Workflow */}
-      <div id="squad" className="space-y-4 pt-4 scroll-mt-20">
-        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Squad Workflow</h2>
+      {/* Upgrading to 2.0 */}
+      <div id="upgrade" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Upgrading to 2.0</h2>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Mixed state — both handoff.md and manifest.md exist
+            &quot;N item(s) need a decision&quot; after <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code>
           </h3>
           <p className="text-sm text-muted-foreground">
-            This happens when a single-task run and a batch run overlap in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/</code>. Run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> to clear the state, or if you&apos;re running <code className="rounded bg-muted px-1 font-mono text-xs">/squad</code> with a new task, it will offer to reset inline.
+            <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code> only changes text inside ContextKit markers. Anything that needs judgment — custom <code className="rounded bg-muted px-1 font-mono text-xs">CLAUDE.md</code> content, unfinished state from retired 1.x workflows, old CI workflow files, pending standards updates, stale references — is listed in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/pending-cleanup.md</code>. Run <code className="rounded bg-muted px-1 font-mono text-xs">/ck update</code> in Claude Code (or <code className="rounded bg-muted px-1 font-mono text-xs">$ck update</code> in Codex). It asks before each change, deletes the file when done, and makes one commit. See <Link href="/docs/upgrade-2-0" className="text-primary hover:underline">Upgrading to 2.0</Link>.
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Squad pipeline stuck mid-run
+            Old skills missing after upgrading
           </h3>
           <p className="text-sm text-muted-foreground">
-            Check the <code className="rounded bg-muted px-1 font-mono text-xs">status:</code> field in <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/handoff.md</code>. Run the command that matches the current status — e.g. if status is <code className="rounded bg-muted px-1 font-mono text-xs">dev</code>, run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-dev</code>. Use <code className="rounded bg-muted px-1 font-mono text-xs">/squad-auto</code> to continue automatically from where it left off.
+            2.0 ships five skills: <code className="rounded bg-muted px-1 font-mono text-xs">/ck</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/doc</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/learn</code>, <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>, and <code className="rounded bg-muted px-1 font-mono text-xs">/headline</code>. Retired 1.x skills are removed on purpose (the <Link href="/docs/upgrade-2-0" className="text-primary hover:underline">upgrade guide</Link> lists each replacement) — long tasks now use <code className="rounded bg-muted px-1 font-mono text-xs">/goal</code>, docs use <code className="rounded bg-muted px-1 font-mono text-xs">/doc arch|feature|component</code>, and standards setup uses <code className="rounded bg-muted px-1 font-mono text-xs">/ck setup</code>. If even the new skills are missing, regenerate them:
+          </p>
+          <div className="rounded-lg border bg-muted/50 p-3 space-y-1">
+            <code className="block font-mono text-sm">ck update --force</code>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            Old 1.x global skills still show up in every project
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Those are pre-2.0 global skills in <code className="rounded bg-muted px-1 font-mono text-xs">~/.claude/skills/</code>. <code className="rounded bg-muted px-1 font-mono text-xs">ck update --global</code> removes retired ContextKit-managed global skills automatically, or remove one by name (the retired names are listed in <Link href="/docs/upgrade-2-0#removed" className="text-primary hover:underline">Upgrading to 2.0</Link>). Skills you wrote yourself are never touched.
+          </p>
+          <div className="rounded-lg border bg-muted/50 p-3 space-y-1">
+            <code className="block font-mono text-sm">ck update --global</code>
+            <code className="block font-mono text-sm">ck uninstall --global &lt;retired-name&gt;</code>
+          </div>
+        </div>
+      </div>
+
+      {/* Context & Rules */}
+      <div id="context" className="space-y-4 pt-4 scroll-mt-20">
+        <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">Context &amp; Rules</h2>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            Testing or code-style rules load in every Claude Code session
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Before 2.0, <code className="rounded bg-muted px-1 font-mono text-xs">.claude/rules/contextkit-*.md</code> used <code className="rounded bg-muted px-1 font-mono text-xs">globs:</code>, which Claude Code ignores, so the rules loaded every session. 2.0 writes <code className="rounded bg-muted px-1 font-mono text-xs">paths:</code> instead. Re-render the rules with <code className="rounded bg-muted px-1 font-mono text-xs">ck update --force</code> or <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>.
           </p>
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            Want to start over completely
+            Changed <code className="rounded bg-muted px-1 font-mono text-xs">context_rules</code> or <code className="rounded bg-muted px-1 font-mono text-xs">headline</code> in config.yml but nothing happened
           </h3>
           <p className="text-sm text-muted-foreground">
-            Run <code className="rounded bg-muted px-1 font-mono text-xs">/squad-reset</code> to delete the entire <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/squad/</code> folder. It will report what was removed before deleting. If you need to recover, check git history.
+            Rule files and the headline block are rendered by the CLI. After editing <code className="rounded bg-muted px-1 font-mono text-xs">.contextkit/config.yml</code>, re-render with <code className="rounded bg-muted px-1 font-mono text-xs">ck update --force</code> or <code className="rounded bg-muted px-1 font-mono text-xs">ck &lt;platform&gt;</code> (for example <code className="rounded bg-muted px-1 font-mono text-xs">ck claude</code>). Plain <code className="rounded bg-muted px-1 font-mono text-xs">ck update</code> exits early when there&apos;s no new version.
           </p>
+          <div className="rounded-lg border bg-muted/50 p-3 space-y-1">
+            <code className="block font-mono text-sm">ck update --force</code>
+            <code className="block font-mono text-sm">ck claude</code>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            Stale-context warning on push
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            After the gates pass, the pre-push hook runs <code className="rounded bg-muted px-1 font-mono text-xs">ck check --context</code> and warns about instructions pointing at missing files or removed skills, or always-loaded context over <code className="rounded bg-muted px-1 font-mono text-xs">context_budget_lines</code> (default 400). It never blocks the push. Fix the listed references by hand, run <code className="rounded bg-muted px-1 font-mono text-xs">/ck update</code> if you just upgraded, or <code className="rounded bg-muted px-1 font-mono text-xs">/ck tidy</code> to trim always-loaded context.
+          </p>
+          <div className="rounded-lg border bg-muted/50 p-3 space-y-1">
+            <code className="block font-mono text-sm">ck check --context</code>
+          </div>
         </div>
       </div>
 

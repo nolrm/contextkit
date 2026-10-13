@@ -184,17 +184,6 @@ describe('BaseIntegration', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  test('13. getStandardsBlock returns standards reference markdown', () => {
-    const integration = new TestIntegration();
-    const block = integration.getStandardsBlock();
-
-    expect(block).toContain('.contextkit/standards/code-style.md');
-    expect(block).toContain('.contextkit/standards/testing.md');
-    expect(block).toContain('.contextkit/standards/architecture.md');
-    expect(block).toContain('.contextkit/commands/dev/analyze.md');
-    expect(block).toContain('.contextkit/product/mission-lite.md');
-  });
-
   test('14. ClaudeIntegration isUpToDate returns false when CLAUDE.md has old version', async () => {
     const ClaudeIntegration = require('../../lib/integrations/claude-integration');
     const integration = new ClaudeIntegration();

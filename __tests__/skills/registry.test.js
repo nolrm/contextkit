@@ -28,18 +28,28 @@ describe('skill registry', () => {
   });
 
   it('4. findSkill returns the matching entry by name', () => {
-    expect(findSkill('squad').name).toBe('squad');
-    expect(findSkill('does-not-exist')).toBeUndefined();
+    expect(findSkill('goal').name).toBe('goal');
+    expect(findSkill('squad')).toBeUndefined();
   });
 
   it('5. skillsByFamily filters correctly and preserves order', () => {
-    const squadSkills = skillsByFamily('squad');
-    expect(squadSkills.length).toBeGreaterThan(0);
-    expect(squadSkills.every((s) => s.family === 'squad')).toBe(true);
+    expect(skillsByFamily('core').map((s) => s.name)).toEqual(['ck', 'doc', 'learn']);
+    expect(skillsByFamily('goal').map((s) => s.name)).toEqual(['goal']);
   });
 
-  it('6. spec family includes both spec and spec-component, spec first', () => {
-    const specSkills = skillsByFamily('spec').map((s) => s.name);
-    expect(specSkills).toEqual(['spec', 'spec-component']);
+  it('6. ships exactly the five 2.0 skills', () => {
+    expect(SKILLS.map((s) => s.name)).toEqual(['ck', 'doc', 'learn', 'goal', 'headline']);
+  });
+
+  it('7. no registered skill is also listed as retired', () => {
+    const { RETIRED_SKILLS } = require('../../lib/skills/retired');
+    expect(SKILLS.filter((s) => RETIRED_SKILLS[s.name])).toEqual([]);
+  });
+
+  it('8. every effort value is one Claude Code accepts', () => {
+    const valid = ['low', 'medium', 'high', 'xhigh', 'max'];
+    for (const skill of SKILLS) {
+      if (skill.claude?.effort) expect(valid).toContain(skill.claude.effort);
+    }
   });
 });

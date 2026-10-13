@@ -29,13 +29,14 @@ describe('CursorIntegration', () => {
     expect(await fs.pathExists('.cursor/rules/contextkit-api.mdc')).toBe(true);
   });
 
-  test('2. standards rule has alwaysApply true', async () => {
+  test('2. standards rule has alwaysApply true and points at AGENTS.md', async () => {
     const integration = new CursorIntegration();
     await integration.install();
 
     const content = await fs.readFile('.cursor/rules/contextkit-standards.mdc', 'utf-8');
     expect(content).toContain('alwaysApply: true');
-    expect(content).toContain('@.contextkit/standards/code-style.md');
+    expect(content).toContain('@AGENTS.md');
+    expect(content).toContain('@.contextkit/standards/index.md');
   });
 
   test('3. testing rule has test file globs', async () => {
@@ -68,26 +69,12 @@ describe('CursorIntegration', () => {
     expect(await fs.pathExists('.cursor/rules/contextkit-standards.mdc')).toBe(true);
   });
 
-  test('6. creates all prompt files for slash commands', async () => {
+  test('6. creates a prompt file for every registry skill', async () => {
     const integration = new CursorIntegration();
     await integration.install();
 
-    const prompts = [
-      'analyze',
-      'spec',
-      'spec-component',
-      'squad',
-      'squad-architect',
-      'squad-dev',
-      'squad-test',
-      'squad-review',
-      'squad-auto',
-      'ck',
-    ];
-    for (const prompt of prompts) {
-      const filePath = `.cursor/prompts/${prompt}.md`;
-      expect(await fs.pathExists(filePath)).toBe(true);
-      const content = await fs.readFile(filePath, 'utf-8');
+    for (const prompt of ['ck', 'doc', 'learn', 'goal', 'headline']) {
+      const content = await fs.readFile(`.cursor/prompts/${prompt}.md`, 'utf-8');
       expect(content).toContain('.contextkit/commands/');
     }
   });
@@ -97,18 +84,12 @@ describe('CursorIntegration', () => {
     await integration.install();
 
     const checks = [
-      ['.cursor/prompts/analyze.md', '.contextkit/commands/dev/analyze.md'],
-      ['.cursor/prompts/spec.md', '.contextkit/commands/spec/spec.md'],
-      ['.cursor/prompts/spec-component.md', '.contextkit/commands/dev/spec-component.md'],
-      ['.cursor/prompts/squad.md', '.contextkit/commands/squad/squad.md'],
-      ['.cursor/prompts/squad-architect.md', '.contextkit/commands/squad/squad-architect.md'],
-      ['.cursor/prompts/squad-auto.md', '.contextkit/commands/squad/squad-auto.md'],
-      ['.cursor/prompts/ck.md', '.contextkit/commands/dev/health-check.md'],
+      ['.cursor/prompts/ck.md', '.contextkit/commands/core/ck.md'],
+      ['.cursor/prompts/doc.md', '.contextkit/commands/docs/doc.md'],
+      ['.cursor/prompts/goal.md', '.contextkit/commands/addons/goal.md'],
     ];
-
     for (const [file, expectedPath] of checks) {
-      const content = await fs.readFile(file, 'utf-8');
-      expect(content).toContain(expectedPath);
+      expect(await fs.readFile(file, 'utf-8')).toContain(expectedPath);
     }
   });
 
@@ -118,34 +99,33 @@ describe('CursorIntegration', () => {
 
     const components = await fs.readFile('.cursor/rules/contextkit-components.mdc', 'utf-8');
     expect(components).toContain('.contextkit/commands/dev/create-component.md');
-    expect(components).toContain('.contextkit/commands/dev/spec-component.md');
+    expect(components).not.toContain('spec-component');
 
     const api = await fs.readFile('.cursor/rules/contextkit-api.mdc', 'utf-8');
     expect(api).toContain('.contextkit/commands/dev/create-feature.md');
   });
 
-  test('9. generated Cursor spec content has no stale dev/spec.md references', async () => {
+  test('9. removes retired prompts and keeps the hand-picked rule files', async () => {
+    await fs.ensureDir('.cursor/prompts');
+    await fs.writeFile('.cursor/prompts/squad-auto.md', 'old');
+
     const integration = new CursorIntegration();
     await integration.install();
 
-    const specPrompt = await fs.readFile('.cursor/prompts/spec.md', 'utf-8');
-    const specComponentPrompt = await fs.readFile('.cursor/prompts/spec-component.md', 'utf-8');
-    const componentsRule = await fs.readFile('.cursor/rules/contextkit-components.mdc', 'utf-8');
-
-    expect(specPrompt).not.toContain('.contextkit/commands/dev/spec.md');
-    expect(specComponentPrompt).not.toContain('.contextkit/commands/dev/spec.md');
-    expect(componentsRule).not.toContain('.contextkit/commands/dev/spec.md');
+    expect(await fs.pathExists('.cursor/prompts/squad-auto.md')).toBe(false);
+    expect(await fs.pathExists('.cursor/rules/contextkit-components.mdc')).toBe(true);
+    expect(await fs.pathExists('.cursor/rules/contextkit-api.mdc')).toBe(true);
   });
 
-  test('10. showUsage reflects the spec command split', async () => {
+  test('10. showUsage lists the 2.0 skills', async () => {
     const integration = new CursorIntegration();
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     integration.showUsage();
 
     const output = consoleSpy.mock.calls.map((call) => call.join(' ')).join('\n');
-    expect(output).toContain('/spec     — Turn a product overview into a project spec');
-    expect(output).toContain('/spec-component — Write a component spec before coding');
+    expect(output).toContain('/goal "idea"');
+    expect(output).not.toContain('/squad');
 
     consoleSpy.mockRestore();
   });

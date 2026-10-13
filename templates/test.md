@@ -4,4 +4,4 @@
 
 Your canonical test file pattern will be generated based on your project's testing framework and conventions.
 
-Run `/analyze` to generate this content, or manually add your test pattern below.
+Run `/ck setup` to generate this content, or manually add your test pattern below.

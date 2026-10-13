@@ -29,89 +29,44 @@ describe('CodexIntegration', () => {
     await fs.remove(tempDir);
   });
 
-  it('1. creates AGENTS.md bridge file with standards and product context', async () => {
-    const integration = new CodexIntegration();
-    await integration.install();
+  it('1. writes the canonical AGENTS.md with the index pointer and read-when table', async () => {
+    await new CodexIntegration().install();
 
-    expect(await fs.pathExists('AGENTS.md')).toBe(true);
     const content = await fs.readFile('AGENTS.md', 'utf-8');
-    expect(content).toContain('.contextkit/standards/code-style.md');
-    expect(content).toContain('.contextkit/standards/architecture.md');
-    expect(content).toContain('.contextkit/product/mission-lite.md');
-    expect(content).not.toContain('.contextkit/standards/testing.md');
-    expect(content).not.toContain('.contextkit/standards/workflows.md');
-    expect(content).not.toContain('.contextkit/standards/ai-guidelines.md');
-    expect(content).not.toContain('.contextkit/standards/glossary.md');
-    expect(content).not.toContain('.contextkit/product/decisions.md');
-    expect(content).not.toContain('.contextkit/product/roadmap.md');
-    expect(content).not.toContain(
-      '- `.contextkit/corrections.md` — Track AI performance improvements'
-    );
-    expect(content).toContain('is loaded on demand via the `standards-aware` skill');
-    expect(content).toContain('`squad-test` skill');
-    expect(content).toContain('`product-context` skill');
-    // Shared verbatim with OpenCode's AGENTS.md body (so installing one after
-    // the other doesn't overwrite the other's content) — no Codex-only path.
-    expect(content).toContain('ContextKit skills are available via');
+    expect(content).toContain('Read `.contextkit/standards/index.md` first');
+    expect(content).toContain('| write or change tests | `.contextkit/standards/testing.md` |');
+    expect(content).toContain('`.contextkit/goals/`');
+    expect(content).toContain('`$name` in Codex');
+    expect(content).not.toContain('squad');
   });
 
-  it('2. creates .codex/skills/ directory with all skill files', async () => {
-    const integration = new CodexIntegration();
-    await integration.install();
+  it('2. creates .codex/skills/ and .agents/skills/ for every registry skill', async () => {
+    await new CodexIntegration().install();
 
-    expect(await fs.pathExists('.codex/skills')).toBe(true);
-
-    const expectedSkills = [
-      'analyze',
-      'spec',
-      'spec-component',
-      'ck',
-      'compress',
-      'squad',
-      'squad-architect',
-      'squad-dev',
-      'squad-test',
-      'squad-review',
-      'squad-auto',
-      'squad-reset',
-      'squad-doc',
-      'squad-go',
-      'squad-spec',
-      'doc-arch',
-      'doc-feature',
-      'doc-component',
-      'agent-push-checklist',
-      'context-budget',
-      'standards-aware',
-      'product-context',
-    ];
-    for (const skill of expectedSkills) {
+    for (const skill of ['ck', 'doc', 'learn', 'goal', 'headline']) {
       expect(await fs.pathExists(`.codex/skills/${skill}/SKILL.md`)).toBe(true);
+      expect(await fs.pathExists(`.agents/skills/${skill}/SKILL.md`)).toBe(true);
     }
   });
 
   it('3. SKILL.md files have correct Codex frontmatter format', async () => {
-    const integration = new CodexIntegration();
-    await integration.install();
+    await new CodexIntegration().install();
 
-    const specSkill = await fs.readFile('.codex/skills/spec/SKILL.md', 'utf-8');
-    expect(specSkill).toContain('name: spec');
-    expect(specSkill).toContain('description:');
-    expect(specSkill).toContain('.contextkit/commands/spec/spec.md');
-
-    const squadSkill = await fs.readFile('.codex/skills/squad/SKILL.md', 'utf-8');
-    expect(squadSkill).toContain('name: squad');
-    expect(squadSkill).toContain('.contextkit/commands/squad/squad.md');
+    const goal = await fs.readFile('.codex/skills/goal/SKILL.md', 'utf-8');
+    expect(goal).toContain('name: goal');
+    expect(goal).toContain('description:');
+    expect(goal).toContain('.contextkit/commands/addons/goal.md');
+    expect(goal).toContain('`$goal`');
   });
 
-  it('4. squad-spec skill references squad-spec command and scope pattern', async () => {
-    const integration = new CodexIntegration();
-    await integration.install();
+  it('4. removes retired skill directories from .codex/skills and .agents/skills', async () => {
+    await fs.ensureDir('.codex/skills/squad-spec');
+    await fs.ensureDir('.agents/skills/standards-aware');
 
-    const content = await fs.readFile('.codex/skills/squad-spec/SKILL.md', 'utf-8');
-    expect(content).toContain('name: squad-spec');
-    expect(content).toContain('.contextkit/commands/squad/squad-spec.md');
-    expect(content).toContain('scope slug');
+    await new CodexIntegration().install();
+
+    expect(await fs.pathExists('.codex/skills/squad-spec')).toBe(false);
+    expect(await fs.pathExists('.agents/skills/standards-aware')).toBe(false);
   });
 
   it('5. appends to existing AGENTS.md without overwriting', async () => {
@@ -132,6 +87,12 @@ describe('CodexIntegration', () => {
 
     const result = await integration.validate();
     expect(result.valid).toBe(true);
-    expect(result.present).toContain('AGENTS.md');
+    expect(result.present).toContain('.codex/skills/goal/SKILL.md');
+  });
+
+  it('7. AGENTS.md alone does not make a project look like a Codex install', async () => {
+    await fs.writeFile('AGENTS.md', '# Mine\n');
+    const result = await new CodexIntegration().validate();
+    expect(result.present).toEqual([]);
   });
 });

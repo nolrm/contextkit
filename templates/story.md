@@ -4,4 +4,4 @@
 
 Your canonical story/demo pattern will be generated based on your project's documentation and showcase conventions.
 
-Run `/analyze` to generate this content, or manually add your story/demo pattern below.
+Run `/ck setup` to generate this content, or manually add your story/demo pattern below.

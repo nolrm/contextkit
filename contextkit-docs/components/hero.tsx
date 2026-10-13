@@ -11,7 +11,7 @@ export function Hero() {
           {/* Pill badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
             <Sparkles className="h-3 w-3" />
-            Token-Efficient Context Engineering + Agentic AI Pipelines
+            ContextKit 2.0 — Context Engineering for AI Coding Tools
           </div>
 
           {/* Headline */}
@@ -23,7 +23,7 @@ export function Hero() {
 
           {/* Subtitle */}
           <p className="text-balance text-base text-muted-foreground max-w-xl leading-relaxed mt-2">
-            Scaffold structured standards so every AI tool reads your project conventions automatically. Then run a grounded multi-role pipeline — PO to Architect to Dev to Tester to Reviewer — without agents hallucinating your patterns.
+            One canonical AGENTS.md, a short always-loaded index, and topic standards that load only where they apply. Add quality-gate git hooks and five small skills. Claude-first; works with Codex, Cursor, Copilot, Gemini, and more.
           </p>
         </div>
 

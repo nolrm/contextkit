@@ -8,6 +8,7 @@ const check = require('../lib/commands/check');
 const note = require('../lib/commands/note');
 const run = require('../lib/commands/run');
 const uninstall = require('../lib/commands/uninstall');
+const usage = require('../lib/commands/usage');
 
 const packageJson = require('../package.json');
 const { checkForUpdates } = require('../lib/utils/notifier');
@@ -26,12 +27,16 @@ program
   .description(
     'Initialize ContextKit in the current project directory (run once per project, not global). ' +
       'With --global, install skills to ~/.claude/skills/ instead — [platform] becomes an optional ' +
-      'skill/family filter ("squad", "spec", or a specific skill name).'
+      'skill filter ("goal", "headline").'
   )
   .option('--no-hooks', 'Skip Git hooks installation')
   .option('--non-interactive', 'Skip interactive prompts')
   .option('--force', 'Regenerate user-owned standards files even if they already exist')
-  .option('--global', 'Install squad/spec skills to ~/.claude/skills/ instead of this project')
+  .option('--no-headline', 'Skip the always-on headline response-style block')
+  .option(
+    '--global',
+    'Install the goal/headline skills to ~/.claude/skills/ instead of this project'
+  )
   .action(async (platform, options) => {
     try {
       await install({ ...options, ...(platform ? { platform } : { fullInstall: true }) });
@@ -86,6 +91,22 @@ program
     }
   });
 
+// Usage command
+program
+  .command('usage')
+  .description('Show which skills get used, from local Claude Code and Codex session logs')
+  .option('--days <days>', 'Look back this many days (0 = all)', '90')
+  .option('--all', 'Include every project, not just this one')
+  .option('--json', 'Output JSON')
+  .action(async (options) => {
+    try {
+      await usage(options);
+    } catch (error) {
+      console.error(chalk.red('Usage report failed:'), error.message);
+      process.exit(1);
+    }
+  });
+
 // Check command
 program
   .command('check')
@@ -93,6 +114,8 @@ program
   .option('--strict', 'Treat warnings as errors')
   .option('--verbose', 'Show detailed information')
   .option('--global', 'Report on installed ~/.claude/skills/ global skills instead')
+  .option('--context', 'Only check for stale context (missing files, removed skills, size)')
+  .option('--quiet', 'Print nothing when there is nothing to report')
   .action(async (options) => {
     try {
       await check(options);
@@ -107,7 +130,7 @@ program
   .command('uninstall [name]')
   .description(
     'Remove contextkit-managed global skills from ~/.claude/skills/. ' +
-      '[name] is a skill name or family ("squad", "spec"); omit with --all to remove everything.'
+      '[name] is a skill name ("goal", "headline", or a pre-2.0 one like "squad"); omit with --all to remove everything.'
   )
   .option('--global', 'Required — only global skill uninstall is supported today')
   .option('--all', 'Remove every contextkit-managed global skill')

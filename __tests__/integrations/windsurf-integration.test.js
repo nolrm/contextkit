@@ -37,7 +37,7 @@ describe('WindsurfIntegration', () => {
 
     expect(await fs.pathExists('.windsurf/rules/contextkit-standards.md')).toBe(true);
     const content = await fs.readFile('.windsurf/rules/contextkit-standards.md', 'utf-8');
-    expect(content).toContain('ContextKit Standards');
+    expect(content).toContain('AGENTS.md');
     expect(content).toContain('alwaysApply: true');
   });
 

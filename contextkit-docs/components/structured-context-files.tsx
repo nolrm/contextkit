@@ -1,26 +1,35 @@
 const steps = [
   {
     number: 1,
-    title: "Initialize your project",
+    title: "Install in your project",
     description: (
       <>
         Run{" "}
         <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-primary">
-          npx contextkit init
+          ck install
         </code>{" "}
-        to create the structure.
+        to write AGENTS.md, the standards folder, path-scoped rules, and quality-gate hooks.
       </>
     ),
   },
   {
     number: 2,
-    title: "Define standards",
-    description: "Edit the generated markdown files to match your team's coding style.",
+    title: "Fill in your standards",
+    description: (
+      <>
+        Run{" "}
+        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-primary">
+          /ck setup
+        </code>{" "}
+        in your AI tool. It reads your codebase and writes the standards, a short index.md, and context_rules.
+      </>
+    ),
   },
   {
     number: 3,
     title: "Generate better code",
-    description: "AI assistants read these files to produce code that actually compiles and fits in.",
+    description:
+      "AI tools read AGENTS.md and the index every session, and load topic standards only when they touch matching files.",
   },
 ]
 
@@ -36,8 +45,8 @@ export function StructuredContextFiles() {
                 Structured Context Files
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                ContextKit generates a consistent folder structure for your project documentation.
-                This allows LLMs to understand your project&apos;s architecture instantly.
+                ContextKit keeps one canonical AGENTS.md and a short always-loaded index. Everything else
+                lives in topic standards that load only where they apply.
               </p>
             </div>
 
@@ -66,36 +75,31 @@ export function StructuredContextFiles() {
               <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
               <span className="h-3 w-3 rounded-full bg-green-500/80" />
               <span className="ml-3 font-mono text-xs text-muted-foreground">
-                .context/architecture/tech-stack.md
+                .contextkit/standards/index.md
               </span>
             </div>
 
             {/* Code content */}
             <div className="bg-[#0a0f1c] p-6 font-mono text-sm leading-7 overflow-auto">
               <p>
-                <span className="text-primary font-bold"># Tech Stack &amp; Architecture</span>
+                <span className="text-primary font-bold"># Project Index</span>
               </p>
+              <p className="text-muted-foreground">Next.js 16 app (App Router, TypeScript strict).</p>
               <p className="mt-4">
-                <span className="text-primary font-bold">## Frontend Framework</span>
+                <span className="text-primary font-bold">## Must / Must Not</span>
               </p>
-              <p className="text-muted-foreground">- **Next.js 16** (App Router)</p>
-              <p className="text-muted-foreground">- **TypeScript** (Strict mode)</p>
-              <p className="text-muted-foreground">- **Tailwind CSS** for styling</p>
+              <p className="text-muted-foreground">- Use Server Actions, not API routes</p>
+              <p className="text-muted-foreground">- Never import from app/ in lib/</p>
               <p className="mt-4">
-                <span className="text-primary font-bold">## State Management</span>
+                <span className="text-primary font-bold">## Commands</span>
               </p>
-              <p className="text-muted-foreground">- **Zustand** for global client state</p>
-              <p className="text-muted-foreground">- **React Query** for server state</p>
+              <p className="text-muted-foreground">- Test: pnpm test</p>
+              <p className="text-muted-foreground">- Lint: pnpm lint</p>
               <p className="mt-4">
-                <span className="text-primary font-bold">## Database</span>
+                <span className="text-primary font-bold">## When You Touch X, Read Y</span>
               </p>
-              <p className="text-muted-foreground">- **Supabase** (PostgreSQL)</p>
-              <p className="text-muted-foreground">- **Prisma** ORM</p>
-              <p className="mt-4">
-                <span className="text-primary font-bold">## AI Patterns</span>
-              </p>
-              <p className="text-muted-foreground">- Use Vercel AI SDK for streaming</p>
-              <p className="text-muted-foreground">- Prefer Server Actions over API routes</p>
+              <p className="text-muted-foreground">- *.test.ts → standards/testing.md</p>
+              <p className="text-muted-foreground">- app/** → standards/code-style.md</p>
             </div>
           </div>
         </div>

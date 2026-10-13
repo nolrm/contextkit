@@ -25,7 +25,7 @@ describe('ContinueIntegration', () => {
 
     expect(await fs.pathExists('.continue/rules/contextkit-standards.md')).toBe(true);
     const content = await fs.readFile('.continue/rules/contextkit-standards.md', 'utf-8');
-    expect(content).toContain('ContextKit Standards');
+    expect(content).toContain('AGENTS.md');
     expect(content).toContain('alwaysApply: true');
   });
 
@@ -36,7 +36,8 @@ describe('ContinueIntegration', () => {
     expect(await fs.pathExists('.continue/config.yaml')).toBe(true);
     const content = await fs.readFile('.continue/config.yaml', 'utf-8');
     expect(content).toContain('contextkit-standards.md');
-    expect(content).toContain('.contextkit/standards/code-style.md');
+    expect(content).toContain('- AGENTS.md');
+    expect(content).toContain('- .contextkit/standards/index.md');
   });
 
   test('3. does not overwrite existing config.json', async () => {
