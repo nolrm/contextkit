@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "contextkit",
-  "version": "1.13.0",
-  "description": "ContextKit squad + spec pipelines — multi-role dev pipeline (PO → Architect → Dev → Test → Review → Doc) and product-overview-to-spec generation, grounded in your project standards.",
+  "version": "2.0.0",
+  "description": "ContextKit skills — /ck (set up, update, tidy project context), /doc (docs for the current change), /learn (corrections → rules), /goal (long tasks with a goal file and milestone review), /headline (short, result-first replies).",
   "author": {
     "name": "nolrm",
     "url": "https://github.com/nolrm/contextkit"

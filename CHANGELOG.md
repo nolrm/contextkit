@@ -1,5 +1,54 @@
 # Changelog
 
+## [2.0.0] - 2026-10-13
+
+ContextKit is now about one thing: better project context for your AI. The squad and spec pipelines are gone — strong models plan, build, and test best in their own loop; what they still need is the right context, a checkable goal, and an independent check. Upgrade with `ck update`, then run `/ck update` in Claude Code or Codex if it lists anything to decide.
+
+### Changed
+- **`AGENTS.md` is the one main context file.** Every integration writes it. `CLAUDE.md` now holds `@AGENTS.md` + `@.contextkit/standards/index.md` plus one Claude-only line (Claude Code only reads `AGENTS.md` on its own when there's no `CLAUDE.md`). `GEMINI.md` imports it; `.github/copilot-instructions.md`, `.windsurfrules`, and `CONVENTIONS.md` carry the same body. One template instead of several that had drifted apart.
+- **Short always-loaded index + path-scoped topic standards.** New `.contextkit/standards/index.md` (≤ 50 lines: must/must-not rules, exact commands, a "when you touch X → read Y" table) is the only standards file loaded every session. Topic files load when matching files are touched, via `context_rules` in `config.yml`, rendered per tool as `.claude/rules/` (`paths:`), `.cursor/rules/*.mdc` (`globs:`), and `.github/instructions/*.instructions.md` (`applyTo:`). `ck update --force` or `ck <platform>` re-renders them after an edit.
+- **Five skills instead of 27.** Core: `/ck` (status · `setup` · `update` · `tidy`), `/doc`, `/learn`. Add-ons, each shareable on its own: `/goal`, `/headline`. `/ck setup` replaces `/analyze`, `/ck tidy` replaces `/compress`, `/doc arch|feature|component` replaces the three `doc-*` skills.
+- **`/headline` replaces `response_style`.** `config.yml` gets `headline: true|false` and a top-level `diagrams_in_docs`; `ck update` carries your old values over.
+- **`ck update` is the upgrade path, in two halves.** The CLI does the mechanical part (format migration v1 → v2, only inside ContextKit markers, after a backup) and lists everything that needs a decision in `.contextkit/pending-cleanup.md`: custom `CLAUDE.md` content, unfinished squad or spec state, the squad CI workflow, pending standards updates, stale references. `/ck update` walks through the list in Claude Code or Codex, asking before each change (custom `CLAUDE.md` blocks: move to `AGENTS.md` / keep / delete), then commits once.
+- `ck update` records the running CLI's version (it previously wrote npm's latest even when running something else) and applies standards fixes up to that version.
+- Global skills: only `goal` and `headline` install globally. `ck update --global` removes retired ones; `ck uninstall --global squad` (or `spec`, or any retired name) still works.
+- The Claude Code plugin now ships the five skills.
+
+### Removed
+- **Squad** — `/squad`, `/squad-architect`, `/squad-dev`, `/squad-test`, `/squad-review`, `/squad-auto`, `/squad-reset`, `/squad-doc`, `/squad-go`, `/squad-spec`. Use `/goal`.
+- **CI Squad** — the GitHub issue → PR workflow template, its install prompt, and `features.squad_ci_workflow`. An existing `.github/workflows/squad-issue.yml` is left in place and listed for `/ck update`.
+- **Spec** — `/spec`, `/spec-component`. Use `/goal`.
+- `/standards-aware`, `/product-context` (the `AGENTS.md` read-when table and path-scoped rules do this), `/context-budget`, `/agent-push-checklist` (the pre-push gates enforce it), `/analyze` and `/compress` as skills (`ck analyze` the CLI command stays).
+- `response_style` (`chat_minimal_words`, `diagrams_in_docs`) — see headline above.
+
+### Fixed
+- **Cursor got installed into Codex projects on `ck update`** (and vice versa): both write the shared `.agents/skills/`, which counted as "installed". Shared files no longer trigger a refresh.
+- **Fresh installs flagged a bogus pending standards update** on their first `ck update` — the 1.2.3 fix was already in the shipped text. Entries whose fix is already present are now skipped.
+- **`.contextkit/policies/policy.yml` wasn't valid YAML** (markdown headings and `**bold**` bullets), so `ck check` warned on every project.
+- **Pre-push failures didn't say which gate failed** — only "see output above", so a failure that scrolled off-screen (common in GUI git clients) left no clue what broke. The banner now names the failing gate, e.g. `✗ Failed: [1] Tests`.
+- **The Claude Code plugin manifest and skill files were stale** — `plugin.json`/`marketplace.json` still described the old squad + spec pipelines at version 1.13.0 after those skills were removed, because `npm run build:plugin` hadn't been re-run. Regenerated; CI's `plugin-sync` check now passes.
+- 2.0 standards migrations remove the stale `agent-push-checklist`, `response_style`, and `/standards-aware` text from untouched 1.x `ai-guidelines.md` files.
+
+## [1.14.0] - 2026-10-13
+
+### Added
+- **`/goal`** — run a long task against a one-page goal file in `.contextkit/goals/`: human-owned Outcomes, agent-refined Checks, a dated Changes log, and Progress. The agent builds in its own loop, re-reads the goal after compaction or a new session, asks multiple-choice questions only for decisions the user would notice, and gets a fresh-context review of the diff before ticking each outcome. Replaces squad and spec in 2.0. Installable globally (`ck install --global goal`).
+- **`/headline`** — short, result-first replies, always on. `ck install` writes a small marker-delimited block into `AGENTS.md`/`CLAUDE.md` (skip with `--no-headline`; toggle with `headline: true|false` in `config.yml`). The skill works without ContextKit too, so teams can share it on its own (`ck install --global headline`). `ck update` seeds `headline:` from the old `chat_minimal_words` flag.
+- **`/learn`** — turns a correction into a rule in the right `.contextkit/standards/` file and logs it via `ck note`.
+- **`/doc`** — with no argument, finds docs and standards that reference the code changed on this branch and updates the stale ones; `/doc arch | feature | component` for a specific level.
+- **`ck usage`** — which skills actually get used, from local Claude Code and Codex session logs: loaded on demand by the model vs typed by you, per tool, last used. `--all` for every project, `--json` for scripts. Nothing leaves the machine.
+- **Stale-context check** — `ck check` now flags instructions that point at missing files or removed/deprecated skills, and always-loaded context over a line budget (`context_budget_lines`, default 400). `ck check --context` runs only this check; the pre-push hook runs it as a non-blocking warning when `ck` is on PATH.
+
+### Fixed
+- **Claude Code rule files were never path-scoped.** `.claude/rules/contextkit-testing.md` and `contextkit-code-style.md` used `globs:`, which Claude Code doesn't read, so both loaded in every session. They now use `paths:`.
+- **`CLAUDE.md`/`AGENTS.md` pointed testing standards at the `squad-test` skill.** They now say testing.md loads when you work on test files.
+- **Invalid `effort: normal`** in generated skill frontmatter — now `medium` (valid values: low, medium, high, xhigh, max).
+- **`standards/README.md` listed six command paths that no longer exist.**
+- The pre-push update nudge no longer advertises "includes: compress skill" for every version.
+
+### Deprecated
+- `squad`, `squad-*`, `spec`, `spec-component` (use `/goal`); `doc-arch`, `doc-feature`, `doc-component` (use `/doc arch|feature|component`); `standards-aware`, `product-context`, `context-budget`, `agent-push-checklist`. All are removed in 2.0.
+
 ## [1.13.0] - 2026-09-28
 
 ### Added

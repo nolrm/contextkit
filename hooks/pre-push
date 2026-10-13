@@ -15,12 +15,16 @@ set -o errtrace # without this, `trap ... ERR` never fires for failures inside
 GATE=0
 PASSED=0
 SKIPPED=0
+CURRENT_GATE_LABEL=""
 _PIPELINE_START=$(date +%s 2>/dev/null || echo "")
 AGENT_MODE="${CK_AGENT_MODE:-0}"
 # Set CK_AGENT_MODE=1 when pushing from an AI agent for review-framed output
 
 on_gate_failure() {
   echo ""
+  if [ -n "$CURRENT_GATE_LABEL" ]; then
+    echo "  ✗ Failed: [$GATE] $CURRENT_GATE_LABEL"
+  fi
   if [ "$AGENT_MODE" = "1" ]; then
     echo "  FAIL — gate failed (see output above)"
     echo ""
@@ -49,6 +53,7 @@ run_gate() {
   local _start _end _elapsed _elapsed_fmt
   _start=$(date +%s 2>/dev/null || echo "")
   echo "  [$GATE] $label"
+  CURRENT_GATE_LABEL="$label"
   "$@"
   PASSED=$((PASSED + 1))
   if [ -n "$_start" ]; then
@@ -142,8 +147,19 @@ check_ck_update() {
 
   if [ "$latest" != "$installed" ]; then
     echo ""
-    echo "  ℹ️  ContextKit v$installed → v$latest available (includes: compress skill) — run ck update"
+    echo "  ℹ️  ContextKit v$installed → v$latest available — run ck update"
   fi
+  return 0
+}
+
+# ── Stale-context warning (informational, never blocks push) ──
+# Instructions pointing at missing files or removed skills are wrong context —
+# the model follows them. Only runs when the ck CLI is on PATH.
+
+check_stale_context() {
+  [ -d ".contextkit" ] || return 0
+  has_cmd ck || return 0
+  ck check --context --quiet 2> /dev/null || true
   return 0
 }
 
@@ -763,3 +779,4 @@ echo ""
 
 record_verified || true
 check_ck_update || true
+check_stale_context || true
