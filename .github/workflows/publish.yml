@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'package.json'
+  workflow_dispatch: {}
 
 jobs:
   publish:
@@ -26,6 +27,11 @@ jobs:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org/'
 
+      # Trusted Publishing (OIDC) needs npm >= 11.5.1 — newer than what
+      # actions/setup-node's bundled Node 22.x ships by default.
+      - name: Update npm for Trusted Publishing support
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm ci
 
@@ -36,11 +42,9 @@ jobs:
         run: |
           echo "npm version: $(npm --version)"
           echo "node version: $(node --version)"
-          npm whoami 2>&1 || echo "Not logged in (expected for OIDC)"
+          npm whoami 2>&1 || echo "Not logged in via classic auth (expected — this publish uses OIDC Trusted Publishing instead)"
 
       - name: Check version and publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "🔍 Checking version: $CURRENT_VERSION"
