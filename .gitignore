@@ -149,8 +149,8 @@ dist/
 build/
 
 # Package lock files (keep package-lock.json for consistency)
-# yarn.lock
-# pnpm-lock.yaml
+yarn.lock
+pnpm-lock.yaml
 
 # Local development
 .env.local

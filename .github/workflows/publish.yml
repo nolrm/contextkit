@@ -67,6 +67,11 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git tag "v$CURRENT_VERSION"
-            git push origin "v$CURRENT_VERSION"
+            # --no-verify: npm ci's "prepare" script sets core.hooksPath to
+            # .contextkit/hooks for this repo, so this push would otherwise
+            # run the dev pre-push quality gates against the CI runner (which
+            # may be missing pnpm/etc). Tests already ran as their own step
+            # above; this tag push is release bookkeeping, not new code.
+            git push --no-verify origin "v$CURRENT_VERSION"
             echo "🏷️  Tagged and pushed v$CURRENT_VERSION"
           fi
