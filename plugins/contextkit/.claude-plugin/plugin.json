@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "contextkit",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "ContextKit skills — /ck (set up, update, tidy project context), /doc (docs for the current change), /learn (corrections → rules), /goal (long tasks with a goal file and milestone review), /headline (short, result-first replies).",
   "author": {
     "name": "nolrm",

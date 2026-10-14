@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0] - 2026-10-14
+
+### Changed
+- **`/ck setup`'s analyze skill trimmed and strengthened** (`commands/dev/analyze.md`, 263 → 115 lines). Cut the duplicate 1.0-era opening/closing narration, now superseded by `ck:unreviewed` + `ck check`. Added: a Step 0 that reads existing `AGENTS.md`/`CLAUDE.md` custom content and `corrections.md` before scanning code; linter/formatter-enforced rules explicitly excluded from the Non-Inferable Filter; new "When Patterns Conflict" and "Scope" guidance; a self-check that re-verifies cited commands against `package.json` immediately before writing; a closing pointer to `/learn` and `/ck tidy`.
+
+### Fixed
+- **README inaccuracies**: a code-example comment that violated the project's own no-redundant-comments rule; `ck analyze` (a real command) was undocumented; the "Project Agnostic" language list didn't match the Quality Gates table; a `ck gates` CLI example that doesn't exist anywhere in the codebase, replaced with the real `.contextkit/quality-gates.yml` `disabled:` mechanism; a stale "Use it in your tool" section that had drifted out of sync with (and only covered 5 of 9 tools from) the per-platform table above it.
+- **Release workflow**: a stray root `pnpm-lock.yaml` made the pre-push hook misdetect the package manager as pnpm on the CI runner, failing the release tag push after a successful npm publish. Removed the stray lockfile, fixed `.gitignore`'s pnpm-lock.yaml/yarn.lock patterns (were comments, not real patterns), and the tag push now skips the dev quality gates (tests already ran as their own CI step).
+
 ## [2.0.0] - 2026-10-13
 
 ContextKit is now about one thing: better project context for your AI. The squad and spec pipelines are gone — strong models plan, build, and test best in their own loop; what they still need is the right context, a checkable goal, and an independent check. Upgrade with `ck update`, then run `/ck update` in Claude Code or Codex if it lists anything to decide.
