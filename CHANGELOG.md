@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1] - 2026-10-14
+
+### Fixed
+- **`config.yml`'s `commands:`, `paths:`, and `conditionals:` blocks were write-only** — generated on every `ck install` (and, for `conditionals`, backfilled by `ck update`) but never read back anywhere in `lib/`. Several `commands:` entries pointed at files removed in the 2.0 command restructure. New installs no longer get them; a new `format_version: 2 → 3` migration strips them from existing projects, including customised values, since nothing consumed them regardless.
+- **`ck update`'s "Refreshed N platform integration(s)" log didn't say which ones** — had to diff the working tree to find out what changed. Now names them, e.g. `Refreshed 2 platform integration(s): claude, codex`.
+- A dangling `config.yml` comment pointed installed projects at `standards-migrations.md`, a file that only exists in this package's own source tree, not in an installed project.
+
 ## [2.1.0] - 2026-10-14
 
 ### Changed

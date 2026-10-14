@@ -4,7 +4,7 @@ Registry of `config.yml` settings added after the initial `format_version: 1` la
 
 ## Purpose
 
-`install.js#createConfiguration` always writes a complete, current `config.yml`. Over time new top-level blocks get added to that template (`headline`, `diagrams_in_docs`, `context_rules`, `context_budget_lines`, `required`/`optional`/`conditionals`, `analysis_scope`, etc.) for projects installed later — but existing projects that already ran `ck install` never see them, since `ck update` doesn't regenerate the whole file.
+`install.js#createConfiguration` always writes a complete, current `config.yml`. Over time new top-level blocks get added to that template (`headline`, `diagrams_in_docs`, `context_rules`, `context_budget_lines`, `required`/`optional`, `analysis_scope`, etc.) for projects installed later — but existing projects that already ran `ck install` never see them, since `ck update` doesn't regenerate the whole file.
 
 `config-schema.js` is the single list of "settings that should exist"; `update.js#appendMissingSettings` diffs a project's raw `config.yml` text against it and appends whatever is missing, each with a comment. Existing content is never touched — this is what lets a project's own customizations survive `ck update`. Keep entries here in sync with the literal template in `install.js#createConfiguration`.
 

@@ -39,7 +39,7 @@ describe('MigrationRunner', () => {
     await runner.run(undefined, configPath);
 
     const content = await fs.readFile(configPath, 'utf8');
-    expect(content).toContain('format_version: 2');
+    expect(content).toContain('format_version: 3');
   });
 
   it('2. migrates to the current format_version when format_version is explicitly 0', async () => {
@@ -48,14 +48,14 @@ describe('MigrationRunner', () => {
     await runner.run(0, configPath);
 
     const content = await fs.readFile(configPath, 'utf8');
-    expect(content).toContain('format_version: 2');
+    expect(content).toContain('format_version: 3');
   });
 
   it('3. does not run migration when format_version already matches current', async () => {
-    const original = 'ck: 1\nformat_version: 2\nversion: "1.0.0"\n';
+    const original = 'ck: 1\nformat_version: 3\nversion: "1.0.0"\n';
     await fs.writeFile(configPath, original);
 
-    await runner.run(2, configPath);
+    await runner.run(3, configPath);
 
     const content = await fs.readFile(configPath, 'utf8');
     expect(content).toBe(original); // unchanged
@@ -80,7 +80,7 @@ describe('MigrationRunner', () => {
     expect(content).toContain('ck: 1');
     expect(content).toContain('version: "0.12.0"');
     expect(content).toContain('project_name: "my-app"');
-    expect(content).toContain('format_version: 2');
+    expect(content).toContain('format_version: 3');
   });
 
   // ── Edge cases ──────────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ describe('MigrationRunner', () => {
     await runner.run(null, configPath);
 
     const content = await fs.readFile(configPath, 'utf8');
-    expect(content).toContain('format_version: 2');
+    expect(content).toContain('format_version: 3');
   });
 
   it('7. format_version higher than current logs warning and does not modify config', async () => {
@@ -107,10 +107,10 @@ describe('MigrationRunner', () => {
   });
 
   it('8. run() with matching version is a no-op — no file write occurs', async () => {
-    await fs.writeFile(configPath, 'format_version: 2\n');
+    await fs.writeFile(configPath, 'format_version: 3\n');
     const statBefore = await fs.stat(configPath);
 
-    await runner.run(2, configPath);
+    await runner.run(3, configPath);
 
     const statAfter = await fs.stat(configPath);
     expect(statAfter.mtimeMs).toBe(statBefore.mtimeMs);
@@ -203,5 +203,90 @@ metadata:
     );
     await runner.run(1, configPath);
     expect(await fs.readFile(configPath, 'utf8')).toMatch(/^headline: true$/m);
+  });
+
+  // ── v2 → v3 (2.1.1) ─────────────────────────────────────────────────────────
+
+  const V2_CONFIG = `ck: 1
+format_version: 2
+required:
+  - standards/index.md
+
+# Optional standards (warn if missing)
+optional:
+  - standards/architecture.md
+
+# Conditional loading rules
+conditionals:
+  - when: react
+    load: [standards/code-style.md, standards/testing.md]
+  - when: css
+    load: [standards/code-style/css-style.md]
+
+# Features
+features:
+  pre_push_hook: true
+
+# Paths (customize for your project)
+paths:
+  components: "src/components"
+  tests: "src/__tests__"
+  stories: "src/stories"
+  docs: "docs"
+
+# Commands
+commands:
+  analyze: "@.contextkit/commands/dev/analyze.md"
+  review: "@.contextkit/commands/dev/review.md"
+
+metadata:
+  generated_by: contextkit@1.6.0
+`;
+
+  it('16. v2→v3 strips the dead commands/paths/conditionals blocks', async () => {
+    await fs.writeFile(configPath, V2_CONFIG);
+    await runner.run(2, configPath);
+    const content = await fs.readFile(configPath, 'utf8');
+    expect(content).not.toMatch(/^conditionals:/m);
+    expect(content).not.toMatch(/^paths:/m);
+    expect(content).not.toMatch(/^commands:/m);
+    expect(content).not.toContain('# Conditional loading rules');
+    expect(content).not.toContain('# Paths (customize for your project)');
+    expect(content).not.toContain('# Commands');
+  });
+
+  it('17. v2→v3 preserves unrelated content and bumps format_version', async () => {
+    await fs.writeFile(configPath, V2_CONFIG);
+    await runner.run(2, configPath);
+    const content = await fs.readFile(configPath, 'utf8');
+    expect(content).toContain('format_version: 3');
+    expect(content).toMatch(/required:\n {2}- standards\/index\.md/);
+    expect(content).toContain('# Optional standards (warn if missing)');
+    expect(content).toMatch(/^[ \t]+pre_push_hook: true$/m);
+    expect(content).toContain('metadata:');
+    expect(content).toContain('generated_by: contextkit@1.6.0');
+  });
+
+  it("18. v2→v3 is a no-op for the fields when they're already absent", async () => {
+    const config = 'ck: 1\nformat_version: 2\nrequired:\n  - standards/index.md\n';
+    await fs.writeFile(configPath, config);
+    await runner.run(2, configPath);
+    const content = await fs.readFile(configPath, 'utf8');
+    expect(content).toContain('format_version: 3');
+    expect(content).toContain('required:\n  - standards/index.md');
+  });
+
+  it("19. v2→v3 doesn't touch context_rules' nested (indented) paths: key", async () => {
+    const config = `ck: 1
+format_version: 2
+context_rules:
+  - file: standards/testing.md
+    paths: ["**/*.test.*"]
+`;
+    await fs.writeFile(configPath, config);
+    await runner.run(2, configPath);
+    const content = await fs.readFile(configPath, 'utf8');
+    expect(content).toContain('context_rules:');
+    expect(content).toContain('paths: ["**/*.test.*"]');
   });
 });

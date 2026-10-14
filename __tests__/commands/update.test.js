@@ -441,7 +441,7 @@ describe('UpdateCommand', () => {
     expect(config).not.toContain('response_style');
   });
 
-  it('23. appends missing required/optional/conditionals and analysis_scope blocks', async () => {
+  it('23. appends missing required/optional and analysis_scope blocks', async () => {
     await fs.ensureDir('.contextkit');
     await fs.writeFile('.contextkit/config.yml', baseConfig);
 
@@ -451,7 +451,7 @@ describe('UpdateCommand', () => {
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
     expect(config).toContain('required:');
     expect(config).toContain('optional:');
-    expect(config).toContain('conditionals:');
+    expect(config).not.toContain('conditionals:');
     expect(config).toContain('analysis_scope: null');
     expect(config).toContain('analyzed_packages: []');
   });

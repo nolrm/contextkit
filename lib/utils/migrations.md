@@ -34,7 +34,7 @@ Runs all pending migrations from `currentVersion` up to `CURRENT_FORMAT_VERSION`
 
 ## Constants
 
-`CURRENT_FORMAT_VERSION = 2` — increment when a new migration step is added.
+`CURRENT_FORMAT_VERSION = 3` — increment when a new migration step is added.
 
 `RETIRED_COMMAND_PATHS` — `.contextkit/`-relative command files removed in 2.0; also used by `update.js#removeLegacyFiles`.
 
@@ -44,6 +44,7 @@ Runs all pending migrations from `currentVersion` up to `CURRENT_FORMAT_VERSION`
 |---|---|
 | v0 → v1 | Adds `format_version: 1` |
 | v1 → v2 (2.0) | `response_style` → `headline` + top-level `diagrams_in_docs` (keeps the user's values); drops `features.squad_ci_workflow`; adds `standards/index.md` to `required`; creates the `index.md` skeleton if missing; removes retired command files (`RETIRED_COMMAND_PATHS`). Anything needing judgment — custom `CLAUDE.md` content, squad/spec state, the squad CI workflow — is left in place and listed in `.contextkit/pending-cleanup.md` by `ck update` (see `upgrade-cleanup.js`) for `/ck update`. |
+| v2 → v3 (2.1.1) | Strips `commands:`, `paths:`, and `conditionals:` — write-only template leftovers nothing in `lib/` ever read back, some pointing at files removed in 2.0 — along with their comment headers. |
 
 ## Adding a Future Migration
 

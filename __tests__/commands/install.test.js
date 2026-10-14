@@ -347,14 +347,24 @@ describe('InstallCommand', () => {
     expect(config).toContain('npm: "https://www.npmjs.com/package/@nolrm/contextkit"');
   });
 
-  it('23. config.yml is format v2 with no squad CI flag', async () => {
+  it('23. config.yml is current format with no squad CI flag', async () => {
     const install = getInstallModule();
     await install({ nonInteractive: true, noHooks: true });
 
     const config = await fs.readFile('.contextkit/config.yml', 'utf8');
-    expect(config).toContain('format_version: 2');
+    expect(config).toContain('format_version: 3');
     expect(config).not.toContain('squad_ci_workflow');
     expect(await fs.pathExists('.github/workflows/squad-issue.yml')).toBe(false);
+  });
+
+  it('67. fresh install never writes the dead commands:/paths:/conditionals: blocks', async () => {
+    const install = getInstallModule();
+    await install({ nonInteractive: true, noHooks: true });
+
+    const config = await fs.readFile('.contextkit/config.yml', 'utf8');
+    expect(config).not.toMatch(/^commands:/m);
+    expect(config).not.toMatch(/^paths:/m);
+    expect(config).not.toMatch(/^conditionals:/m);
   });
 
   it('24. config.yml defaults headline on and ships default context rules', async () => {
